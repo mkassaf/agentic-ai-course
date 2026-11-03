@@ -46,9 +46,14 @@ def main():
     if not config.get("ref"):
         issues.append("Course ref is missing")
     paths = sorted((ROOT / "notebooks").glob("*.ipynb"))
+    expected = set(config.get("labs", []))
+    if {path.stem for path in paths} != expected:
+        issues.append("Notebook filenames do not match the configured lab sequence")
     if len(paths) != 8:
         issues.append(f"Expected 8 notebooks; found {len(paths)}")
     for path in paths:
+        if not (ROOT / "lessons" / (path.stem + ".json")).exists():
+            issues.append(f"{path.name}: editable lesson source is missing")
         notebook = nbformat.read(path, as_version=4)
         nbformat.validate(notebook)
         text = "\n".join(c.source for c in notebook.cells)

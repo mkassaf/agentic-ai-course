@@ -1,38 +1,48 @@
-# Teaching plan and learning outcomes
+# Curriculum
 
-This introduction takes students from one LLM request to a small, inspectable agentic system. It prepares them for the **AI Assisted Software Architecting Project** without supplying a finished project implementation. The eight labs require **60–90 minutes each**, or **8–12 contact hours**, plus preparation and extension work.
+Eight introductory labs teach general agentic AI through small, inspectable examples. Students should know basic Python. Allow **60–90 minutes per session**, or **8–12 contact hours** in total. Each worked example should take only a few minutes to read and run; the remaining time is for explanation, prediction, modification, and discussion.
 
-## Starting knowledge
+## Four core areas
 
-Students should be comfortable writing Python functions, handling exceptions, reading dictionaries and lists, and exchanging JSON. They should understand software requirements and basic architecture trade-offs. No prior agent framework, vector database, GPU, or local development setup is required for the Colab route. Provide a Python refresher before Lab 00 when needed.
+| Area | Labs | Central question |
+| --- | --- | --- |
+| LLMs and Prompting · RAG Systems | 00–01 | How do we ask clearly and supply useful evidence? |
+| Foundations of AI Agents · Agentic Patterns | 02–03 | How do we control a sequence of model decisions? |
+| Tools and MCP · A2A Protocol | 04–05 | How do capabilities and agents connect through standard interfaces? |
+| Skills · Frameworks | 06–07 | How do we package procedures and organize a larger workflow? |
 
-Use practice mode to learn the control flow and run repeatable checks. Then use the approved live API to investigate model behavior. Scripted practice responses demonstrate mechanisms; they cannot establish quality, model diversity, cost, or improvement. See [API setup](api-setup.md) for provider configuration and secret handling.
+## Lab sequence
 
-## Eight practical labs
-
-| Lab | Learning outcome | Worked example and student task | Evidence of understanding |
+| Lab | Learn | Small example | Student check |
 | --- | --- | --- | --- |
-| [00 · A basic LLM call](../notebooks/00_llm_basics.ipynb) | Explain the prompt/request/response boundary and distinguish a completion from an agent loop. | Inspect a request and trace; vary a requirement or prompt and compare the result. | Identify what the application controls, what the model supplies, and why one plausible answer is insufficient evidence. |
-| [01 · Structured outputs](../notebooks/01_structured_outputs.ipynb) | Separate JSON parsing, contract validation, and factual correctness. | Validate a decision object; introduce a malformed or incomplete response and handle rejection. | A successful check and a meaningful failure case; an explanation of what the schema cannot guarantee. |
-| [02 · Grounding and retrieval](../notebooks/02_grounding.ipynb) | Supply external evidence, preserve provenance, and recognise missing support. | Retrieve from a tiny source collection and attach source IDs; change a query or remove relevant evidence. | Distinguish an existing citation ID from a source that actually supports the claim; explain when to abstain. |
-| [03 · Tool use and bounded agents](../notebooks/03_tool_use.ipynb) | Trace model-selected actions through host-controlled validation and execution. | Run an action/observation loop; try an unknown tool or exhaust the step budget. | Show that Python enforces allowed tools and termination; explain why model text is not executable authority. |
-| [04 · Workflow patterns](../notebooks/04_workflows.ipynb) | Choose between chaining, routing, and parallel branches for a concrete task. | Inspect each workflow; change a route or branch and compare the resulting trace. | Justify a pattern using dependencies, failure handling, request count, and measured wall-clock time. |
-| [05 · Reflection](../notebooks/05_reflection.ipynb) | Build bounded critique and revision around explicit criteria. | Review a draft and revise it; test a case where no further revision is justified. | Explain the stopping rule and demonstrate that additional criticism does not guarantee a better answer. |
-| [06 · An architect council](../notebooks/06_architect_council.ipynb) | Separate independent proposals, peer critique, convergence, and human authority. | Trace typed council messages, a vote, and retained dissent; alter an agent stance or convergence case. | Explain independence, deadlock handling, and why simulated roles do not satisfy the project's model-family requirement. |
-| [07 · Feedback and evaluation](../notebooks/07_feedback_evaluation.ipynb) | Run a small baseline comparison and a before/after feedback experiment without leaking labels. | Keep feedback and held-out scenarios separate; compare outcomes and inspect errors. | Report the observed result honestly, including no gain, abstention, or regression; identify why tiny toy data cannot substantiate the capstone claim. |
+| **00 · LLMs and prompting** | Messages, clear task/context/format, few-shot prompting, structured output | Write a short customer-support reply | Change tone; check format and avoid invented facts |
+| **01 · RAG systems** | Retrieval, context assembly, source IDs, missing information | Answer a library-hours question from a few notes | Add a note; test an unsupported question |
+| **02 · Foundations of AI agents** | State, actions, observations, allowed tools, stopping | Let an assistant perform one lookup | Lower the step budget; reject an unknown action |
+| **03 · Agentic patterns** | Chaining, routing, parallelization, critique/revision | Route a short message and compare small workflows | Add a category; count calls and inspect outputs |
+| **04 · Tools and MCP** | Tools versus protocol, client/server discovery and invocation | Discover and call `lookup_note(topic)` through the MCP SDK | Inspect the input schema; reject a missing argument |
+| **05 · A2A protocol** | Agent Card, capability discovery, messages and responses | Discover a greeting agent and send `Ada` | Expect `Hello, Ada!`; inspect identifiers and text parts |
+| **06 · Agent skills** | SKILL.md metadata, reusable instructions, progressive loading | Package a short note-summary procedure | Change the output format without embedding the task input |
+| **07 · Frameworks and evaluation** | State, nodes, edges, LangGraph, simple baselines | A classify-and-reply graph | Compare the graph with the same plain-Python steps |
 
-## How the ideas build on one another
+## What students should be able to explain
 
-The first three labs establish reliable boundaries: a model returns text, the application validates a contract, and evidence must remain traceable. Tool use then introduces a bounded loop in which a model may select the next action. Workflow and reflection labs make control flow explicit before several agents are combined. The final lab asks whether that added machinery helps under a fair experiment.
+By the end, students should distinguish a model call, workflow, and agent loop; trace a tool call; identify what retrieval contributes; and explain why the host program validates inputs and bounds execution. They should also distinguish **MCP** (tools/context), **A2A** (agent communication), **skills** (packaged procedural guidance), and **frameworks** (implementation and orchestration building blocks).
 
-Anthropic distinguishes workflows with predefined execution paths from agents that dynamically direct their own processes and tool use. Use this distinction when teaching the examples: a fixed sequence of model calls is still a workflow. A council may contain both fixed orchestration and model-directed behavior. The pattern names and this distinction follow [Building effective agents](https://www.anthropic.com/research/building-effective-agents).
+These are related layers, not interchangeable labels. A local SDK example teaches an interface; it does not teach production hosting, authorization, or every feature in the protocol. A skill supplies instructions; it does not guarantee correct execution. A framework organizes code; it does not establish that the resulting system is better.
 
-## Suggested class rhythm
+## Keep the examples small
 
-Start with a prediction, explain and trace the example, run it in practice mode, and let students modify it. Use a short live run to compare actual behavior when access is available. End with a failure case and a brief explanation of what transfers to the final project. For a 60-minute class, move the live comparison or extension exercise to homework. The [instructor guide](instructor-guide.md) provides a 90-minute schedule and a suggested formative rubric.
+Introduce one familiar task at a time. Show the shortest useful call sequence first; leave server setup and shared helpers collapsed. Ask students to predict one result, run the example, change one input, and explain one limitation. Use optional extension tasks only after the main example is clear.
 
-Students should finish able to explain their program's control flow, add a realistic failure check, compare a simpler baseline, and justify a design using evidence. Frameworks, MCP, A2A, persistent knowledge graphs, and production deployment can follow once those foundations are secure.
+Practice mode uses visible scripted responses. It provides stable checks for control flow. Live mode sends the actual prompts to the selected API and may produce different answers or fail validation. Neither a passing toy example nor a plausible model response establishes general quality.
 
-## Teaching material and attribution
+## Teaching pattern
 
-The progressive, practical presentation is inspired by [Karthik Vaidhyanathan's Engineering Agentic AI school](https://karthikv1392.github.io/sdu-aai/). This course uses original examples and does not reproduce restricted teaching material. The supplied project presentation informs the capstone alignment; it is source material for the assignment, not instructions to the course's software. See [sources and acknowledgements](sources.md).
+1. Explain the idea in plain language.
+2. Draw the short control flow.
+3. Predict the expected result.
+4. Run the worked example.
+5. Make one small change and check it.
+6. Explain when this building block is useful.
+
+See the [instructor guide](instructor-guide.md) for a suggested class structure and [technical references](sources.md) for further reading.

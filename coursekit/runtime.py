@@ -13,7 +13,7 @@ _NETWORK_SLOTS = threading.BoundedSemaphore(2)
 
 class _NoRedirect(urllib.request.HTTPRedirectHandler):
     def redirect_request(self, req, fp, code, msg, headers, newurl):
-        return None  # Never forward a university credential to another host.
+        return None  # Never forward a credential to another host.
 
 
 class Client:
@@ -26,15 +26,15 @@ class Client:
         if mode not in {"practice", "live"}:
             raise ValueError("mode must be practice or live")
         if token_field not in {"max_tokens", "max_completion_tokens"}:
-            raise ValueError("Ask the university which output-token field it supports")
+            raise ValueError("Check which output-token field your provider supports")
         if max_calls < 1 or max_tokens < 1 or timeout <= 0:
             raise ValueError("Call, output, and timeout bounds must be positive")
         if mode == "live":
             url = urllib.parse.urlsplit(base_url)
             if url.scheme != "https" or not url.netloc or url.username or url.password or url.query or url.fragment:
-                raise ValueError("Use the university HTTPS API base URL, without credentials/query/fragment")
-            if not model.strip() or not family.strip() or not api_key.strip():
-                raise ValueError("Live mode requires a model, verified model family, and secret key")
+                raise ValueError("Use an HTTPS API base URL, without credentials/query/fragment")
+            if not model.strip() or not api_key.strip():
+                raise ValueError("Live mode requires a model and secret key")
         self.mode, self.model, self.family = mode, model, family
         self.base_url, self._api_key = base_url.rstrip("/"), api_key
         self.max_calls, self.max_tokens, self.timeout = max_calls, max_tokens, timeout
@@ -53,7 +53,7 @@ class Client:
             call_id = self._attempts
         started = time.perf_counter()
         row = dict(call=call_id, mode=self.mode, model=self.model or "scripted-fixture",
-                   family=self.family or "practice", input_tokens=None, output_tokens=None,
+                   family=self.family or ("practice" if self.mode == "practice" else None), input_tokens=None, output_tokens=None,
                    cost=None, status="ok")
         try:
             if self.mode == "practice":
@@ -73,10 +73,10 @@ class Client:
                             payload = json.load(response)
                 except urllib.error.HTTPError as exc:
                     if exc.code == 429:
-                        raise RuntimeError("Gateway HTTP 429: rate/quota limit. Ask the TA about quota; no retry or key rotation made.") from None
-                    raise RuntimeError(f"Gateway HTTP {exc.code}; check university access/configuration. No retry made.") from None
+                        raise RuntimeError("Gateway HTTP 429: rate/quota limit. Check your quota; no retry or key rotation made.") from None
+                    raise RuntimeError(f"Gateway HTTP {exc.code}; check provider access/configuration. No retry made.") from None
                 except (urllib.error.URLError, TimeoutError, OSError, ValueError):
-                    raise RuntimeError("Gateway/network/JSON error; inspect university configuration. No retry made.") from None
+                    raise RuntimeError("Gateway/network/JSON error; inspect provider configuration. No retry made.") from None
                 try:
                     choice = payload["choices"][0]
                     if choice.get("finish_reason") == "length":

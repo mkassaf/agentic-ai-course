@@ -77,12 +77,12 @@ class ClientTests(unittest.TestCase):
                         model.ask("question")
                 self.assertEqual(model.trace[0]["status"], "error")
 
-    def test_live_configuration_requires_https_and_verified_metadata(self):
+    def test_live_configuration_requires_https_model_and_key(self):
         for change in (
             {"base_url": "http://gateway.university.example/v1"},
             {"base_url": "https://user:password@gateway.university.example"},
             {"base_url": "https://gateway.university.example/?key=secret"},
-            {"family": ""}, {"model": ""}, {"api_key": ""},
+            {"model": ""}, {"api_key": ""},
         ):
             with self.subTest(change=change), self.assertRaises(ValueError):
                 client(**change)

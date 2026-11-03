@@ -1,0 +1,51 @@
+{
+  "slug": "00_llms_prompting",
+  "title": "LLMs and prompting",
+  "section": "Foundations",
+  "cells": [
+    {
+      "type": "markdown",
+      "source": "## Start with one small call\n\n**Goal:** ask a model for a short support reply, improve the prompt, and check a tiny JSON response. No agents yet: your Python code makes one call at a time.\n\n`client.ask(prompt, practice=\"...\")` sends your prompt to the configured model in live mode. In practice mode it returns the supplied example text, so you can learn the code without a key. Practice responses are authored examples, not model reasoning or test results.\n\nRun each cell and look at the printed answer before changing anything."
+    },
+    {
+      "type": "code",
+      "source": "question = \"A customer says: my parcel is late. Write one helpful sentence.\"\nreply = client.ask(question, practice=\"I\u2019m sorry your parcel is late; could you share the tracking number?\")\nprint(reply)\nassert isinstance(reply, str) and reply.strip()"
+    },
+    {
+      "type": "markdown",
+      "source": "**Expected practice output:** a one-sentence request for the tracking number.\n\nThe model has not contacted a courier or checked an order. Text generation is different from taking an action.\n\n## What does an LLM request look like?\n\nThe next cell prints the request body only. The runtime adds an authorization header from Colab Secrets when making a live call. The key never belongs in the printed payload."
+    },
+    {
+      "type": "code",
+      "source": "import json\npayload = {\n    \"model\": MODEL,\n    \"messages\": [{\"role\": \"user\", \"content\": question}],\n    \"max_tokens\": 128,\n}\nprint(json.dumps(payload, indent=2))\nassert \"api_key\" not in payload  # Printing this body does not expose the key."
+    },
+    {
+      "type": "markdown",
+      "source": "A chat request chooses a model, supplies messages, and bounds output length. The shared runtime also uses a timeout and call budget. Some gateways use `max_completion_tokens` instead of `max_tokens`; ask the teaching team which field their gateway supports. The FreeInference adapter adds non-streaming/provider options.\n\n## Give the model a clear task\n\nA **zero-shot** prompt gives the task without examples. Add a length limit, desired tone, and a rule against inventing facts."
+    },
+    {
+      "type": "code",
+      "source": "zero_shot = \"\"\"Write one polite support sentence for: 'My parcel is late.'\nAsk for the tracking number. Do not invent delivery dates.\"\"\"\nzero_reply = client.ask(zero_shot,\n    practice=\"Could you share your tracking number so we can check the delayed parcel?\")\nprint(zero_reply)"
+    },
+    {
+      "type": "markdown",
+      "source": "A **few-shot** prompt adds examples of the desired behavior. Examples use some of the context budget and can also bias the answer. They do not guarantee accuracy."
+    },
+    {
+      "type": "code",
+      "source": "few_shot = \"\"\"Reply in one short sentence.\nCustomer: I cannot log in.\nReply: Could you share the error message you see?\nCustomer: My parcel is late.\nReply:\"\"\"\nfew_reply = client.ask(few_shot,\n    practice=\"Could you share your tracking number so we can investigate?\")\nprint(few_reply)"
+    },
+    {
+      "type": "markdown",
+      "source": "## Ask for a small structure, then check it\n\nA program can use a category more easily than a paragraph. Request two fields. Asking for JSON in a prompt is not a guarantee: parse it and check the allowed values. A valid shape still does not prove that the category is correct."
+    },
+    {
+      "type": "code",
+      "source": "raw = client.ask('Classify \"My parcel is late\". Return only JSON with category '\n    '(\"delivery\" or \"account\") and needs_tracking (true or false).',\n    practice='{\"category\":\"delivery\",\"needs_tracking\":true}')\nresult = json.loads(raw)\nassert set(result) == {\"category\", \"needs_tracking\"}\nassert result[\"category\"] in {\"delivery\", \"account\"}\nassert isinstance(result[\"needs_tracking\"], bool)\nprint(result)"
+    },
+    {
+      "type": "markdown",
+      "source": "**Tiny exercise:** change the message to \u201cI forgot my password.\u201d Write the expected category before running the cell. In practice mode, update the fixture too; in live mode, the model must produce the result.\n\nThen replace `raw` with `\"not JSON\"`. Confirm that parsing fails visibly. Avoid silently converting an invalid response into a successful one.\n\n**Check your understanding:** Which part chooses when to call the model? Which part verifies the result? What extra capability would be needed to check a real parcel?\n\n## Read further\n\n- [FreeInference quickstart](https://doc.freeinference.org/quickstart)\n- [FreeInference model catalog](https://doc.freeinference.org/models)\n- [Chat Completions request schema](https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/create)\n- [Anthropic: Building effective agents](https://www.anthropic.com/research/building-effective-agents)"
+    }
+  ]
+}

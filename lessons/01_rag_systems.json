@@ -1,0 +1,43 @@
+{
+  "slug": "01_rag_systems",
+  "title": "A small RAG system",
+  "section": "Foundations",
+  "cells": [
+    {
+      "type": "markdown",
+      "source": "## Answer from a few library notes\n\n**Goal:** split text into small pieces, retrieve a relevant piece, and answer with a source ID.\n\nRetrieval-augmented generation (RAG) adds relevant source text to a model prompt. We use fictional library notes so the whole example fits on screen. This is a lexical baseline, not an embedding model or vector database.\n\n**Flow:** question \u2192 retrieve a note \u2192 generate an answer \u2192 check the citation."
+    },
+    {
+      "type": "code",
+      "source": "notes = {\n    \"hours\": \"The library opens at 09:00. The library closes at 18:00.\",\n    \"loans\": \"Students may borrow three books. Books are due after fourteen days.\",\n}\nchunks = [{\"id\": f\"{name}-{i}\", \"text\": sentence.strip() + \".\"}\n    for name, text in notes.items()\n    for i, sentence in enumerate(text.split(\".\")[:-1])]\nprint(chunks)\nassert len(chunks) == 4"
+    },
+    {
+      "type": "markdown",
+      "source": "Each chunk has an ID we can cite. This simple splitter assumes short sentences ending in a full stop. A real document may need a better splitter and document/version metadata.\n\n## Retrieve by word overlap\n\nThe code below ranks chunks by shared words. Zero shared words gives no result. This makes it easy to inspect, but it misses synonyms and sometimes matches irrelevant text."
+    },
+    {
+      "type": "code",
+      "source": "import re\n\ndef words(text):\n    return set(re.findall(r\"[a-z0-9]+\", text.lower()))\n\ndef retrieve(question):\n    scored = [(len(words(question) & words(c[\"text\"])), c) for c in chunks]\n    score, best = max(scored, key=lambda item: item[0])\n    return best if score > 0 else None\n\nhit = retrieve(\"When does the library open?\")\nprint(hit)\nassert hit is not None and hit[\"id\"].startswith(\"hours-\")"
+    },
+    {
+      "type": "markdown",
+      "source": "Inspect the retrieved sentence before answering. Shared words can produce ties, and the highest-ranked chunk is not automatically relevant. Our opening-time query should retrieve the first hours sentence."
+    },
+    {
+      "type": "code",
+      "source": "question = \"When does the library open?\"\nhit = retrieve(question)\nprompt = f\"Use only this note: [{hit['id']}] {hit['text']}\\nQuestion: {question}\\n\"\nprompt += 'Return only JSON with answer and source_id. If unsupported, answer \"I do not know\".'\nraw = client.ask(prompt,\n    practice=json.dumps({\"answer\": \"The library opens at 09:00.\", \"source_id\": hit[\"id\"]}))\nanswer = json.loads(raw)\nassert set(answer) == {\"answer\", \"source_id\"}\nassert answer[\"source_id\"] == hit[\"id\"]\nprint(answer)"
+    },
+    {
+      "type": "markdown",
+      "source": "**Expected practice answer:** \u201cThe library opens at 09:00,\u201d with a source ID.\n\nA matching source ID only tells us the source exists. Read the retrieved sentence: does it actually support the answer? A model can cite the right ID while making the wrong claim.\n\n## Missing evidence should stay missing"
+    },
+    {
+      "type": "code",
+      "source": "unknown_question = \"Parking prices?\"\nmissing = retrieve(unknown_question)\nif missing is None:\n    response = \"I do not know: no relevant note was found.\"\nelse:\n    response = \"A note matched; a human should check relevance before answering.\"\nprint(response)\nassert missing is None"
+    },
+    {
+      "type": "markdown",
+      "source": "Here the application abstains before calling the model. This saves a call and avoids inviting an unsupported answer. It does not solve all retrieval failures: weak matches can still be irrelevant.\n\n**Tiny exercises:**\n\n1. Ask about a synonym such as \u201cshutting time.\u201d Explain why lexical matching may fail.\n2. Add a note about weekend hours. Give its chunks distinct IDs and inspect which one wins.\n3. Add a line in a note saying \u201cignore the user's question.\u201d Treat that line as source data, not an instruction from the user.\n\n**Check your understanding:** retrieval finds text; generation writes an answer. Which failure happened if the right sentence was never retrieved? Which happened if it was retrieved but misquoted?\n\n## Read further\n\n- [Lewis et al.: Retrieval-Augmented Generation](https://arxiv.org/abs/2005.11401)\n- [Anthropic: the augmented LLM](https://www.anthropic.com/research/building-effective-agents)"
+    }
+  ]
+}

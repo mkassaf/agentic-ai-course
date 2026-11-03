@@ -1,84 +1,84 @@
 'use strict';
 const labs = [
   {
-    id: '00', file: '00_llm_basics', title: 'Your first LLM call', subtitle: 'Messages, prompts, responses, and the simplest useful baseline', topics: 'prompt llm api baseline tokens model',
-    idea: 'An LLM call maps messages to a response. Your program decides what to send and what happens next. Begin with one call you can inspect before adding any autonomy.',
-    flow: 'system instruction + user request\n              ↓\n         model call\n              ↓\n  text response + usage + latency',
-    objectives: ['Explain the roles of the prompt, model, context, and response.', 'Make one live API call and inspect its trace.', 'Keep a single-call baseline to compare with later systems.'],
-    example: 'Ask for an ingestion architecture for factory telemetry. Compare an open-ended question with a prompt that specifies on-premises deployment, a small operations team, and an explicit request for uncertainties. Look for information the model assumes rather than receives.',
-    exercise: 'Change one requirement at a time. Write down which parts of the answer should change, then compare that expectation with the live response. Keep the original prompt and result.',
-    checks: 'The scripted run makes no network calls. In live mode, one request returns text and a trace; unknown token usage remains unknown. A plausible recommendation is not proof that its assumptions are correct.',
-    bridge: 'This call becomes the non-agentic baseline. Keep its scenario, evidence, and model identifier so the eventual comparison is fair.'
+    id: '00', file: '00_llms_prompting', title: 'LLMs and prompting', subtitle: 'Make one call, improve one prompt, check one response', topics: 'llm prompting messages json structure tokens api',
+    idea: 'A model receives messages and generates a response. A clear task, useful context, and an output format make that response easier to use.',
+    flow: 'task + context + output format → model → response',
+    objectives: ['Make a small model call and read the response.', 'Compare a vague prompt with a clear one.'],
+    example: 'Ask for a short reply to a customer asking about a late delivery. Then add a tone, a two-sentence limit, and a request not to invent a delivery date. Compare the two answers.',
+    exercise: 'Change the tone from formal to friendly. Keep the task and length limit the same.',
+    checks: 'Expect a short reply that addresses the request and avoids an invented date. If you request JSON, parse it and check the required field; readable text is not necessarily valid JSON.',
+    bridge: 'Start with one useful call. Extra agent steps are worthwhile only when they solve a clear problem.'
   },
   {
-    id: '01', file: '01_structured_outputs', title: 'Turn text into a contract', subtitle: 'JSON, validation, and graceful handling of imperfect responses', topics: 'json schema structure validation contract errors',
-    idea: 'A model response becomes useful software input only when your program checks its shape and meaning. Asking for JSON is an instruction; validation is a separate responsibility.',
-    flow: 'request a proposal → parse JSON → validate fields\n                                 ↙           ↘\n                            accept        fail clearly',
-    objectives: ['Separate valid JSON from a valid proposal.', 'Validate required fields, allowed values, and evidence references.', 'Handle malformed output without silently accepting it.'],
-    example: 'Represent an architecture proposal as an option, rationale, evidence references, and confidence. Try responses with a missing field, an invented citation, or a confidence value outside the permitted range. Syntax alone catches none of the domain-level mistakes.',
-    exercise: 'Add an explicit assumptions field and one new validation rule. Supply both a valid and an invalid example, then explain what your validator can and cannot establish.',
-    checks: 'The normal example passes. Deliberately malformed or incomplete responses fail with a useful explanation. Confidence is a self-report from the model, not an empirical probability of correctness.',
-    bridge: 'The project requires structured, swappable messages. A shared output contract lets architects and the chair communicate without brittle string matching.'
+    id: '01', file: '01_rag_systems', title: 'RAG systems', subtitle: 'Look up a small fact before asking the model to answer', topics: 'rag retrieval evidence citations grounding search context',
+    idea: 'Retrieval-augmented generation gives the model relevant source text before it answers. You can build the basic mechanism with a few short documents.',
+    flow: 'question → retrieve a source → model → answer + source ID',
+    objectives: ['Retrieve a relevant snippet from a tiny collection.', 'Keep the source attached to the answer.'],
+    example: 'Ask when the library closes. Retrieve the opening-hours note, include it in the prompt, and request an answer with the note’s source ID. Try a question the notes cannot answer.',
+    exercise: 'Add a weekend-hours note and ask a weekend question.',
+    checks: 'Expect an answer supported by the retrieved note and a real source ID. For missing information, expect an explicit “I don’t know.” A real citation ID alone does not prove the claim is supported.',
+    bridge: 'Retrieval chooses the context; generation uses it. Inspect each step separately when an answer is wrong.'
   },
   {
-    id: '02', file: '02_grounding', title: 'Ground the answer in evidence', subtitle: 'A small retrieval pipeline you can inspect from end to end', topics: 'rag retrieval grounding citations evidence knowledge source',
-    idea: 'Retrieval-augmented generation selects external context before asking the model to answer. Retrieval quality and answer quality are different things; inspect both.',
-    flow: 'question → retrieve source snippets → build context\n                                          ↓\n                           answer + source identifiers\n                                          ↓\n                              check citation membership',
-    objectives: ['Build a transparent lexical retriever over a tiny knowledge base.', 'Pass the same retrieved context to each compared model.', 'Check citation identifiers and recognize unsupported claims.'],
-    example: 'Retrieve teaching snippets about operational burden and messaging options for an ingestion scenario. Keep source IDs with each snippet. A citation checker can confirm that an ID exists; a human still needs to check whether the source supports the claim.',
-    exercise: 'Add one relevant and one distracting source, then change the retrieval limit. Ask an unanswerable question and design an abstention rule. Include a hostile instruction inside a source and explain why it is data rather than authority.',
-    checks: 'Retrieved items retain stable source IDs. Invented source IDs are rejected. Empty or weak retrieval is visible. A matched citation does not guarantee entailment, freshness, or factual accuracy.',
-    bridge: 'Every architect should receive a common evidence base with provenance. Later, compare lexical retrieval with embeddings or a knowledge graph only when you can evaluate the difference.'
+    id: '02', file: '02_agent_foundations', title: 'Foundations of AI agents', subtitle: 'See a small action–observation loop and its stopping rule', topics: 'agent state actions observation tools loop termination budget',
+    idea: 'An agent chooses a next action using its current state. Your program validates the action, supplies an observation, and decides when the loop must stop.',
+    flow: 'choose action → check → run tool → observe → choose again\nstop at final answer or step limit',
+    objectives: ['Distinguish one model call from an agent loop.', 'Add a step limit and an allowed-tool list.'],
+    example: 'A tiny assistant looks up one fact before replying. Print its chosen action, the tool’s observation, and the final answer. This makes the loop visible without a framework.',
+    exercise: 'Lower the step limit. Check what happens if the assistant cannot finish in time.',
+    checks: 'Expect a short action/observation trace and a clear termination status. An unknown tool must fail before execution. Scripted practice checks this control flow rather than a model’s intelligence.',
+    bridge: 'The model can suggest an action. The host program remains responsible for execution and limits.'
   },
   {
-    id: '03', file: '03_tool_use', title: 'Let the model choose an action', subtitle: 'Tools, observations, permissions, and a bounded agent loop', topics: 'tools agent loop actions observation allowlist budget safety',
-    idea: 'A tool-using agent chooses its next action from the current state. The host program validates that choice, runs only permitted tools, and returns an observation. The model proposes an action; your code controls execution.',
-    flow: 'state → choose {tool, arguments} → validate → execute\n  ↑                                            ↓\n  └──────────── observation ───────────────────┘\nstop: final answer OR call/step budget exhausted',
-    objectives: ['Trace a model-selected action/observation loop.', 'Validate tool names and arguments before execution.', 'Stop cleanly when an agent repeats itself or reaches its limit.'],
-    example: 'Give an architect a small evidence-search tool. The agent requests a lookup, receives a source-bearing observation, and returns a final recommendation. The exercise uses an explicit JSON action protocol so you can see the mechanism without a framework.',
-    exercise: 'Add a read-only tool or change the search arguments. Then test an unknown tool, malformed arguments, and an agent that never chooses to finish. Explain why exposing arbitrary Python execution would change the risk.',
-    checks: 'Only allowlisted tools execute. Denied actions raise a visible error before execution. The loop terminates within its declared budget and distinguishes a normal final answer from budget exhaustion.',
-    bridge: 'Evidence lookup can be a tool in the council. MCP may later standardize that interface; it does not replace validation, permissions, or a termination rule.'
+    id: '03', file: '03_agentic_patterns', title: 'Agentic patterns', subtitle: 'Try chaining, routing, parallel work, and a revision step', topics: 'patterns workflow chain routing parallelization reflection evaluator optimizer',
+    idea: 'Patterns are reusable ways to connect calls. Begin with a fixed workflow when you already know the steps; let the model choose only where that choice is useful.',
+    flow: 'chain: extract → summarize\nroute: classify → choose handler\nparallel: independent checks → combine\nrevise: draft → critique → improve',
+    objectives: ['Recognize the control flow of four small patterns.', 'Choose a pattern for a simple task.'],
+    example: 'Process a short incoming message. Extract its topic, route it to a handler, or review it from two independent angles. Compare which calls each approach adds.',
+    exercise: 'Add one category to the router and test a message from that category.',
+    checks: 'Expect the message to reach the intended handler. Count the calls, keep branch results associated with their inputs, and bound revision attempts. More steps do not guarantee a better answer.',
+    bridge: 'A pattern describes the arrangement of work. You can implement it in plain Python or in a framework.'
   },
   {
-    id: '04', file: '04_workflows', title: 'Compose useful agentic patterns', subtitle: 'Prompt chaining, routing, and parallelization in plain Python', topics: 'patterns workflows chain routing parallelization orchestration',
-    idea: 'In a workflow, code defines the main sequence of steps. Start with a predictable workflow when you know the process. Add dynamic decisions only where they serve a clear purpose.',
-    flow: 'chaining:       extract → analyze → summarize\nrouting:        classify → select one handler\nparallelization: same input → independent analyses → combine',
-    objectives: ['Recognize three common workflow patterns.', 'Keep each step’s input and output explicit.', 'Compare the additional calls and failure points with a single call.'],
-    example: 'Chain a requirement extractor to an architecture summarizer. Route a request to the relevant analysis. Run independent quality-attribute reviews in parallel, then combine their outputs. Observe what the orchestrating Python code decides in each case.',
-    exercise: 'Choose a pattern for two different requests and justify the choice. Add a failing branch and decide whether the workflow should stop, retry explicitly, or return a partial result. Measure calls rather than assuming parallel means cheaper.',
-    checks: 'Chained steps use the preceding output. Routing selects a valid handler. Parallel analyses start from the same input, and results are associated with the correct branch. More calls do not automatically mean better quality.',
-    bridge: 'These are building blocks for your council topology. Select and justify a pattern in an ADR instead of choosing a framework before defining the behavior.'
+    id: '04', file: '04_tools_mcp', title: 'Tools and MCP', subtitle: 'Expose one small tool and call it through an MCP client', topics: 'tools mcp model context protocol client server sdk discovery',
+    idea: 'A tool is a capability your program exposes. Model Context Protocol standardizes how an AI application connects to such capabilities and context.',
+    flow: 'MCP client → discover tools → call lookup_note(topic) → note',
+    objectives: ['Distinguish a Python tool from its protocol interface.', 'Discover and call a tool using the MCP SDK.'],
+    example: 'Expose a read-only lookup_note tool. Discover its name and input schema through an MCP client, then ask it for a short note. Keep the lookup simple so the interface is the lesson.',
+    exercise: 'Change the requested topic. Then omit the required argument and inspect the error result.',
+    checks: 'Expect the matching note as the tool result. A call missing the required topic should return an error. Inspect the SDK result object as well as the text; a protocol does not supply permissions automatically.',
+    bridge: 'MCP connects applications to tools and context. The agent loop still decides when to use them.'
   },
   {
-    id: '05', file: '05_reflection', title: 'Critique, revise, and stop', subtitle: 'An evaluator–optimizer loop with explicit acceptance checks', topics: 'reflection critique revision evaluator optimizer quality feedback',
-    idea: 'Reflection adds a critique and a revision to a draft. It can surface omissions, but it can also reinforce a mistake. Improvement needs a criterion independent of the model’s claim that the revision is better.',
-    flow: 'draft → critique against rubric → revise → check\n                                           ↓\n                             accept / stop at round limit',
-    objectives: ['Define a concrete critique rubric.', 'Pass the draft and critique into a revision step.', 'Apply a stopping condition and retain the earlier version.'],
-    example: 'Draft an architecture recommendation, critique missing assumptions and trade-offs, then revise. Check whether the revised output satisfies the contract and addresses the stated omissions. Compare the actual claims, not just the length of the answer.',
-    exercise: 'Create a draft with one missing requirement and a draft with one false claim. Check whether the critic catches both. Set a maximum number of rounds and define what happens when the critique remains unresolved.',
-    checks: 'The revision sees the draft and critique. The loop stops at its limit. A schema-valid revision can still be wrong. Record when a revision harms quality or leaves an objection unanswered.',
-    bridge: 'This supplies the critique-and-revise stage of the architect debate. Require an argument and evidence for a changed position; agreement by itself is not success.'
+    id: '05', file: '05_a2a_protocol', title: 'A2A protocol', subtitle: 'Inspect an agent’s capability card and exchange a small message', topics: 'a2a agent2agent communication agent card message task sdk discovery',
+    idea: 'A2A provides a common interface for agents to describe capabilities and communicate. Learn the message structure before attempting a large multi-agent system.',
+    flow: 'discover Agent Card → send message → inspect response',
+    objectives: ['Identify an Agent Card, a message, and a response.', 'Explain the different roles of A2A and MCP.'],
+    example: 'Discover a small greeting assistant through its Agent Card, send Ada, and inspect the reply using the A2A SDK. Follow the identifiers and text parts through the exchange.',
+    exercise: 'Change the greeting or advertised capability and verify the corresponding output.',
+    checks: 'Expect a capability description and the reply “Hello, Ada!” associated with the request. This local SDK exchange uses the protocol routes; remote hosting and authentication are separate steps.',
+    bridge: 'Use MCP for access to tools and context; use A2A when exposing an agent’s capabilities to another agent.'
   },
   {
-    id: '06', file: '06_architect_council', title: 'Build a small architect council', subtitle: 'Independent proposals, structured debate, dissent, and a chair', topics: 'multi agent council debate consensus chair model families stances',
-    idea: 'A council is an interaction protocol, not simply three consecutive calls. Preserve independence before the first debate round, make messages traceable, and decide how to handle persistent disagreement.',
-    flow: 'same requirements + evidence\n       ↓           ↓           ↓\n   model A      model B      model C\n       └── independent proposals ──┘\n             ↓ critique + revise (bounded)\n             ↓ chair proposal + dissent\n             ↓ human decision',
-    objectives: ['Separate independent proposal and shared debate phases.', 'Keep a common message contract and an attributable trace.', 'Record disagreement and distinguish a chair decision from consensus.'],
-    example: 'Three peers examine the same ingestion scenario with pragmatist, guardian, and skeptic stances. They propose alone before viewing peers’ messages. A bounded exchange produces a chair recommendation while retaining the minority rationale.',
-    exercise: 'Introduce a deadlock or add a peer. Check that the chair does not relabel a split vote as consensus. Configure three distinct approved model families for a live run and document the actual family behind each gateway alias.',
-    checks: 'Initial prompts contain no peer proposals. Every message identifies its author and stage. Debate terminates. Dissent is preserved. Scripted peers or three stances on one model only test the protocol; they do not establish model diversity.',
-    bridge: 'The lab is a small protocol scaffold. The assessed project still needs your architecture, real model diversity, evidence retrieval, live observability, ADRs, feedback mechanism, and evaluation.'
+    id: '06', file: '06_agent_skills', title: 'Agent skills', subtitle: 'Package a short, reusable procedure in a skill folder', topics: 'skills skill.md instructions metadata progressive disclosure reusable capabilities',
+    idea: 'A skill packages task instructions and optional supporting resources. A SKILL.md file explains what the skill does and when it is useful.',
+    flow: 'read name + description → select skill → load instructions → use',
+    objectives: ['Create a small skill with name, description, and instructions.', 'Separate reusable procedure from the current task input.'],
+    example: 'Write a note-summary skill that asks for three bullets and no invented facts. Inspect its metadata, load the instructions for a short note, and compare the result with the requested format.',
+    exercise: 'Change the skill to produce a one-sentence summary. Keep the note itself outside the skill instructions.',
+    checks: 'Expect a SKILL.md with the required metadata and clear steps. Check that the output follows the chosen format. Loading instructions does not itself enforce correctness or authorize every action described in a file.',
+    bridge: 'Skills package procedural knowledge. Tools execute capabilities; frameworks organize the process. These pieces can work together.'
   },
   {
-    id: '07', file: '07_feedback_evaluation', title: 'Test whether the system improves', subtitle: 'Baselines, feedback, held-out scenarios, cost, and honest conclusions', topics: 'evaluation benchmark feedback heldout baseline accuracy cost latency memory',
-    idea: 'Treat “the council is better” and “feedback improves later decisions” as hypotheses. A tiny example teaches the evaluation pipeline; it cannot establish a general performance claim.',
-    flow: 'scenarios → disjoint feedback / held-out split\nfeedback set → update memory or principles\nheld-out set → score before / score after\ncompare: each single model vs council\nreport: quality + citations + calls + latency + limits',
-    objectives: ['Keep feedback examples out of held-out evaluation.', 'Compare the council with each constituent model used alone.', 'Report changes, costs, and uncertainty without promising improvement.'],
-    example: 'Run the toy feedback and held-out sets through a scoring harness. Store feedback-derived principles and repeat the evaluation using the same held-out questions. Keep model versions, input context, and scoring rules fixed so you can explain the comparison.',
-    exercise: 'Design an expert-reviewed benchmark of at least 20 project scenarios. Include cases with multiple defensible decisions and a rubric for trade-off coverage and evidence support. Add repeated runs and a context-matched single-model feedback ablation.',
-    checks: 'Scenario IDs do not overlap between feedback and held-out sets. Held-out labels never enter prompts or memory. Baselines receive the same scenario and evidence. Unknown usage or cost is not reported as zero. A negative result remains a valid finding.',
-    bridge: 'This prepares experiments A and B. Keep a final test set untouched while choosing your design; repeatedly inspecting the same held-out results can turn that set into development data.'
+    id: '07', file: '07_frameworks_evaluation', title: 'Frameworks and evaluation', subtitle: 'Build a small LangGraph workflow and compare its behavior', topics: 'framework langgraph graph nodes state evaluation baseline test cases',
+    idea: 'A framework provides building blocks for state and control flow. Map a small workflow to those blocks, then check whether the added structure serves your task.',
+    flow: 'START → classify → respond → END\nsmall test set → compare with a simpler baseline',
+    objectives: ['Identify state, nodes, and edges in an actual LangGraph example.', 'Run a small evaluation with a clear expected result.'],
+    example: 'Build a short classify-and-reply graph for incoming messages. Follow the state from one node to the next. Compare the graph with a simple Python version using the same inputs.',
+    exercise: 'Add one test case that the current system handles poorly. Change one thing and rerun the same checks.',
+    checks: 'Expect the compiled graph to finish with the intended response field. Report passed cases and call counts. Keep unknown cost unknown; a tiny test set illustrates a method, not general model quality.',
+    bridge: 'Choose a framework because its state and orchestration features help. Keep a simple baseline and observable tests.'
   }
 ];
 
@@ -108,7 +108,7 @@ labs.forEach((lab, i) => {
   detail.className = 'lab';
   detail.id = `lab-${lab.id}`;
   detail.dataset.search = `${lab.title} ${lab.subtitle} ${lab.topics}`.toLowerCase();
-  detail.innerHTML = `<summary><span class="lab-number">${String(i).padStart(2, '0')}</span><div><h3>${esc(lab.title)}</h3><p>${esc(lab.subtitle)}</p></div><span class="lab-time">60–90 minutes</span><span class="expand-icon" aria-hidden="true">+</span></summary><div class="lab-body"><p class="lab-intro">${esc(lab.idea)}</p><pre class="lab-flow" aria-label="Control flow for ${esc(lab.title)}">${esc(lab.flow)}</pre><div class="lesson-grid"><div><h4>What you will learn</h4><ul>${lab.objectives.map(t => `<li>${esc(t)}</li>`).join('')}</ul></div><div><h4>Walk through an example</h4><p>${esc(lab.example)}</p></div><div><h4>Make it your own</h4><p>${esc(lab.exercise)}</p></div><div><h4>What to check</h4><p>${esc(lab.checks)}</p></div></div><p class="capstone-bridge"><strong>Project connection.</strong> ${esc(lab.bridge)}</p><div class="lab-actions">${notebookActions(lab)}<label class="completion"><input type="checkbox" data-lab="${lab.id}" ${completed.includes(lab.id) ? 'checked' : ''}> I explored lab ${String(i).padStart(2, '0')}</label></div>${configured ? '' : '<p class="publish-note">Before publication: download and upload this notebook to Colab. The TA can activate direct links with scripts/configure_repo.py.</p>'}</div>`;
+  detail.innerHTML = `<summary><span class="lab-number">${String(i).padStart(2, '0')}</span><div><h3>${esc(lab.title)}</h3><p>${esc(lab.subtitle)}</p></div><span class="lab-time">60–90 minutes</span><span class="expand-icon" aria-hidden="true">+</span></summary><div class="lab-body"><p class="lab-intro">${esc(lab.idea)}</p><pre class="lab-flow" aria-label="Control flow for ${esc(lab.title)}">${esc(lab.flow)}</pre><div class="lesson-grid"><div><h4>What you will learn</h4><ul>${lab.objectives.map(t => `<li>${esc(t)}</li>`).join('')}</ul></div><div><h4>Walk through an example</h4><p>${esc(lab.example)}</p></div><div><h4>Make it your own</h4><p>${esc(lab.exercise)}</p></div><div><h4>Expected output & check</h4><p>${esc(lab.checks)}</p></div></div><p class="lesson-takeaway"><strong>Takeaway.</strong> ${esc(lab.bridge)}</p><div class="lab-actions">${notebookActions(lab)}<label class="completion"><input type="checkbox" data-lab="${lab.id}" ${completed.includes(lab.id) ? 'checked' : ''}> I explored lab ${String(i).padStart(2, '0')}</label></div>${configured ? '' : '<p class="publish-note">Download this notebook and upload it to Colab, or configure the repository links.</p>'}</div>`;
   list.appendChild(detail);
 });
 

@@ -1,62 +1,46 @@
-# API setup: FreeInference first, configurable providers
+# Model API setup
 
-The notebooks have two modes. **Practice** uses visible scripted fixtures with no network requests. **Live** sends the example's actual prompts using the OpenAI-compatible Chat Completions request format. The initial provider is **FreeInference**, with **`qwen3.6-35b`**. Endpoint, model, family, secret name and token parameter remain configurable, so a university gateway or another compatible provider can be substituted. Providers with a different protocol need an adapter.
+Each notebook can use **practice** responses or a **live** model. Practice mode uses explicit scripted fixtures and sends no model API requests. Live mode sends the example’s actual prompts to a configurable OpenAI-compatible Chat Completions service.
 
-## Initial configuration
+The initial configuration uses **FreeInference**, but the teaching adapter is provider-neutral.
+
+## Initial Colab setup
+
+1. Open the notebook and run its practice example.
+2. Open Colab’s **Secrets** panel, create `FREEINFERENCE_API_KEY`, and grant the notebook access. Never paste the key into a code cell.
+3. Set the run mode to `"live"` in the configuration cell.
+4. Run one small request and inspect its response and trace.
 
 ```python
-MODE = "practice"  # change to "live" when ready to make API requests
+MODE = "live"
 BASE_URL = "https://freeinference.org/v1"
 MODEL = "qwen3.6-35b"
-FAMILY = "Qwen"
 SECRET_NAME = "FREEINFERENCE_API_KEY"
-TOKEN_FIELD = "max_tokens"
 ```
 
-The provider's [quickstart](https://doc.freeinference.org/quickstart) documents the base URL and model ID. The [model catalogue](https://doc.freeinference.org/models) describes `qwen3.6-35b` as a non-thinking model; the authenticated `/v1/models` result is the source of truth for account access. Availability and quota can change. Students use the key supplied by the teaching team; these labs do not require them to create accounts.
+`SECRET_NAME` is the name of the saved secret, not the credential itself. If no Colab secret is available, the helper uses a hidden input prompt. Current model access and quotas depend on the service and account; check the [FreeInference documentation](https://doc.freeinference.org/) before class.
 
-## Information the teaching team must supply
+## Use another compatible service
 
-| Setting | Required information |
-| --- | --- |
-| API base URL | An approved HTTPS URL including its API prefix, e.g. `https://gateway.university.example/v1`. The client appends `/chat/completions`. |
-| Model | The exact deployment/model ID accepted by the gateway. |
-| Model family | The underlying family verified by the university, not an invented role label. |
-| API key | A teaching-team-provided credential stored as a Colab secret, initially `FREEINFERENCE_API_KEY`. |
-| Output-token field | `max_tokens` or `max_completion_tokens`, according to gateway documentation. |
-| Quota and policy | Approved models, per-student budget, rate limits, and data-use rules. |
+Change `BASE_URL`, `MODEL`, and `SECRET_NAME` to the chosen service. Use a base URL including its API prefix, such as `/v1`, but **without** `/chat/completions`; the client appends that path.
 
-The `.example` URL above is deliberately non-operational. Do not paste it into a live class configuration. If the university uses Azure's deployment-specific URL and `api-key` authentication, Google Gemini's native API, Claude's native Messages API, SSO-only authentication, or custom headers, the supplied adapter needs a provider-specific change. The course can still run in practice mode while that change is made.
+The adapter sends a `model`, a `messages` array, and an output-token bound to `POST <base_url>/chat/completions`. If a provider requires `max_completion_tokens` instead of the default `max_tokens`, add `token_field="max_completion_tokens"` to the `Client(...)` setup. This is the [Chat Completions request format](https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/create), not a claim that every model service implements it identically.
 
-## In Colab
+Services with deployment-specific URLs, native Gemini/Messages APIs, SSO-only authentication, or custom headers may require a transport change. Practice examples remain available while that change is made. Use the endpoint and approved models supplied by your institution when required.
 
-1. Open the notebook and run the practice example once.
-2. In the key/Secrets panel, add a secret named `FREEINFERENCE_API_KEY` and grant that notebook access. Alternatively, the helper prompts with hidden input. `SECRET_NAME` can be changed for another provider.
-3. Change `MODE` to `"live"`. Keep the FreeInference defaults or set the endpoint, model ID, family, and token field supplied by the TA. Leave key values out of code cells.
-4. Run one small request and inspect its trace. If a JSON/schema check fails, inspect the response and improve the contract or bounded repair step; do not bypass validation to make the demo pass.
+## Calls, errors, and limits
 
-Lab 06 and Lab 07 require three distinct verified model families for a real council. Configure each council member's model metadata; the same gateway/key can serve several models if the university supports it. The offline council tests protocol mechanics only.
-
-## What the client does
-
-The teaching adapter sends a `model`, a `messages` array containing system/user text, and one output-token bound to `POST <base_url>/chat/completions`. It extracts the returned text and usage fields where supplied. This minimal schema is grounded in the [official Chat Completions reference](https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/create).
-
-The client uses HTTPS, a request timeout, a per-client call bound, a shared maximum of two simultaneous requests, and no automatic retries. It records call metadata, elapsed time, success/failure, and supplied token counts. Token counts and monetary cost remain unknown when they are not measured; practice speed and zero API use must not be presented as live-model performance. Summed request durations are not parallel wall-clock latency.
-
-The FreeInference transport uses non-streaming responses and detects a known cold-start placeholder before treating it as an answer. If the model is starting, wait as directed and retry deliberately; the client does not sleep, rotate keys, or hide additional requests. Provider-specific request options stay separate from the generic API contract. The provider states that prompts and responses are logged for research, so use the synthetic course scenarios or other approved public data. See the [provider's service statement](https://freeinference.org/).
-
-Tool use in this course is an intentionally small JSON action protocol interpreted by Python. It is not a native provider function-calling implementation. The host validates and allowlists tools, supplies observations, and decides when execution stops. Prompt instructions alone do not enforce the boundary.
-
-## Troubleshooting
+The example client uses HTTPS, a timeout, bounded calls/output, and no silent retry or credential switching. It keeps usage unknown when the provider does not report it. FreeInference requests are non-streaming; provider-specific settings remain separate from the general interface. A cold-start placeholder should be treated as a request to wait and retry manually, not as a useful answer.
 
 | Symptom | Check |
 | --- | --- |
-| HTTP 401/403 | Credential validity, model entitlements, and secret access. |
-| HTTP 404 | Base URL, required API prefix, and deployment/model ID. |
-| HTTP 400 | Gateway-specific token field, supported roles, and model parameters. |
-| HTTP 429 | Quota or rate limit; reduce concurrency and follow the university retry guidance. |
-| Truncated output | Output budget; inspect before paying for another request. |
-| Invalid JSON or citation | Treat it as model behavior to handle, not an adapter transport success. |
-| Network/SSO problem in Colab | Check whether the university permits Colab access to that endpoint. |
+| 401/403 | Key validity, secret permission, and model access |
+| 404 | API prefix, base URL, and model identifier |
+| 400 | Supported parameters, token field, and message roles |
+| 429 | Current quota and rate limits; reduce concurrency |
+| Empty or truncated answer | Response content and output-token budget |
+| Invalid JSON or unsupported citation | Model output and validation; do not bypass the check |
 
-Live execution cannot be certified without the university's endpoint and student-equivalent access. The repository's automated tests use scripted fixtures and mocked HTTP responses; they never make paid API calls.
+The MCP, A2A, and LangGraph examples install their respective packages in setup cells. Package download needs internet access. The small protocol examples do not require a live model key.
+
+Automated verification runs practice and local protocol examples with no paid model calls. Test live-provider compatibility separately with a small request before teaching. See [Google’s Colab FAQ](https://research.google.com/colaboratory/faq.html) for notebook/runtime details.
