@@ -1,66 +1,58 @@
 #!/usr/bin/env python3
-"""Build portable notebooks from small lesson sources and one shared model adapter."""
+"""Build tiny notebooks; reusable implementation belongs in the course package."""
 from pathlib import Path
 import hashlib
 import json
+import re
 import textwrap
 
 import nbformat
 
 ROOT = Path(__file__).resolve().parents[1]
-
-SETUP = '''\
-# Run all examples without a key first. Change only MODE for a live model run.
-MODE = "practice"  # "live" uses the API key supplied through Colab Secrets
-BASE_URL = "https://freeinference.org/v1"
-MODEL = "qwen3.6-35b"
-SECRET_NAME = "FREEINFERENCE_API_KEY"
-
-client = Client(mode=MODE, base_url=BASE_URL, model=MODEL,
-                api_key=secret(SECRET_NAME) if MODE == "live" else "",
-                max_calls=24, max_tokens=512)
-print("Mode:", MODE)
-'''
+EXTRAS = {
+    "03_tools_mcp": ("mcp", "mcp"),
+    "05_a2a_protocol": ("a2a", "a2a"),
+    "07_frameworks_evaluation": ("framework", "langgraph"),
+}
+PROTOCOL_LABS = {"03_tools_mcp", "05_a2a_protocol"}
 
 
-def source_cell(kind, source, hidden=False):
+def source_cell(kind, source):
     source = textwrap.dedent(source).strip()
-    cell = (nbformat.v4.new_markdown_cell(source) if kind == "markdown"
+    return (nbformat.v4.new_markdown_cell(source) if kind == "markdown"
             else nbformat.v4.new_code_cell(source))
-    if hidden:
-        cell.metadata.update(collapsed=True, jupyter={"source_hidden": True},
-                             colab={"cellView": "form"})
-    return cell
 
 
-def build(lesson, runtime):
+def setup_for(slug, revision):
+    extra, module = EXTRAS.get(slug, ("", ""))
+    package = "agentic-ai-coursekit" + (f"[{extra}]" if extra else "")
+    url = f"https://github.com/mkassaf/agentic-ai-course/archive/{revision}.zip"
+    modules = ["coursekit"] + ([module] if module else [])
+    source = ("from importlib.util import find_spec\n"
+              f"if not all(find_spec(name) for name in {modules!r}):\n"
+              f'    %pip install -q "{package} @ {url}"')
+    if slug not in PROTOCOL_LABS:
+        source += '\nfrom coursekit import make_ask\nMODE = "practice"\nask = make_ask(mode=MODE)'
+    return source
+
+
+def build(lesson, revision):
     slug = lesson["slug"]
     number = slug.split("_", 1)[0]
-    intro = f'''# Lab {number} · {lesson["title"]}
-
-**Prepared by Mustafa Assaf** · Beginner level · 60–90 minute session
-
-Start with the small worked example, read the expected output, then change one thing.
-Use a CPU runtime and run the cells from top to bottom. No repository clone is needed.
-
-**Practice mode:** model answers are explicitly scripted so you can inspect the code
-without a key. They demonstrate control flow, not model quality. MCP, A2A and LangGraph
-examples run their actual libraries locally even in practice mode; their setup cells
-install pinned packages if needed.
-
-**Optional live calls:** add `FREEINFERENCE_API_KEY` in Colab's Secrets panel, allow
-this notebook access, and change `MODE` to `"live"`. The initial model is
-`qwen3.6-35b` on FreeInference; `BASE_URL`, `MODEL` and `SECRET_NAME` can be changed
-for another compatible provider. Keep the key out of cells and outputs.
-'''
-    cells = [source_cell("markdown", intro),
-             source_cell("markdown", "### Shared setup\nThe next cell contains the reusable model client. Run it as supplied; the short teaching examples follow below."),
-             source_cell("code", runtime, hidden=True), source_cell("code", SETUP)]
+    intro = f'# Lab {number} · {lesson["title"]}\n\n**Prepared by Mustafa Assaf** · 5–10 minute example'
+    setup_note = '## Setup\nRun this cell once. It loads the reusable helpers; the example follows below.'
+    if slug not in PROTOCOL_LABS:
+        setup_note += (' Practice answers are scripted. For a live model, save '
+                       '`FREEINFERENCE_API_KEY` in Colab Secrets and change `MODE` to `"live"`.')
+    else:
+        setup_note += ' This protocol example needs no model key.'
+    cells = [source_cell("markdown", intro), source_cell("markdown", setup_note),
+             source_cell("code", setup_for(slug, revision))]
+    cells[-1].metadata["tags"] = ["setup"]
     for cell in lesson["cells"]:
         if cell["type"] not in ("markdown", "code"):
             raise ValueError(f"Unknown cell type in {slug}")
-        cells.append(source_cell(cell["type"], cell["source"], cell.get("hidden", False)))
-    cells.append(source_cell("markdown", "### Finish\nExplain the result in your own words. Make the small change suggested above and rerun its check. If you use a live model, save the actual result and trace; a different or failed response is something to investigate."))
+        cells.append(source_cell(cell["type"], cell["source"]))
     for index, cell in enumerate(cells):
         cell.id = hashlib.sha256(f"{slug}:{index}".encode()).hexdigest()[:12]
     notebook = nbformat.v4.new_notebook(cells=cells, metadata={
@@ -77,12 +69,14 @@ for another compatible provider. Keep the key out of cells and outputs.
 def main():
     (ROOT / "notebooks").mkdir(exist_ok=True)
     config = json.loads((ROOT / "course.json").read_text())
-    runtime = (ROOT / "coursekit/runtime.py").read_text()
+    revision = (ROOT / "coursekit-ref.txt").read_text().strip()
+    if not re.fullmatch(r"[0-9a-f]{40}", revision):
+        raise ValueError("coursekit-ref.txt must contain a published commit SHA")
     for slug in config["labs"]:
         lesson = json.loads((ROOT / "lessons" / (slug + ".json")).read_text())
         if lesson["slug"] != slug:
             raise ValueError(f"Lesson/file slug mismatch: {slug}")
-        build(lesson, runtime)
+        build(lesson, revision)
 
 
 if __name__ == "__main__":

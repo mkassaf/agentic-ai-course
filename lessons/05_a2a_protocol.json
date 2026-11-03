@@ -2,56 +2,21 @@
   "slug": "05_a2a_protocol",
   "title": "Agent-to-agent communication with A2A",
   "section": "Core protocols",
+  "packages": [
+    "a2a-sdk[http-server]==1.3.0"
+  ],
   "cells": [
     {
       "type": "markdown",
-      "source": "## What you will learn\n\nDiscover an agent's **Agent Card**, send one **A2A message**, and read its reply. Allow 60–90 minutes, including the exercise. The whole example delegates one tiny task: greet a student by name.\n\nThis uses the official `a2a-sdk==1.3.0` and the A2A **1.0 JSON-RPC** binding. An HTTP test transport runs the real SDK server routes inside the notebook, so discovery, JSON serialisation, and protocol handling still happen. It opens no public endpoint or listening port and needs no LLM key. The agent's greeting behavior is deterministic so we can focus on the protocol."
-    },
-    {
-      "type": "markdown",
-      "source": "## 1. Install and import the SDK\n\nRun the collapsed setup cell. The first Colab run needs internet access to install the pinned package and HTTP-server dependencies. The example's subsequent requests stay inside the notebook process."
+      "source": "## Delegate one tiny request\n\nA2A lets a caller discover an agent's **Agent Card** and exchange messages. Here, a greeting agent receives `Ada` and replies.\n\n`greet_over_a2a` is a **course helper**, not a standard SDK method. It wraps the official A2A SDK's card discovery and A2A 1.0 JSON-RPC request/reply. Its HTTP transport stays inside the notebook; no public server or model key is needed. [Inspect the helper](../coursekit/protocol_examples.py)."
     },
     {
       "type": "code",
-      "source": "import importlib.metadata\nimport subprocess\nimport sys\n\ntry:\n    sdk_version = importlib.metadata.version(\"a2a-sdk\")\nexcept importlib.metadata.PackageNotFoundError:\n    sdk_version = None\nif sdk_version != \"1.3.0\":\n    subprocess.check_call([\n        sys.executable, \"-m\", \"pip\", \"install\", \"-q\",\n        \"a2a-sdk[http-server]==1.3.0\",\n    ])\n\nimport httpx\nfrom a2a.client import A2ACardResolver, ClientConfig, create_client\nfrom a2a.helpers import get_message_text, new_text_message\nfrom a2a.server.agent_execution import AgentExecutor\nfrom a2a.server.request_handlers import DefaultRequestHandler\nfrom a2a.server.routes import create_agent_card_routes, create_jsonrpc_routes\nfrom a2a.server.tasks import InMemoryTaskStore\nfrom a2a.types import (\n    AgentCapabilities, AgentCard, AgentInterface, AgentSkill,\n    Role, SendMessageRequest,\n)\nfrom starlette.applications import Starlette",
-      "hidden": true
+      "source": "from coursekit.protocol_examples import greet_over_a2a\nagent, reply = await greet_over_a2a(\"Ada\")\nprint(f\"{agent}: {reply}\")\nassert reply == \"Hello, Ada!\""
     },
     {
       "type": "markdown",
-      "source": "## 2. Give the agent one behavior\n\n`execute` receives the user's message through A2A and places a reply on the SDK event queue. The caller does not need to know how the greeting is implemented. For this immediate response we do not create a long-running task."
-    },
-    {
-      "type": "code",
-      "source": "class Greeter(AgentExecutor):\n    async def execute(self, context, event_queue):\n        name = get_message_text(context.message).strip()\n        await event_queue.enqueue_event(new_text_message(f\"Hello, {name}!\"))\n\n    async def cancel(self, context, event_queue):\n        raise NotImplementedError(\"This immediate reply does not create tasks.\")"
-    },
-    {
-      "type": "markdown",
-      "source": "## 3. Publish a card and protocol routes\n\nThe collapsed cell declares the agent's name, `greet` skill, text input/output, and A2A 1.0 JSON-RPC endpoint. The SDK serves its card at `/.well-known/agent-card.json` and handles protocol requests.\n\n`agent.local` is a label used only by the in-process test transport; it is not an external website. The card advertises no streaming support because this example returns one response."
-    },
-    {
-      "type": "code",
-      "source": "agent_card = AgentCard(\n    name=\"Greeter\",\n    description=\"Greets one student by name.\",\n    version=\"1.0.0\",\n    default_input_modes=[\"text/plain\"],\n    default_output_modes=[\"text/plain\"],\n    capabilities=AgentCapabilities(streaming=False),\n    supported_interfaces=[AgentInterface(\n        protocol_binding=\"JSONRPC\", url=\"http://agent.local/\",\n        protocol_version=\"1.0\",\n    )],\n    skills=[AgentSkill(\n        id=\"greet\", name=\"Greet\", description=\"Greet a student by name.\",\n        tags=[\"greeting\"],\n    )],\n)\nhandler = DefaultRequestHandler(\n    agent_executor=Greeter(), task_store=InMemoryTaskStore(),\n    agent_card=agent_card,\n)\napp = Starlette(routes=(\n    create_agent_card_routes(agent_card)\n    + create_jsonrpc_routes(handler, \"/\")\n))\ntransport = httpx.ASGITransport(app=app)",
-      "hidden": true
-    },
-    {
-      "type": "markdown",
-      "source": "## 4. Discover, delegate, and read the reply\n\nThe caller first retrieves the card. `create_client` uses that card to select the protocol interface. A message carries the name, and the response carries the greeting. The SDK generates message IDs; no model prompt is pretending to be a protocol message.\n\nExpected output:\n\n```text\nDiscovered: Greeter\nHello, Ada!\n```"
-    },
-    {
-      "type": "code",
-      "source": "async with httpx.AsyncClient(transport=transport, base_url=\"http://agent.local\") as http:\n    resolver = A2ACardResolver(httpx_client=http, base_url=\"http://agent.local\")\n    discovered = await resolver.get_agent_card()\n    print(\"Discovered:\", discovered.name)\n    config = ClientConfig(streaming=False, httpx_client=http)\n    remote = await create_client(discovered, client_config=config)\n    message = new_text_message(\"Ada\", role=Role.ROLE_USER)\n    async for event in remote.send_message(SendMessageRequest(message=message)):\n        reply = get_message_text(event.message)\n        print(reply)\n    await remote.close()"
-    },
-    {
-      "type": "markdown",
-      "source": "## 5. Check the boundary\n\nThese checks establish successful discovery and a correctly transported reply. They do not claim that a greeting is intelligent or that a discovered agent is trustworthy."
-    },
-    {
-      "type": "code",
-      "source": "assert discovered.name == \"Greeter\"\nassert discovered.skills[0].id == \"greet\"\nassert discovered.supported_interfaces[0].protocol_version == \"1.0\"\nassert reply == \"Hello, Ada!\"\nprint(\"Discovery and reply checks passed.\")"
-    },
-    {
-      "type": "markdown",
-      "source": "## MCP and A2A: what changed?\n\n| MCP lab | A2A lab |\n| --- | --- |\n| Discover a tool and its argument schema. | Discover an agent and its declared skills/interfaces. |\n| Call `lookup_note(topic)`. | Send a message requesting a greeting. |\n| The host directs tool execution. | A separate agent handles the delegated request. |\n\nBoth are interoperability protocols. A2A can carry a direct message, as here, or a task whose state changes over time. Task progress, cancellation, streaming, authentication, and deployment are useful next steps, but they are outside this small example. The presence of an Agent Card alone does not establish identity, capability quality, or permission.\n\n## Your turn\n\nChange `Ada` to your name and update the expected reply. Then change the agent's greeting and rerun the app setup and request. Explain which code changes belong to the caller and which belong to the receiving agent.\n\n**Exit ticket:** What information did the Agent Card give the caller before it sent the message?\n\nFurther reading: [official A2A Python SDK](https://github.com/a2aproject/a2a-python), [A2A agent discovery](https://a2a-protocol.org/latest/topics/agent-discovery/), and [A2A and MCP](https://a2a-protocol.org/latest/topics/a2a-and-mcp/). The lesson uses original greeting logic with the official SDK's server and client APIs."
+      "source": "Expected output: `Greeter: Hello, Ada!`\n\n**Exercise:** replace `Ada` with your name and update the check.\n\nMCP connects a host to tools; A2A connects callers to agents. This example uses one immediate message. Longer jobs can use A2A tasks and status updates. Discovery does not establish trust.\n\n[Official A2A SDK](https://github.com/a2aproject/a2a-python) · [Agent discovery](https://a2a-protocol.org/latest/topics/agent-discovery/)"
     }
   ]
 }

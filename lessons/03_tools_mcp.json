@@ -2,56 +2,29 @@
   "slug": "03_tools_mcp",
   "title": "Tools and MCP",
   "section": "Core protocols",
+  "packages": [
+    "mcp==2.3.0"
+  ],
   "cells": [
     {
       "type": "markdown",
-      "source": "## What you will learn\n\nExpose one Python function through **Model Context Protocol (MCP)**, discover its input schema, and call it from a separate client. Then check one invalid call. Allow 60\u201390 minutes, including the exercise.\n\nThe example is deliberately small: a study-note lookup. A model can suggest the topic, but Python and the MCP server control execution. The server is a real subprocess speaking MCP over **stdio**. No public server, tunnel, or API key is needed for the protocol demonstration."
-    },
-    {
-      "type": "markdown",
-      "source": "## 1. Install the official SDK\n\nRun the collapsed setup cell. It installs the pinned `mcp==2.3.0` package if necessary; the first Colab run needs internet access for this installation. The actual tool calls stay local. Python 3.11 or later is required."
+      "source": "## Expose one tool\n\nMCP lets a host discover and call tools through a standard contract. This example uses the **official SDK** and its in-process test transport: no server port or model key is needed. The function reads one study note."
     },
     {
       "type": "code",
-      "source": "import importlib.metadata\nimport subprocess\nimport sys\n\ntry:\n    sdk_version = importlib.metadata.version(\"mcp\")\nexcept importlib.metadata.PackageNotFoundError:\n    sdk_version = None\nif sdk_version != \"2.3.0\":\n    subprocess.check_call([sys.executable, \"-m\", \"pip\", \"install\", \"-q\", \"mcp==2.3.0\"])\n\nimport tempfile\nfrom pathlib import Path\nfrom mcp import Client as MCPClient, StdioServerParameters",
-      "hidden": true
+      "source": "from mcp import Client as MCPClient\nfrom mcp.server import MCPServer\nserver = MCPServer(\"Study notes\")\n\n@server.tool()\ndef lookup_note(topic: str) -> str:\n    \"\"\"Read one short study note.\"\"\"\n    return {\"prompt\": \"A prompt is the input sent to a model.\"}.get(topic, \"Not found.\")"
     },
     {
       "type": "markdown",
-      "source": "## 2. Write one tool\n\nThis is the server's useful code. `@server.tool()` exposes the function, its docstring, and the `topic: str` argument as an MCP tool. The SDK builds the input schema.\n\nThe function only reads two fixed notes. It does not execute arbitrary model text."
+      "source": "## Discover and call it\n\nThe client discovers the tool before calling it. MCP handles the connection and argument schema; our Python function produces the answer."
     },
     {
       "type": "code",
-      "source": "tool_code = '''\n@server.tool()\ndef lookup_note(topic: str) -> str:\n    \"\"\"Look up one short study note by topic.\"\"\"\n    notes = {\n        \"prompt\": \"A prompt is the input sent to a model.\",\n        \"tool\": \"A tool is a function the host can execute.\",\n    }\n    return notes.get(topic, \"No note found.\")\n'''"
+      "source": "async with MCPClient(server) as connection:\n    tools = await connection.list_tools()\n    result = await connection.call_tool(\"lookup_note\", {\"topic\": \"prompt\"})\n    print(tools.tools[0].name)\n    print(result.content[0].text)\nassert result.content[0].text == \"A prompt is the input sent to a model.\""
     },
     {
       "type": "markdown",
-      "source": "The next collapsed cell wraps that function in an MCP server and saves it to a temporary file. The client will launch it with the same Python interpreter. Server diagnostics belong on stderr: stdout is reserved for protocol messages."
-    },
-    {
-      "type": "code",
-      "source": "server_folder = tempfile.TemporaryDirectory(prefix=\"mcp-study-notes-\")\nserver_path = Path(server_folder.name) / \"notes_server.py\"\nserver_path.write_text(\n    'from mcp.server import MCPServer\\n'\n    'server = MCPServer(\"Study notes\")\\n'\n    + tool_code\n    + '\\nserver.run()\\n',\n    encoding=\"utf-8\",\n)\nserver_parameters = StdioServerParameters(\n    command=sys.executable, args=[str(server_path)]\n)",
-      "hidden": true
-    },
-    {
-      "type": "markdown",
-      "source": "## 3. Suggest an argument\n\nThe course client uses a visible fixture in practice mode and the configured provider in live mode. This is a tiny teaching decision, rather than native provider function calling. We validate the allowed argument before any MCP request."
-    },
-    {
-      "type": "code",
-      "source": "topic = client.ask(\n    \"Choose a topic for this question: What is a prompt?\",\n    system=\"Return exactly one allowed topic: prompt or tool. No other text.\",\n    practice=\"prompt\",\n).strip()\nif topic not in {\"prompt\", \"tool\"}:\n    raise ValueError(\"The model did not return an allowed topic.\")\nprint(\"Selected topic:\", topic)"
-    },
-    {
-      "type": "markdown",
-      "source": "## 4. Discover and call the tool\n\nEntering `async with` connects and negotiates the protocol. `list_tools` returns the discovered schema; `call_tool` sends a real MCP request. Leaving the block closes the session and subprocess.\n\nExpected practice output includes `lookup_note`, `A prompt is the input sent to a model.`, and `Missing argument rejected: True`. The negotiated protocol version is also printed and may vary with compatible SDK releases."
-    },
-    {
-      "type": "code",
-      "source": "async with MCPClient(server_parameters) as notes:\n    print(\"MCP version:\", notes.protocol_version)\n    catalog = await notes.list_tools()\n    print(\"Discovered:\", catalog.tools[0].name)\n    print(\"Required arguments:\", catalog.tools[0].input_schema[\"required\"])\n    result = await notes.call_tool(\"lookup_note\", {\"topic\": topic})\n    print(result.content[0].text)\n    invalid = await notes.call_tool(\"lookup_note\", {})\n    print(\"Missing argument rejected:\", invalid.is_error)\n\nassert not result.is_error\nassert invalid.is_error\nassert \"topic\" in catalog.tools[0].input_schema[\"required\"]"
-    },
-    {
-      "type": "markdown",
-      "source": "## What happened?\n\nThe **host** chose an allowed argument, the **MCP client** transported the request, and the **MCP server** validated and ran the function. MCP standardises the connection and tool contract. It does not choose a useful task, make the model correct, or grant permission to execute arbitrary code.\n\nA missing required argument produces a tool error (`is_error=True`). An unknown but well-typed topic returns `No note found.` because that is our function's chosen behavior. Transport errors and domain results are different cases.\n\n## Your turn\n\nAdd a `memory` note, allow that topic in the selection check, and run the tool again. Change the missing-argument request to `{\"topic\": \"unknown\"}` and explain why its result is different. Rerun the server-file setup after editing the tool.\n\n**Exit ticket:** Which component executes `lookup_note`, and what did MCP add beyond a direct Python function call?\n\nFurther reading: [official MCP Python SDK client guide](https://py.sdk.modelcontextprotocol.io/client/) and [MCP architecture](https://modelcontextprotocol.io/docs/learn/architecture). The example uses the official SDK; it is a small local teaching example, with authentication and deployment left for a later lesson."
+      "source": "Expected output: `lookup_note`, then `A prompt is the input sent to a model.`\n\n**Exercise:** add a `memory` note and change the requested topic.\n\nMCP does not decide which tool is useful or guarantee that its answer is correct.\n\n[Official SDK client guide](https://py.sdk.modelcontextprotocol.io/client/) · [MCP architecture](https://modelcontextprotocol.io/docs/learn/architecture)"
     }
   ]
 }

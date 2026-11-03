@@ -57,10 +57,15 @@ def main():
         notebook = nbformat.read(path, as_version=4)
         nbformat.validate(notebook)
         text = "\n".join(c.source for c in notebook.cells)
-        if "practice" not in text or "live" not in text:
+        if "make_ask" in text and ("practice" not in text or "live" not in text):
             issues.append(f"{path.name}: needs practice and live explanations")
-        if len(notebook.cells) < 8:
-            issues.append(f"{path.name}: too little material")
+        examples = [c for c in notebook.cells if c.cell_type == "code" and "setup" not in c.metadata.get("tags", [])]
+        if not 1 <= len(examples) <= 2:
+            issues.append(f"{path.name}: keep one or two example code cells")
+        if sum(len(c.source.splitlines()) for c in examples) > 20:
+            issues.append(f"{path.name}: example exceeds the 20-line beginner limit")
+        if sum(len(c.source.splitlines()) for c in notebook.cells if c.cell_type == "code") > 25:
+            issues.append(f"{path.name}: notebook exceeds 25 Python lines including setup")
         for cell in notebook.cells:
             if cell.cell_type == "code":
                 if cell.get("outputs") or cell.get("execution_count") is not None:

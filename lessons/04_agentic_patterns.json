@@ -5,47 +5,23 @@
   "cells": [
     {
       "type": "markdown",
-      "source": "## One pattern at a time\n\n**Goal:** recognize routing, chaining, parallelization, evaluation and orchestration. Each example below is independent and small. We reuse simple support messages, not a large agent framework.\n\nThe application chooses the control flow in these workflows. A model may fill in a route or plan, but Python still checks it.\n\n## 1. Routing: choose a branch\n\nA router classifies a message, then code chooses a response path."
+      "source": "## Chaining: pass one result to the next call\n\nThe first call identifies a missing detail. The second writes a question using it."
     },
     {
       "type": "code",
-      "source": "message = \"My delivery has not arrived.\"\nroute = client.ask('Return only delivery or account for: ' + message,\n                   practice=\"delivery\").strip().lower()\nreplies = {\"delivery\": \"Please share the tracking number.\",\n           \"account\": \"Please share the login error message.\"}\nif route not in replies:\n    raise ValueError(\"Unknown route: ask a human\")\nprint(replies[route])\nassert route in replies"
+      "source": "need = ask(\"What detail is missing from: My parcel is late?\", example=\"tracking number\")\nprint(ask(\"Politely ask the customer for: \" + need, example=\"Could you share the tracking number?\"))"
     },
     {
       "type": "markdown",
-      "source": "**Expected practice output:** \u201cPlease share the tracking number.\u201d\n\n**Tiny exercise:** change the message to a login problem. What should happen when the model returns an unknown label?\n\n## 2. Chaining: use one output as the next input\n\nThe first call identifies the customer's need. The second call writes a reply using that result. A bad first step can affect the second."
+      "source": "## Routing: choose one branch\n\nThe model returns a label; Python chooses the reply."
     },
     {
       "type": "code",
-      "source": "need = client.ask(\"Name the missing detail in: 'My delivery is late.'\",\n                  practice=\"tracking number\")\nreply = client.ask(\"Write one polite question asking only for: \" + need,\n                   practice=\"Could you share the tracking number?\")\nprint(\"Step 1:\", need)\nprint(\"Step 2:\", reply)\nassert need.strip() and reply.strip()"
+      "source": "route = ask(\"Return delivery or account for: My parcel is late.\", example=\"delivery\").strip()\nreplies = {\"delivery\": \"Tracking number?\", \"account\": \"What login error do you see?\"}\nassert route in replies\nprint(replies[route])"
     },
     {
       "type": "markdown",
-      "source": "**Tiny exercise:** add a check that `need` is shorter than 80 characters before making the second call.\n\n## 3. Parallelization: independent checks\n\nTwo checks can run independently: tone and missing details. Their outputs are not a debate, because neither sees the other's answer. The shared client limits concurrent network calls to two."
-    },
-    {
-      "type": "code",
-      "source": "from concurrent.futures import ThreadPoolExecutor\nchecks = [(\"Describe the tone of: 'Where is my parcel?'\", \"The tone is direct.\"),\n          (\"What detail is missing from: 'Where is my parcel?'\", \"The tracking number.\")]\ndef check(item):\n    prompt, fixture = item\n    return client.ask(prompt, practice=fixture)\nwith ThreadPoolExecutor(max_workers=2) as pool:\n    results = list(pool.map(check, checks))\nprint(results)\nassert len(results) == 2"
-    },
-    {
-      "type": "markdown",
-      "source": "**Tiny exercise:** compare this with a sequential `for` loop. Parallel execution can reduce wall time, but it does not reduce the number of calls.\n\n## 4. Evaluator\u2013optimizer: critique once, then revise\n\nUse a specific criterion and a fixed stopping point. Critique may help, but a model can also repeat or introduce a mistake."
-    },
-    {
-      "type": "code",
-      "source": "draft = \"We will sort it out.\"\ncritique = client.ask(\"Does this reply ask for a tracking number? Explain briefly: \" + draft,\n                      practice=\"No. Ask for the tracking number instead of promising a result.\")\nrevision = client.ask(\"Revise once using this feedback: \" + critique + \"\\nDraft: \" + draft,\n                      practice=\"Could you share your tracking number so we can investigate?\")\nprint(\"Feedback:\", critique)\nprint(\"Revision:\", revision)\nassert revision.strip()"
-    },
-    {
-      "type": "markdown",
-      "source": "**Tiny exercise:** give an unhelpful critique. Does the revision become worse? Keep both outputs instead of assuming the latest one is better.\n\n## 5. Optional extension: orchestrator\u2013workers\n\nAn orchestrator proposes a small task list. We validate the plan against allowed worker jobs, then run those jobs. The model cannot invent a new tool or arbitrary executable step."
-    },
-    {
-      "type": "code",
-      "source": "plan = json.loads(client.ask('Plan checks for \"Where is my parcel?\". Return JSON '\n    '{\"tasks\":[...]}, using only tone and missing_detail, at most two tasks.',\n    practice='{\"tasks\":[\"tone\",\"missing_detail\"]}'))\nworkers = {\"tone\": \"Describe the tone.\", \"missing_detail\": \"Name the missing detail.\"}\nassert set(plan) == {\"tasks\"} and isinstance(plan[\"tasks\"], list)\nassert 1 <= len(plan[\"tasks\"]) <= 2\nassert all(isinstance(task, str) and task in workers for task in plan[\"tasks\"])\nworker_results = [client.ask(workers[task] + ' Message: \"Where is my parcel?\"',\n    practice={\"tone\": \"Direct.\", \"missing_detail\": \"Tracking number.\"}[task])\n    for task in plan[\"tasks\"]]\nprint(dict(zip(plan[\"tasks\"], worker_results)))"
-    },
-    {
-      "type": "markdown",
-      "source": "**Tiny exercise:** replace one planned task with `send_email`. Confirm validation rejects it before any worker executes. The example only writes suggestions; it sends nothing.\n\n**Compare the patterns:** routing chooses one branch; chaining passes an output forward; parallelization gathers independent outputs; evaluation revises a draft; an orchestrator chooses subtasks. Use the smallest pattern that addresses the need, and compare quality, calls and latency.\n\n## Read further\n\n- [Anthropic: workflow patterns](https://www.anthropic.com/research/building-effective-agents)"
+      "source": "**Expected practice outputs:** a tracking-number question in both examples.\n\n**Small exercise:** route a forgotten-password message to `account`. Update its practice example too.\n\nOther useful patterns: **parallelization** runs independent checks; **evaluator\u2013optimizer** critiques and revises; **orchestrator\u2013workers** divides a task into subtasks. More calls do not automatically improve an answer.\n\n## Read further\n\n- [Examples of all five workflow patterns](https://www.anthropic.com/research/building-effective-agents)"
     }
   ]
 }

@@ -1,52 +1,19 @@
 {
   "slug": "07_frameworks_evaluation",
-  "title": "Frameworks and evaluation",
+  "title": "Frameworks",
   "section": "Skills and frameworks",
   "cells": [
     {
       "type": "markdown",
-      "source": "## The same small workflow, two ways\n\n**Goal:** run a real LangGraph graph, compare it with plain Python, and measure more than whether code completed.\n\nOur workflow classifies a support message, then chooses a short reply. Two nodes are enough to see what a framework adds: explicit state and edges. This is a small workflow, not a claim of full autonomy.\n\nThis lab uses the actual `langgraph` package, pinned to `1.0.2` for reproducibility. Installation may use the network; practice model calls still require no API key. The earlier plain-Python examples need no framework; the protocol labs use their own SDKs."
+      "source": "## Run a real two-step LangGraph workflow\n\nA framework organizes steps and state. Here the model classifies a message, then Python selects a reply. The setup helper supplies LangGraph `1.0.2`.\n\nThis is the actual library, with two nodes connected by edges. The model is still accessed through the same `ask()` function."
     },
     {
       "type": "code",
-      "source": "import importlib.metadata\nimport subprocess\nimport sys\ntry:\n    installed = importlib.metadata.version(\"langgraph\")\nexcept importlib.metadata.PackageNotFoundError:\n    installed = None\nif installed != \"1.0.2\":\n    subprocess.check_call([sys.executable, \"-m\", \"pip\", \"install\", \"-q\", \"langgraph==1.0.2\"])\nfrom langgraph.graph import StateGraph, START, END\nfrom typing import TypedDict\nprint(\"LangGraph:\", importlib.metadata.version(\"langgraph\"))",
-      "hidden": true
+      "source": "from langgraph.graph import StateGraph, START, END\ndef classify(state):\n    label = ask(\"Return delivery or account for: \" + state[\"message\"], example=\"delivery\").strip()\n    return {\"label\": label}\nreplies = {\"delivery\": \"Tracking number?\", \"account\": \"What login error?\"}\ndef reply(state):\n    return {\"reply\": replies[state[\"label\"]]}\ngraph = StateGraph(dict)\ngraph.add_node(\"classify\", classify)\ngraph.add_node(\"reply\", reply)\ngraph.add_edge(START, \"classify\")\ngraph.add_edge(\"classify\", \"reply\")\ngraph.add_edge(\"reply\", END)\napp = graph.compile()\nresult = app.invoke({\"message\": \"My parcel is late.\"})\nprint(result[\"reply\"])\nassert result[\"reply\"].strip()"
     },
     {
       "type": "markdown",
-      "source": "## Define two small steps\n\nThe first step calls the model. The second is ordinary Python. The practice fixture is selected from a visible lookup table; those labels are not passed to a live model. For a new practice message, add its label to that table. A missing fixture becomes `unknown` and is rejected visibly."
-    },
-    {
-      "type": "code",
-      "source": "practice_labels = {\"My parcel is late.\": \"delivery\", \"I forgot my password.\": \"account\",\n                   \"Where is my delivery?\": \"delivery\"}\nreplies = {\"delivery\": \"Please share the tracking number.\",\n           \"account\": \"Please share the login error message.\"}\n\ndef classify(state):\n    label = client.ask(\"Return only delivery or account for: \" + state[\"message\"],\n        practice=practice_labels.get(state[\"message\"], \"unknown\")).strip().lower()\n    if label not in replies:\n        raise ValueError(\"Unknown category; ask a human\")\n    return {\"category\": label}"
-    },
-    {
-      "type": "code",
-      "source": "def write_reply(state):\n    return {\"reply\": replies[state[\"category\"]]}\n\ndef plain_python(message):\n    state = {\"message\": message}\n    state.update(classify(state))\n    state.update(write_reply(state))\n    return state\n\nplain_result = plain_python(\"My parcel is late.\")\nprint(plain_result)\nassert plain_result[\"reply\"].strip()"
-    },
-    {
-      "type": "markdown",
-      "source": "## Build a real two-node graph\n\nA node reads state and returns an update. Edges specify the execution order. `compile()` builds the runnable graph; `invoke()` executes it."
-    },
-    {
-      "type": "code",
-      "source": "class SupportState(TypedDict, total=False):\n    message: str\n    category: str\n    reply: str\n\nbuilder = StateGraph(SupportState)\nbuilder.add_node(\"classify\", classify)\nbuilder.add_node(\"reply\", write_reply)\nbuilder.add_edge(START, \"classify\")\nbuilder.add_edge(\"classify\", \"reply\")\nbuilder.add_edge(\"reply\", END)\ngraph = builder.compile()\ngraph_result = graph.invoke({\"message\": \"My parcel is late.\"})\nprint(graph_result)\nassert graph_result[\"reply\"].strip()"
-    },
-    {
-      "type": "markdown",
-      "source": "**Expected practice result:** both versions choose `delivery` and ask for a tracking number. Live calls may differ, even with the same prompt. A framework does not make model output deterministic or correct.\n\n## A tiny evaluation\n\nUse two new messages with expected categories. They are held out from the worked input above. The fixtures encode their labels, so practice scores check the evaluation wiring only. They are not empirical model accuracy."
-    },
-    {
-      "type": "code",
-      "source": "import time\ncases = [(\"I forgot my password.\", \"account\"),\n         (\"Where is my delivery?\", \"delivery\")]\nrecords = []\nfor method, run in [(\"python\", plain_python),\n                    (\"langgraph\", lambda text: graph.invoke({\"message\": text}))]:\n    for message, expected in cases:\n        before, started = len(client.trace), time.perf_counter()\n        output = run(message)\n        records.append({\"method\": method, \"correct\": output[\"category\"] == expected,\n            \"calls\": len(client.trace) - before, \"seconds\": time.perf_counter() - started})\nprint(records)\nassert len(records) == 4 and all(r[\"calls\"] == 1 for r in records)"
-    },
-    {
-      "type": "code",
-      "source": "for method in [\"python\", \"langgraph\"]:\n    rows = [r for r in records if r[\"method\"] == method]\n    print(method, {\"accuracy\": sum(r[\"correct\"] for r in rows) / len(rows),\n        \"calls\": sum(r[\"calls\"] for r in rows),\n        \"wall_seconds\": round(sum(r[\"seconds\"] for r in rows), 4)})\nprint(\"Reported API usage:\", summarize_trace([client]))\nif MODE == \"practice\":\n    print(\"Scripted examples only: these scores do not measure model quality.\")"
-    },
-    {
-      "type": "markdown",
-      "source": "Two examples are far too few for a general accuracy claim. A latency difference here may be noise. Both methods make one model call per message; the framework handles orchestration, not fewer tokens. Unknown usage or monetary cost must stay unknown.\n\n**Tiny exercises:**\n\n1. Add one ambiguous support message and decide when a human should review it.\n2. Add a third formatting node and compare it with one extra Python function call.\n3. In live mode, inspect wrong labels and reply usefulness. Freeze prompts before testing; tuning on the test examples leaks information.\n\nFor a larger evaluation, separate development and test data, include failures and abstentions, rate factual support and usefulness, and record calls, tokens, cost when known, and latency. A passing shape check alone is not a quality metric.\n\n## Frameworks beyond this example\n\nLangGraph provides explicit state and graph control. Other frameworks offer different abstractions, such as higher-level agents or role-based teams. Choose based on the behavior you need, rather than the number of agents a framework can launch.\n\n## Read further\n\n- [LangGraph overview](https://docs.langchain.com/oss/python/langgraph/overview)\n- [LangGraph quickstart](https://docs.langchain.com/oss/python/langgraph/quickstart)\n- [Pinned LangGraph release](https://pypi.org/project/langgraph/1.0.2/)\n- [HELM evaluation](https://crfm.stanford.edu/helm/)"
+      "source": "**Expected practice output:** \u201cTracking number?\u201d\n\nThe check confirms that a reply exists. For evaluation, also ask whether it addresses the message. A framework does not make the model correct. Practice output is scripted, so it cannot measure model accuracy.\n\n**Small exercise:** change the message to a login problem and the practice label to `account`.\n\n## Read further\n\n- [LangGraph overview](https://docs.langchain.com/oss/python/langgraph/overview)\n- [LangGraph quickstart](https://docs.langchain.com/oss/python/langgraph/quickstart)"
     }
   ]
 }
