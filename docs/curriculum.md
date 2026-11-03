@@ -1,37 +1,43 @@
 # Curriculum
 
-Eight beginner labs introduce general agentic AI through tiny examples. Each main example takes **5–10 minutes**, plus first-run package installation, and contains at most **20 visible Python lines** in at most **two main code blocks**. Each lab has one check and one exercise. Students need basic Python.
+Eight beginner labs teach general agentic AI through one small software architecture question: **modular monolith or microservices?** Keep the case familiar while changing one mechanism at a time.
 
-A class may spend 60–90 minutes on discussion and optional practice; that is not the time needed to read the short example.
+Each worked example takes **5–10 minutes**, plus first-run installation. There are at most **20 main Python lines**, two main code blocks, one check, and one small exercise. The whole notebook stays within **25 Python lines including setup**. Students need basic Python. Discussion and paired practice can extend a class to 60–90 minutes.
+
+## The shared case
+
+A three-person team has no independent deployment requirement. Our fictional course policy chooses microservices only when `team_size >= 8` **and** `independent_deploys` is true; otherwise it chooses a modular monolith.
+
+This deliberately small policy makes comparisons easy. It is not a real-world architecture prescription: deployment boundaries, ownership, reliability, cost, and operational maturity need richer analysis.
+
+## Eight steps
+
+| Lab | New mechanism | Student comparison |
+| --- | --- | --- |
+| **00 · Rules and a first LLM call** | Python baseline, then one prompt | Does the model match the rule without being given it? |
+| **01 · Better prompts and evaluation** | Explicit criteria, a worked example, JSON, three cases | Does a clearer prompt follow the supplied policy? |
+| **02 · RAG for architecture rules** | Retrieve a policy record before generation | Which source supports the answer? |
+| **03 · Tools and MCP** | Build a metrics reader and an in-memory save action | What is read, and what state changes? |
+| **04 · Agent foundations and patterns** | Bounded ReAct-style action/observation loop | Who chooses the next step, and what stops the loop? |
+| **05 · Reusable architecture skills** | Small ADR-writing SKILL.md | Which procedure can be reused for a new case? |
+| **06 · A2A architecture review** | Discover and message a reviewer agent | What proposal crosses the agent interface? |
+| **07 · Frameworks and a final check** | Two-node LangGraph choose-and-check workflow | Which node proposes, and which validates? |
 
 ## Four core areas
 
 | Area | Labs |
 | --- | --- |
-| LLMs and Prompting · RAG Systems | 00–01 |
-| Foundations of AI Agents · Agentic Patterns | 02 & 04 |
-| Tools and MCP · A2A Protocol | 03 & 05 |
-| Skills · Frameworks | 06–07 |
+| LLMs and Prompting · RAG Systems | 00–02 |
+| Foundations of AI Agents · Agentic Patterns | 03–04 |
+| Tools and MCP · A2A Protocol | 03 & 06 |
+| Skills · Frameworks | 05 & 07 |
 
-## Tiny examples
+## Keep reasoning and evaluation observable
 
-| Lab | Example | One small change |
-| --- | --- | --- |
-| **00 · LLMs and prompting** | One support-reply call | Edit the tone in the prompt |
-| **01 · RAG systems** | A question answered from two short notes | Change an opening time |
-| **02 · Foundations of AI agents** | One lookup in a bounded loop | Change the requested fact |
-| **03 · Tools and MCP** | One lookup tool through MCP | Request another topic |
-| **04 · Agentic patterns** | A chain and a router as microexamples | Change the message category |
-| **05 · A2A protocol** | One Hello exchange | Replace Ada with your name |
-| **06 · Agent skills** | Read and apply short SKILL.md instructions | Change the requested summary length |
-| **07 · Frameworks** | An actual two-node LangGraph workflow | Change the input message |
+Prompt decomposition means checking explicit criteria and asking for a brief, verifiable justification. This is a teaching adaptation inspired by chain-of-thought prompting, not a reproduction of the original method or access to private model reasoning. ReAct-style action and observation comes after students have used tools. Its compact control-flow example illustrates the loop without implementing a full native function-calling agent.
 
-## Keep the mechanism visible
+Evaluate three things: adherence to the supplied policy, grounding in the case and retrieved evidence, and the clarity of one consequence or trade-off. The tiny automatic checks cover only part of that assessment. Scripted practice scores demonstrate the evaluation code; only live runs provide evidence about model behavior, and three cases cannot establish general quality.
 
-Each notebook has one setup cell. It installs reusable course helpers from a pinned public GitHub revision, plus the relevant SDK for protocol/framework examples. Runtime, client, and server boilerplate lives in the package rather than inside the notebook.
-
-Teach the short example first: predict its output, run it, check one result, then change one input. Keep parallelization, reflection, orchestration, larger skill catalogs, and evaluation harnesses as further reading. The introductory examples do not need them.
-
-Students should be able to distinguish a model call, an agent loop, a tool interface, an agent message, skill instructions, and graph nodes. A check demonstrates one expected behavior; it does not establish general model quality.
+The RAG retriever uses transparent keyword matching. MCP and A2A use their real SDKs locally; the save action changes only in-memory data. The ADR example loads instructions directly rather than implementing an automatic skill host. LangGraph runs an actual two-node workflow. Supporting transport code stays in the installable course package.
 
 See the [instructor guide](instructor-guide.md) and [technical references](sources.md).

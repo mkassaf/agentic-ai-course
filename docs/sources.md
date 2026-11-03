@@ -9,12 +9,13 @@ Follow each repository's README for its own setup and run instructions.
 
 ## Technical references
 
-These primary sources support the course concepts and interfaces. The notebooks keep the main examples small; use these pages for detail and further exercises.
+These primary sources support the course concepts and interfaces. The notebooks keep the main examples small; use these pages for detail and further exercises. Architecture labels and thresholds are fictional teaching fixtures, not recommendations derived from these sources.
 
 | Topic | Reference | Use in the course |
 | --- | --- | --- |
 | Model API messages | [Chat Completions overview](https://developers.openai.com/api/reference/chat-completions/overview) and [request reference](https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/create) | Message input, response extraction, and the compatible transport |
 | Initial model service | [FreeInference documentation](https://doc.freeinference.org/) | Base URL, current model access, service-specific behavior |
+| Prompt decomposition | [Wei et al., Chain-of-Thought Prompting (2022)](https://arxiv.org/abs/2201.11903) | Background for decomposition; the classroom adaptation uses explicit criteria and brief justifications rather than reproducing the original CoT method |
 | RAG | [Lewis et al., Retrieval-Augmented Generation (2020)](https://arxiv.org/abs/2005.11401) | Retrieval supplies evidence before generation; the classroom retriever is deliberately small |
 | Agent actions | [Yao et al., ReAct (2022)](https://arxiv.org/abs/2210.03629) | Actions and observations in a loop; the course does not expose private model reasoning |
 | Workflows and patterns | [Anthropic, Building effective agents](https://www.anthropic.com/research/building-effective-agents) | Chaining, routing, parallelization, orchestration, and evaluator–optimizer patterns |

@@ -1,0 +1,22 @@
+{
+  "slug": "06_a2a_protocol",
+  "title": "Delegate an architecture review with A2A",
+  "section": "Core protocols",
+  "packages": [
+    "a2a-sdk[http-server]==1.3.0"
+  ],
+  "cells": [
+    {
+      "type": "markdown",
+      "source": "## Ask another agent to check the proposal\n\nAn architecture proposer can delegate a policy check to a reviewer. A2A provides agent discovery and message exchange; our reviewer applies the same fictional rule deterministically.\n\n`review_over_a2a` is a **course helper**, not an SDK method. It wraps the official SDK's Agent Card discovery and A2A 1.0 JSON-RPC exchange inside one process. [Inspect the helper](https://github.com/mkassaf/agentic-ai-course/blob/main/coursekit/protocol_examples.py). No public server or model key is needed."
+    },
+    {
+      "type": "code",
+      "source": "from coursekit.protocol_examples import review_over_a2a\ncase = {\"team_size\": 3, \"independent_deploys\": False}\nagent, report = await review_over_a2a(case, \"modular monolith\")\nprint(f\"{agent}: {report}\")\nassert report == \"PASS: course policy expects modular monolith.\""
+    },
+    {
+      "type": "markdown",
+      "source": "**Expected output:** `Architecture reviewer: PASS: course policy expects modular monolith.`\n\n**Small exercise:** propose `microservices` for this same case and update the check to expect `FAIL`.\n\nThis checks agreement with a simplified policy, not real design quality. The reviewer uses no LLM. A2A connects callers to agents; MCP connects hosts to tools. This immediate exchange does not demonstrate long-running tasks or autonomous debate.\n\n[Official A2A SDK](https://github.com/a2aproject/a2a-python) · [Agent discovery](https://a2a-protocol.org/latest/topics/agent-discovery/)"
+    }
+  ]
+}

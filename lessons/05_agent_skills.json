@@ -1,0 +1,19 @@
+{
+  "slug": "05_agent_skills",
+  "title": "A skill for a short architecture decision record",
+  "section": "Skills and frameworks",
+  "cells": [
+    {
+      "type": "markdown",
+      "source": "## Reuse a small decision-writing procedure\n\nAn architecture decision record (ADR) captures context, a decision, and consequences. Package our procedure as a minimal `SKILL.md`:\n\n```markdown\n---\nname: architecture-decision\ndescription: Write a short ADR using the course architecture policy.\n---\nChoose microservices only if team_size >= 8 AND independent_deploys is true; otherwise choose modular monolith.\nReturn three lines: Context, Decision, Consequence.\nUse only supplied facts. State one likely trade-off.\n```\n\nThe [packaged SKILL.md](https://github.com/mkassaf/agentic-ai-course/blob/main/coursekit/skills/architecture-decision/SKILL.md) contains this procedure. We explicitly select and load that real file below. A skill-aware host could discover its description and load it when needed; this notebook does not implement automatic discovery."
+    },
+    {
+      "type": "code",
+      "source": "from importlib.resources import files\ninstructions = files(\"coursekit\").joinpath(\"skills/architecture-decision/SKILL.md\").read_text()\ncase = {\"team_size\": 3, \"independent_deploys\": False}\nexample = \"Context: Three developers; no independent deployment requirement.\\nDecision: Modular monolith.\\nConsequence: Simpler deployment, but modules share a release.\"\nanswer = ask(instructions + f\" Case: {case}\", example=example)\nprint(answer)\nassert all(label + \":\" in answer for label in (\"Context\", \"Decision\", \"Consequence\"))"
+    },
+    {
+      "type": "markdown",
+      "source": "**Expected practice output:** a three-line ADR choosing modular monolith. The assertion checks headings; a person must check the policy choice, facts, and trade-off. Formatting alone does not prove correctness.\n\nA skill supplies instructions. A tool reads or changes data. Applying a skill does not execute a tool by itself.\n\n**Small exercise:** append a request for `Risk:` to the loaded `instructions`, then add that line to the practice answer and format check. Name one plausible risk without inventing project facts.\n\n## Read further\n\n- [Agent Skills specification](https://agentskills.io/specification)"
+    }
+  ]
+}

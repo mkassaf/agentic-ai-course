@@ -1,0 +1,19 @@
+{
+  "slug": "02_rag_systems",
+  "title": "Retrieve architecture rules with RAG",
+  "section": "RAG systems",
+  "cells": [
+    {
+      "type": "markdown",
+      "source": "## Store the rule as text, then retrieve it\n\nInstead of copying the policy into every prompt, keep short records and retrieve the relevant one. Our transparent retriever matches a topic tag to a word in the question. It uses no embeddings or vector database.\n\nThe model receives the retrieved policy as context. A question with no matching tag skips the model call."
+    },
+    {
+      "type": "code",
+      "source": "rules = [{\"topic\": \"architecture\", \"text\": \"R1: Choose microservices only if team_size >= 8 AND independent_deploys is true; otherwise choose modular monolith.\"},\n         {\"topic\": \"database\", \"text\": \"R2: Use transactions when updating account balances.\"}]\nquestion = \"Which architecture fits team_size=3 and independent_deploys=False?\"\nmatches = [rule[\"text\"] for rule in rules if rule[\"topic\"] in question.lower().split()]\ncontext = \"\\n\".join(matches)\nprint(\"Retrieved:\", context or \"No matching rule.\")\nanswer = ask(f\"Use only this policy: {context}\\n{question} Reply with the choice and rule ID.\", example=\"modular monolith (R1)\") if matches else \"No matching rule.\"\nprint(answer)\nassert matches == [rules[0][\"text\"]] and \"R1\" in answer"
+    },
+    {
+      "type": "markdown",
+      "source": "**Expected practice output:** the architecture policy, then `modular monolith (R1)`. The check verifies retrieval and a rule reference. Read the answer to check whether that reference actually supports the choice.\n\n**Small exercise:** ask `Which deployment region should we use?` Neither topic matches. Expect `No matching rule.` and update the assertion to check that abstention. No practice answer is needed because no model is called.\n\n## Read further\n\n- [The original RAG paper](https://arxiv.org/abs/2005.11401)"
+    }
+  ]
+}

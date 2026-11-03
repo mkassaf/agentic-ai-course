@@ -11,10 +11,10 @@ import nbformat
 ROOT = Path(__file__).resolve().parents[1]
 EXTRAS = {
     "03_tools_mcp": ("mcp", "mcp"),
-    "05_a2a_protocol": ("a2a", "a2a"),
+    "06_a2a_protocol": ("a2a", "a2a"),
     "07_frameworks_evaluation": ("framework", "langgraph"),
 }
-PROTOCOL_LABS = {"03_tools_mcp", "05_a2a_protocol"}
+PROTOCOL_LABS = {"03_tools_mcp", "06_a2a_protocol"}
 
 
 def source_cell(kind, source):

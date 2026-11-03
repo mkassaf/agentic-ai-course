@@ -1,0 +1,27 @@
+{
+  "slug": "00_rules_and_llms",
+  "title": "Rules, then one LLM call",
+  "section": "LLMs and prompting",
+  "cells": [
+    {
+      "type": "markdown",
+      "source": "## One architecture decision, two ways\n\nA small team is choosing **modular monolith** or **microservices**. Throughout this course, use this fictional policy:\n\n> Choose microservices only when team size is at least 8 **and** independent deployment is required. Otherwise choose modular monolith.\n\nThis is a teaching rule, not a universal architecture recommendation. First express it as Python:"
+    },
+    {
+      "type": "code",
+      "source": "case = {\"team_size\": 3, \"independent_deploys\": False}\nexpected = \"microservices\" if case[\"team_size\"] >= 8 and case[\"independent_deploys\"] else \"modular monolith\"\nprint(\"Rule:\", expected)"
+    },
+    {
+      "type": "markdown",
+      "source": "Now ask the model without giving it our policy. `example` supplies a scripted practice answer; it is never sent to the live model."
+    },
+    {
+      "type": "code",
+      "source": "prompt = f\"Choose modular monolith or microservices for {case}. Return only the label.\"\nanswer = ask(prompt, example=\"modular monolith\").strip().lower()\nprint(\"Model:\", answer)\nassert answer == expected, \"The answer disagrees with the course policy.\""
+    },
+    {
+      "type": "markdown",
+      "source": "**Expected practice output:** both choices are `modular monolith`. In live mode, agreement is not guaranteed: the model has not seen our rule.\n\n**Small exercise:** set team size to 8 and independent deployment to `True`. Predict the rule's answer, then compare the live response. If using practice mode, update its scripted answer yourself.\n\n## Read further\n\n- [FreeInference quickstart](https://doc.freeinference.org/quickstart)\n- [Prompt engineering](https://developers.openai.com/api/docs/guides/prompt-engineering)"
+    }
+  ]
+}

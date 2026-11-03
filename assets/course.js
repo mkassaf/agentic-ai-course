@@ -2,139 +2,139 @@
 const labs = [
   {
     "id": "00",
-    "file": "00_llms_prompting",
-    "title": "LLMs and prompting",
-    "subtitle": "One call, one prompt edit",
-    "topics": "llm prompt api messages",
-    "idea": "A clear prompt tells the model what to do.",
-    "flow": "prompt → response",
+    "file": "00_rules_and_llms",
+    "title": "Rules, then one LLM call",
+    "subtitle": "Compare Python rules with one prompt",
+    "topics": "rules llm prompt architecture monolith microservices baseline",
+    "idea": "Start with a rule you can inspect, then ask a model the same architecture question.",
+    "flow": "case → Python rule / one prompt → compare",
     "objectives": [
-      "Make one model call.",
-      "See how a prompt edit changes the reply."
+      "Run a deterministic rule.",
+      "Compare it with one model prediction."
     ],
-    "example": "Ask for a short customer-support reply. Read the answer.",
-    "exercise": "Change the tone from formal to friendly.",
-    "checks": "Expect a short reply about the supplied request. Check that it does not invent a delivery date.",
-    "bridge": "One useful call is the starting point."
+    "example": "A three-person team has no independent deployment requirement. Compare a Python decision with a single architecture prompt.",
+    "exercise": "Increase the team size and request independent deployments.",
+    "checks": "The course policy selects a modular monolith for the original case. Compare the model’s label with that baseline.",
+    "bridge": "A clear baseline gives later experiments something to compare."
   },
   {
     "id": "01",
-    "file": "01_rag_systems",
-    "title": "RAG systems",
-    "subtitle": "Find an answer in two short notes",
-    "topics": "rag retrieval sources context",
-    "idea": "RAG retrieves relevant text before generating an answer.",
-    "flow": "question → find note → answer",
+    "file": "01_prompting_evaluation",
+    "title": "Better prompts and small evaluations",
+    "subtitle": "Explicit criteria, one example, three test cases",
+    "topics": "prompting cot criteria few shot json evaluation testing",
+    "idea": "Give the model explicit criteria and a small worked example, then check its output.",
+    "flow": "policy + example + case → JSON → score",
     "objectives": [
-      "Retrieve one relevant note.",
-      "Use it as model context."
+      "Write a precise, structured prompt.",
+      "Check policy adherence on three cases."
     ],
-    "example": "Use two library notes. Ask when the library closes and pass the matching note to the model.",
-    "exercise": "Change one opening time and ask again.",
-    "checks": "Expect the answer to use the time in the selected note. Check its source ID.",
-    "bridge": "Retrieval supplies the evidence."
+    "example": "Compare basic and guided prompts on three cases. Read the JSON decision and brief reason.",
+    "exercise": "Add team_size=7 with independent deployment required and compare live.",
+    "checks": "Read the three-case score and inspect failures. Practice scores only test the scripted example, not model quality.",
+    "bridge": "Use checkable criteria and brief justifications; more reasoning text does not prove a better design."
   },
   {
     "id": "02",
-    "file": "02_agent_foundations",
-    "title": "Foundations of AI agents",
-    "subtitle": "One lookup in a tiny agent loop",
-    "topics": "agent loop action observation tool stop",
-    "idea": "An agent chooses an action, observes its result, and decides what to do next.",
-    "flow": "action → lookup → observation → answer",
+    "file": "02_rag_systems",
+    "title": "Retrieve architecture rules with RAG",
+    "subtitle": "Retrieve a stored rule before answering",
+    "topics": "rag retrieval rules source architecture context",
+    "idea": "Store the policy as text, retrieve a matching rule, and use it as model context.",
+    "flow": "question → retrieve policy → grounded answer",
     "objectives": [
-      "Follow one action and observation.",
-      "Recognize the stopping rule."
+      "Retrieve the relevant rule.",
+      "Trace the answer back to its source."
     ],
-    "example": "Let a small assistant look up one fact, then reply.",
-    "exercise": "Change the requested fact.",
-    "checks": "Expect one lookup followed by an answer. The loop must stop within its limit.",
-    "bridge": "The host program controls tool execution and limits."
+    "example": "Find the deployment rule in a tiny rule collection, then answer the same architecture question.",
+    "exercise": "Ask which deployment region to use; expect no matching rule.",
+    "checks": "Check the retrieved rule and source. A missing rule should produce no match rather than unrelated evidence.",
+    "bridge": "This transparent keyword retriever illustrates RAG; larger systems may use embeddings and ranking."
   },
   {
     "id": "03",
     "file": "03_tools_mcp",
-    "title": "Tools and MCP",
-    "subtitle": "Call one lookup tool through MCP",
-    "topics": "tool mcp client server protocol sdk",
-    "idea": "MCP gives applications a standard interface to tools and context.",
-    "flow": "MCP client → lookup tool → note",
+    "title": "Architecture tools and our own MCP server",
+    "subtitle": "Build a tiny metrics tool and save action",
+    "topics": "tools mcp server client extract action agent foundations",
+    "idea": "A tool reads data or performs an allowed action; MCP exposes its interface to a client.",
+    "flow": "read_metrics → inspect → save_decision",
     "objectives": [
-      "Call a tool through an MCP client.",
-      "Read the returned result."
+      "Build and call your own MCP tools.",
+      "Distinguish a read from an action."
     ],
-    "example": "Ask the read-only lookup tool for one note. Supporting server code lives in the course package.",
-    "exercise": "Request a different topic.",
-    "checks": "Expect the matching note in the tool result. Check that the response contains it.",
-    "bridge": "The tool’s interface is the new building block."
+    "example": "Expose project metrics and save one architecture decision to an in-memory list through the real MCP SDK.",
+    "exercise": "Add a service_name field to the metrics fixture and inspect it.",
+    "checks": "Check the extracted metrics and saved value. The action changes only the notebook’s in-memory data.",
+    "bridge": "These fixed client calls become model-chosen actions in the next lab."
   },
   {
     "id": "04",
     "file": "04_agentic_patterns",
-    "title": "Agentic patterns",
-    "subtitle": "A tiny chain and a tiny router",
-    "topics": "patterns chaining routing workflow",
-    "idea": "Chaining connects steps; routing selects a path.",
-    "flow": "chain: topic → reply\nroute: category → handler",
+    "title": "ReAct: choose a tool, then decide",
+    "subtitle": "A bounded ReAct-style tool loop",
+    "topics": "agent foundations patterns react action observation loop chaining routing",
+    "idea": "An agent chooses an allowed action, reads the observation, and decides when to finish.",
+    "flow": "choose action → read_metrics → observe → finish",
     "objectives": [
-      "Pass one result to the next step.",
-      "Route a message to a handler."
+      "Follow model-selected actions.",
+      "Explain the loop’s stopping limit."
     ],
-    "example": "Extract a message topic, then write a reply. In a second microexample, choose a handler from its category.",
-    "exercise": "Change the message category.",
-    "checks": "Expect the selected handler to match the category. Check that one output.",
-    "bridge": "Parallelization, reflection, and orchestration are further reading."
+    "example": "Let a tiny architecture assistant request the project metrics before returning a decision.",
+    "exercise": "Change the team metrics and predict the next decision.",
+    "checks": "Check the observation, final answer, and stop condition. Reaching the turn limit alone is not success.",
+    "bridge": "ReAct-style action and observation follows tools and MCP; larger patterns are further practice."
   },
   {
     "id": "05",
-    "file": "05_a2a_protocol",
-    "title": "A2A protocol",
-    "subtitle": "One Hello exchange",
-    "topics": "a2a agent card message protocol sdk",
-    "idea": "A2A gives agents a common interface for capability discovery and messages.",
-    "flow": "discover greeter → send Ada → reply",
+    "file": "05_agent_skills",
+    "title": "A skill for a short architecture decision record",
+    "subtitle": "Write a three-part decision record",
+    "topics": "skills skill.md adr architecture decision record reusable",
+    "idea": "A skill packages a reusable procedure separately from the current project data.",
+    "flow": "load ADR skill + case → decision record",
     "objectives": [
-      "Find a greeting agent.",
-      "Send one message."
+      "Read a small SKILL.md file.",
+      "Apply it to a new architecture case."
     ],
-    "example": "Send Ada to the small greeter through the A2A SDK. Read its reply.",
-    "exercise": "Replace Ada with your name.",
-    "checks": "Expect “Hello, Ada!” for the original input. Check that exact text.",
-    "bridge": "The local exchange uses real A2A protocol routes."
+    "example": "Use short instructions to write Context, Decision, and Consequence for the same case.",
+    "exercise": "Add a Risk section to the skill, practice answer, and check.",
+    "checks": "Check the three sections, policy-consistent choice, and a supported consequence.",
+    "bridge": "This example loads instructions directly; a skill-aware host can select them when needed."
   },
   {
     "id": "06",
-    "file": "06_agent_skills",
-    "title": "Agent skills",
-    "subtitle": "Read and apply short skill instructions",
-    "topics": "skills skill.md instructions reusable",
-    "idea": "A skill stores reusable instructions for a task.",
-    "flow": "read SKILL.md → apply to note → summary",
+    "file": "06_a2a_protocol",
+    "title": "Delegate an architecture review with A2A",
+    "subtitle": "Send a proposal to a reviewer agent",
+    "topics": "a2a agent card discovery message review architecture",
+    "idea": "A2A lets one application discover an agent and send it a message.",
+    "flow": "discover reviewer → send proposal → review",
     "objectives": [
-      "Read a short skill.",
-      "Use its instructions with a new input."
+      "Discover an architecture reviewer.",
+      "Inspect its policy review response."
     ],
-    "example": "Read a note-summary SKILL.md and apply its short instructions to one note.",
-    "exercise": "Change the requested summary length.",
-    "checks": "Expect a summary in the requested format. Check that format.",
-    "bridge": "Keep the reusable procedure separate from the current note."
+    "example": "Send the tiny case and a proposed decision through real A2A protocol routes using the course helper.",
+    "exercise": "Propose microservices for the same small case; expect a failed review.",
+    "checks": "Expect Architecture reviewer and a PASS review for modular monolith. A microservices proposal should produce FAIL.",
+    "bridge": "The reviewer is deterministic; the protocol exchange needs no model API key."
   },
   {
     "id": "07",
     "file": "07_frameworks_evaluation",
-    "title": "Frameworks",
-    "subtitle": "A two-node LangGraph example",
-    "topics": "framework langgraph nodes state edges",
-    "idea": "A framework organizes a workflow using state, nodes, and edges.",
-    "flow": "START → classify → reply → END",
+    "title": "A framework for choosing and checking",
+    "subtitle": "A two-node LangGraph choose-and-check workflow",
+    "topics": "framework langgraph state nodes edges evaluate architecture",
+    "idea": "A framework makes the sequence and shared state explicit.",
+    "flow": "START → choose → check → END",
     "objectives": [
-      "Run an actual LangGraph workflow.",
-      "Follow state through two nodes."
+      "Run two real LangGraph nodes.",
+      "Keep generation separate from validation."
     ],
-    "example": "A small graph classifies one message and writes a reply.",
-    "exercise": "Change the input message.",
-    "checks": "Expect the final state to contain a reply. Check that field.",
-    "bridge": "The graph makes the sequence explicit."
+    "example": "One node proposes the architecture; the next checks it against the course policy.",
+    "exercise": "Change the case and inspect the final state.",
+    "checks": "Inspect the decision and policy-check result. Then explain one consequence the automatic check does not assess.",
+    "bridge": "Passing a policy check is useful evidence, but does not establish overall architecture quality."
   }
 ];
 
@@ -144,13 +144,13 @@ const config = window.COURSE_CONFIG || {};
 const configured = typeof config.repo === 'string' && /^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})\/[A-Za-z0-9_.-]+$/.test(config.repo) && config.repo !== 'OWNER/REPO';
 const ref = typeof config.ref === 'string' ? config.ref : 'main';
 let completed = [];
-try { const stored = JSON.parse(localStorage.getItem('agentic-ai-course-progress') || '[]'); if (Array.isArray(stored)) completed = stored.filter(x => labs.some(l => l.id === x)); } catch (_) { /* Browser storage is optional. */ }
+try { const stored = JSON.parse(localStorage.getItem('agentic-ai-course-architecture-v1-progress') || '[]'); if (Array.isArray(stored)) completed = stored.filter(x => labs.some(l => l.id === x)); } catch (_) { /* Browser storage is optional. */ }
 
 function updateProgress() {
   const count = labs.filter(l => completed.includes(l.id)).length;
   document.getElementById('progress-label').textContent = `${count} / ${labs.length} labs explored`;
   document.getElementById('course-progress').value = count;
-  try { localStorage.setItem('agentic-ai-course-progress', JSON.stringify(completed)); } catch (_) { /* Private browsing can disable storage. */ }
+  try { localStorage.setItem('agentic-ai-course-architecture-v1-progress', JSON.stringify(completed)); } catch (_) { /* Private browsing can disable storage. */ }
 }
 function notebookActions(lab) {
   const path = `notebooks/${lab.file}.ipynb`;

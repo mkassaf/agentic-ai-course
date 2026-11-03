@@ -3,13 +3,13 @@
   "repo": "mkassaf/agentic-ai-course",
   "ref": "main",
   "labs": [
-    "00_llms_prompting",
-    "01_rag_systems",
-    "02_agent_foundations",
+    "00_rules_and_llms",
+    "01_prompting_evaluation",
+    "02_rag_systems",
     "03_tools_mcp",
     "04_agentic_patterns",
-    "05_a2a_protocol",
-    "06_agent_skills",
+    "05_agent_skills",
+    "06_a2a_protocol",
     "07_frameworks_evaluation"
   ]
 }

@@ -1,27 +1,19 @@
 {
   "slug": "04_agentic_patterns",
-  "title": "Small agentic patterns",
-  "section": "Agents and patterns",
+  "title": "ReAct: choose a tool, then decide",
+  "section": "Agent foundations and patterns",
   "cells": [
     {
       "type": "markdown",
-      "source": "## Chaining: pass one result to the next call\n\nThe first call identifies a missing detail. The second writes a question using it."
+      "source": "## Let the model choose its next action\n\nLab 03 called a tool directly. Now the model chooses `read_metrics` or `finish`; Python validates that choice and limits the loop to two turns. The observation is kept in memory for the next call.\n\nThis small ReAct-style pattern alternates action and observation, then gives an architecture decision. We use a local version of the metric reader to keep the control flow visible. A complete ReAct agent can choose among more tools."
     },
     {
       "type": "code",
-      "source": "need = ask(\"What detail is missing from: My parcel is late?\", example=\"tracking number\")\nprint(ask(\"Politely ask the customer for: \" + need, example=\"Could you share the tracking number?\"))"
+      "source": "rule = 'Choose microservices only if team_size >= 8 AND independent_deploys is true; otherwise choose modular monolith.'\ndef read_metrics(): return {\"team_size\": 3, \"independent_deploys\": False}\nobservation = \"\"\nfor turn in range(2):\n    prompt = f\"Choose read_metrics or finish. Finish only after reading metrics. Observation: {observation}. Return only the action.\"\n    action = ask(prompt, example=\"read_metrics\" if not observation else \"finish\").strip()\n    print(\"Action:\", action)\n    if action == \"read_metrics\": observation = str(read_metrics())\n    elif action == \"finish\" and observation: break\n    else: raise ValueError(\"Unknown action or missing observation\")\nelse: raise RuntimeError(\"Turn limit reached before finish\")\nanswer = ask(f\"{rule} Metrics: {observation}. Return only the choice.\", example=\"modular monolith\").strip().lower()\nprint(\"Decision:\", answer)\nassert answer == \"modular monolith\", \"Check the observation and policy.\""
     },
     {
       "type": "markdown",
-      "source": "## Routing: choose one branch\n\nThe model returns a label; Python chooses the reply."
-    },
-    {
-      "type": "code",
-      "source": "route = ask(\"Return delivery or account for: My parcel is late.\", example=\"delivery\").strip()\nreplies = {\"delivery\": \"Tracking number?\", \"account\": \"What login error do you see?\"}\nassert route in replies\nprint(replies[route])"
-    },
-    {
-      "type": "markdown",
-      "source": "**Expected practice outputs:** a tracking-number question in both examples.\n\n**Small exercise:** route a forgotten-password message to `account`. Update its practice example too.\n\nOther useful patterns: **parallelization** runs independent checks; **evaluator\u2013optimizer** critiques and revises; **orchestrator\u2013workers** divides a task into subtasks. More calls do not automatically improve an answer.\n\n## Read further\n\n- [Examples of all five workflow patterns](https://www.anthropic.com/research/building-effective-agents)"
+      "source": "**Expected practice sequence:** `read_metrics → finish → modular monolith`. The check evaluates the final decision. An invalid action, an early finish, or an exhausted turn limit fails visibly.\n\n**Small exercise:** make the metric reader return team size 8 and independent deployment `True`. Predict the new answer; update its practice fixture and final assertion, or run live.\n\nA fixed **chain** would always read, choose, then check. A **router** could send a decision to a specialist. Use an agent loop when choosing the next action is useful; extra calls alone do not ensure quality.\n\n## Read further\n\n- [ReAct](https://arxiv.org/abs/2210.03629)\n- [Workflows and agentic patterns](https://www.anthropic.com/research/building-effective-agents)"
     }
   ]
 }

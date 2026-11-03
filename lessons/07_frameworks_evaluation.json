@@ -1,19 +1,19 @@
 {
   "slug": "07_frameworks_evaluation",
-  "title": "Frameworks",
+  "title": "A framework for choosing and checking",
   "section": "Skills and frameworks",
   "cells": [
     {
       "type": "markdown",
-      "source": "## Run a real two-step LangGraph workflow\n\nA framework organizes steps and state. Here the model classifies a message, then Python selects a reply. The setup helper supplies LangGraph `1.0.2`.\n\nThis is the actual library, with two nodes connected by edges. The model is still accessed through the same `ask()` function."
+      "source": "## Put the same two steps in LangGraph\n\nA framework organizes steps and shared state. This real two-node LangGraph workflow asks for a choice, then checks it against our Python rule. Each node preserves the existing state before adding its result.\n\nThe model can still disagree with the policy. The framework makes that disagreement visible; it does not make the choice correct."
     },
     {
       "type": "code",
-      "source": "from langgraph.graph import StateGraph, START, END\ndef classify(state):\n    label = ask(\"Return delivery or account for: \" + state[\"message\"], example=\"delivery\").strip()\n    return {\"label\": label}\nreplies = {\"delivery\": \"Tracking number?\", \"account\": \"What login error?\"}\ndef reply(state):\n    return {\"reply\": replies[state[\"label\"]]}\ngraph = StateGraph(dict)\ngraph.add_node(\"classify\", classify)\ngraph.add_node(\"reply\", reply)\ngraph.add_edge(START, \"classify\")\ngraph.add_edge(\"classify\", \"reply\")\ngraph.add_edge(\"reply\", END)\napp = graph.compile()\nresult = app.invoke({\"message\": \"My parcel is late.\"})\nprint(result[\"reply\"])\nassert result[\"reply\"].strip()"
+      "source": "from langgraph.graph import StateGraph, START, END\nrule = 'Choose microservices only if team_size >= 8 AND independent_deploys is true; otherwise choose modular monolith.'\ndef choose(state):\n    answer = ask(f\"{rule} Case: {state['case']}. Return only the choice.\", example=\"modular monolith\").strip().lower()\n    return {**state, \"decision\": answer}\ndef check(state):\n    case = state[\"case\"]\n    expected = \"microservices\" if case[\"team_size\"] >= 8 and case[\"independent_deploys\"] else \"modular monolith\"\n    return {**state, \"matches_policy\": state[\"decision\"] == expected}\ngraph = StateGraph(dict)\ngraph.add_node(\"choose\", choose)\ngraph.add_node(\"check\", check)\ngraph.add_edge(START, \"choose\")\ngraph.add_edge(\"choose\", \"check\")\ngraph.add_edge(\"check\", END)\nresult = graph.compile().invoke({\"case\": {\"team_size\": 3, \"independent_deploys\": False}})\nprint(result[\"decision\"], result[\"matches_policy\"])\nassert result[\"matches_policy\"], \"The model choice failed the policy check.\""
     },
     {
       "type": "markdown",
-      "source": "**Expected practice output:** \u201cTracking number?\u201d\n\nThe check confirms that a reply exists. For evaluation, also ask whether it addresses the message. A framework does not make the model correct. Practice output is scripted, so it cannot measure model accuracy.\n\n**Small exercise:** change the message to a login problem and the practice label to `account`.\n\n## Read further\n\n- [LangGraph overview](https://docs.langchain.com/oss/python/langgraph/overview)\n- [LangGraph quickstart](https://docs.langchain.com/oss/python/langgraph/quickstart)"
+      "source": "**Expected practice output:** `modular monolith True`. This is a fixed workflow, not an autonomous agent: the edges always choose, then check.\n\nThe check measures the same policy adherence as Lab 01. Real design review also needs evidence, alternatives, and trade-offs. Scripted practice output is not a model-quality benchmark.\n\n**Small exercise:** try team size 8 with independent deployment `True`. Update the practice label to `microservices`, or run live. Confirm that the final check still passes.\n\n## Read further\n\n- [LangGraph overview](https://docs.langchain.com/oss/python/langgraph/overview)\n- [LangGraph quickstart](https://docs.langchain.com/oss/python/langgraph/quickstart)"
     }
   ]
 }

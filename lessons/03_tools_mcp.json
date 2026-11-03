@@ -1,6 +1,6 @@
 {
   "slug": "03_tools_mcp",
-  "title": "Tools and MCP",
+  "title": "Architecture tools and our own MCP server",
   "section": "Core protocols",
   "packages": [
     "mcp==2.3.0"
@@ -8,23 +8,23 @@
   "cells": [
     {
       "type": "markdown",
-      "source": "## Expose one tool\n\nMCP lets a host discover and call tools through a standard contract. This example uses the **official SDK** and its in-process test transport: no server port or model key is needed. The function reads one study note."
+      "source": "## Read project facts, then save a decision\n\nA tool performs an operation. Our own MCP server offers two: read a tiny JSON project fixture and save a decision in a notebook list. Nothing is written to an external service.\n\nThe **official MCP SDK** supplies discovery, argument schemas, and an in-process connection. No port or model key is needed. The fictional course case has three developers and no independent deployments."
     },
     {
       "type": "code",
-      "source": "from mcp import Client as MCPClient\nfrom mcp.server import MCPServer\nserver = MCPServer(\"Study notes\")\n\n@server.tool()\ndef lookup_note(topic: str) -> str:\n    \"\"\"Read one short study note.\"\"\"\n    return {\"prompt\": \"A prompt is the input sent to a model.\"}.get(topic, \"Not found.\")"
+      "source": "import json\nfrom mcp import Client as MCPClient\nfrom mcp.server import MCPServer\nserver = MCPServer(\"Architecture tools\")\nsaved = []\n@server.tool()\ndef read_metrics() -> dict:\n    return json.loads('{\"team_size\": 3, \"independent_deploys\": false}')\n@server.tool()\ndef save_decision(choice: str) -> str:\n    saved.append(choice)\n    return choice"
     },
     {
       "type": "markdown",
-      "source": "## Discover and call it\n\nThe client discovers the tool before calling it. MCP handles the connection and argument schema; our Python function produces the answer."
+      "source": "## Discover and call the tools\n\nThe client reads the JSON fields and saves the decision from our course rule. These calls are a fixed workflow; the next lab lets the model choose its next action."
     },
     {
       "type": "code",
-      "source": "async with MCPClient(server) as connection:\n    tools = await connection.list_tools()\n    result = await connection.call_tool(\"lookup_note\", {\"topic\": \"prompt\"})\n    print(tools.tools[0].name)\n    print(result.content[0].text)\nassert result.content[0].text == \"A prompt is the input sent to a model.\""
+      "source": "async with MCPClient(server) as connection:\n    print([tool.name for tool in (await connection.list_tools()).tools])\n    metrics = await connection.call_tool(\"read_metrics\", {})\n    print(metrics.content[0].text)\n    result = await connection.call_tool(\"save_decision\", {\"choice\": \"modular monolith\"})\n    print(result.content[0].text)\nassert saved == [\"modular monolith\"]"
     },
     {
       "type": "markdown",
-      "source": "Expected output: `lookup_note`, then `A prompt is the input sent to a model.`\n\n**Exercise:** add a `memory` note and change the requested topic.\n\nMCP does not decide which tool is useful or guarantee that its answer is correct.\n\n[Official SDK client guide](https://py.sdk.modelcontextprotocol.io/client/) · [MCP architecture](https://modelcontextprotocol.io/docs/learn/architecture)"
+      "source": "**Expected output:** two discovered tools, the project's JSON fields, then `modular monolith`. The check confirms the save action changed the list.\n\n**Small exercise:** add a `service_name` field to the JSON fixture and inspect the returned data.\n\nReading JSON is structured data extraction, not interpretation of a design document. MCP exposes operations; it does not select the architecture or validate the saved choice. The course rule is a teaching policy, not general architecture advice.\n\n[Official SDK client guide](https://py.sdk.modelcontextprotocol.io/client/) · [MCP architecture](https://modelcontextprotocol.io/docs/learn/architecture)"
     }
   ]
 }
