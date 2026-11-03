@@ -1,20 +1,21 @@
 """Small protocol examples used by the introductory notebooks.
 
-``greet_over_a2a`` is a course helper, not an A2A SDK method. It keeps
-Agent Card and server configuration outside the beginner's greeting example.
+``review_over_a2a`` is a course helper, not an A2A SDK method. It keeps
+Agent Card and server configuration outside the beginner's policy review.
 The official SDK still discovers the card and exchanges JSON-RPC messages.
 All HTTP requests use an in-process ASGI transport; no port is opened.
 """
 
 
-async def greet_over_a2a(name: str) -> tuple[str, str]:
-    """Return (discovered agent name, greeting) using A2A 1.0 JSON-RPC.
+async def review_over_a2a(case: dict, proposal: str) -> tuple[str, str]:
+    """Return (discovered agent name, policy report) using A2A 1.0 JSON-RPC.
 
     Requires ``a2a-sdk[http-server]==1.3.0``. Imports stay inside the helper
     so other course lessons do not need to install this optional dependency.
-    The receiving agent is deterministic; this example teaches interoperability
-    independently of model access or response quality.
+    The receiving agent is deterministic and applies the course's fictional
+    teaching rule. Agreement with that rule does not establish design quality.
     """
+    import json
     import httpx
     from a2a.client import A2ACardResolver, ClientConfig, create_client
     from a2a.helpers import get_message_text, new_text_message
@@ -28,16 +29,26 @@ async def greet_over_a2a(name: str) -> tuple[str, str]:
     )
     from starlette.applications import Starlette
 
-    class Greeter(AgentExecutor):
+    if type(case.get("team_size")) is not int or case["team_size"] < 1:
+        raise ValueError("team_size must be a positive integer.")
+    if type(case.get("independent_deploys")) is not bool:
+        raise ValueError("independent_deploys must be a boolean.")
+
+    class ArchitectureReviewer(AgentExecutor):
         async def execute(self, context, event_queue):
-            student = get_message_text(context.message).strip()
-            await event_queue.enqueue_event(new_text_message(f"Hello, {student}!"))
+            request = json.loads(get_message_text(context.message))
+            facts = request["case"]
+            expected = ("microservices" if facts["team_size"] >= 8
+                        and facts["independent_deploys"] else "modular monolith")
+            status = "PASS" if request["proposal"] == expected else "FAIL"
+            report = f"{status}: course policy expects {expected}."
+            await event_queue.enqueue_event(new_text_message(report))
 
         async def cancel(self, context, event_queue):
             raise NotImplementedError("An immediate message creates no task to cancel.")
 
     card = AgentCard(
-        name="Greeter", description="Greets a student.", version="1.0.0",
+        name="Architecture reviewer", description="Checks the fictional course policy.", version="1.0.0",
         default_input_modes=["text/plain"], default_output_modes=["text/plain"],
         capabilities=AgentCapabilities(streaming=False),
         supported_interfaces=[AgentInterface(
@@ -45,12 +56,12 @@ async def greet_over_a2a(name: str) -> tuple[str, str]:
             protocol_version="1.0",
         )],
         skills=[AgentSkill(
-            id="greet", name="Greet", description="Greet a student by name.",
-            tags=["greeting"],
+            id="review", name="Review", description="Check an architecture proposal against the course policy.",
+            tags=["architecture", "policy"],
         )],
     )
     handler = DefaultRequestHandler(
-        agent_executor=Greeter(), task_store=InMemoryTaskStore(), agent_card=card,
+        agent_executor=ArchitectureReviewer(), task_store=InMemoryTaskStore(), agent_card=card,
     )
     app = Starlette(routes=(
         create_agent_card_routes(card) + create_jsonrpc_routes(handler, "/")
@@ -65,14 +76,16 @@ async def greet_over_a2a(name: str) -> tuple[str, str]:
             discovered, client_config=ClientConfig(streaming=False, httpx_client=http),
         )
         try:
-            message = new_text_message(name, role=Role.ROLE_USER)
+            payload = json.dumps({"case": case, "proposal": proposal})
+            message = new_text_message(payload, role=Role.ROLE_USER)
             request = SendMessageRequest(message=message)
-            greeting = None
+            report = None
             async for event in remote.send_message(request):
                 if event.HasField("message"):
-                    greeting = get_message_text(event.message)
+                    report = get_message_text(event.message)
         finally:
             await remote.close()
-        if greeting is not None:
-            return discovered.name, greeting
-    raise RuntimeError("The agent returned no greeting message.")
+            await handler.aclose()
+        if report is not None:
+            return discovered.name, report
+    raise RuntimeError("The agent returned no review message.")
