@@ -4,7 +4,7 @@ Prepared by **Mustafa Assaf**
 
 **[Course website](https://mkassaf.github.io/agentic-ai-course/)** · **[GitHub repository](https://github.com/mkassaf/agentic-ai-course)**
 
-Eight beginner labs in **general agentic AI**. Start with a small LLM call, then explore RAG, agent loops, patterns, MCP, A2A, skills, and frameworks. Each lab uses one familiar task, short visible examples, an expected result, and a small exercise.
+Eight beginner labs in **general agentic AI**. Start with a small LLM call, then explore RAG, agent loops, MCP, patterns, A2A, skills, and frameworks. Each lab uses one familiar task, short visible examples, an expected result, and a small exercise.
 
 The four core areas are:
 
@@ -22,8 +22,8 @@ Open a notebook in **Google Colab**, save a copy to your Drive, and run the cell
 | 00 · LLMs and prompting | Improve a short support-reply prompt | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/00_llms_prompting.ipynb) | [View](notebooks/00_llms_prompting.ipynb) |
 | 01 · RAG systems | Answer a library-hours question from notes | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/01_rag_systems.ipynb) | [View](notebooks/01_rag_systems.ipynb) |
 | 02 · Foundations of AI agents | Follow one lookup in a bounded loop | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/02_agent_foundations.ipynb) | [View](notebooks/02_agent_foundations.ipynb) |
-| 03 · Agentic patterns | Chain, route, parallelize, and revise small tasks | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/03_agentic_patterns.ipynb) | [View](notebooks/03_agentic_patterns.ipynb) |
-| 04 · Tools and MCP | Discover and call a read-only note tool | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/04_tools_mcp.ipynb) | [View](notebooks/04_tools_mcp.ipynb) |
+| 03 · Tools and MCP | Discover and call a read-only note tool | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/03_tools_mcp.ipynb) | [View](notebooks/03_tools_mcp.ipynb) |
+| 04 · Agentic patterns | Chain, route, parallelize, and revise small tasks | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/04_agentic_patterns.ipynb) | [View](notebooks/04_agentic_patterns.ipynb) |
 | 05 · A2A protocol | Discover a greeting agent and send a message | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/05_a2a_protocol.ipynb) | [View](notebooks/05_a2a_protocol.ipynb) |
 | 06 · Agent skills | Package a note-summary procedure in SKILL.md | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/06_agent_skills.ipynb) | [View](notebooks/06_agent_skills.ipynb) |
 | 07 · Frameworks and evaluation | Run a small LangGraph workflow and compare it | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/07_frameworks_evaluation.ipynb) | [View](notebooks/07_frameworks_evaluation.ipynb) |
@@ -50,6 +50,11 @@ The API adapter is provider-neutral: change the base URL, model, and secret name
 - [Instructor guide](docs/instructor-guide.md)
 - [API setup and troubleshooting](docs/api-setup.md)
 - [Technical references](docs/sources.md)
+
+## More learning resources
+
+- [Agentic AI Learning Lab](https://github.com/mkassaf/agentic-ai-learning-lab): a browser-based practice app with examples progressing from single prompts to tool use, reflection, and multi-agent workflows.
+- [LangGraph Complete Guide](https://github.com/mkassaf/langgraph-complete-guide): Python examples covering chatbots, ReAct agents, supervisor patterns, and research workflows. Continue here after Lab 07.
 
 ## Run and verify locally
 

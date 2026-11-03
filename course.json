@@ -6,8 +6,8 @@
     "00_llms_prompting",
     "01_rag_systems",
     "02_agent_foundations",
-    "03_agentic_patterns",
-    "04_tools_mcp",
+    "03_tools_mcp",
+    "04_agentic_patterns",
     "05_a2a_protocol",
     "06_agent_skills",
     "07_frameworks_evaluation"

@@ -30,8 +30,8 @@ Avoid beginning with all the shared runtime or server boilerplate. Keep it avail
 | 00 | Which part of your prompt changed the output, and which facts did you actually supply? |
 | 01 | Was the wrong answer caused by retrieval or generation? |
 | 02 | Who decides which actions may execute, and what stops the loop? |
-| 03 | Which part of the process is fixed in code, and which part does the model choose? |
-| 04 | What did MCP add beyond calling the Python function directly? |
+| 03 | What did MCP add beyond calling the Python function directly? |
+| 04 | Which part of the process is fixed in code, and which part does the model choose? |
 | 05 | What does an Agent Card tell a client, and what does a message carry? |
 | 06 | Which information belongs in a reusable skill, and which belongs in the current request? |
 | 07 | What changed when the same steps became graph nodes? How did you check the result? |
@@ -51,7 +51,7 @@ Do not grade a particular wording from a live model. Distinguish deterministic p
 
 ## Keep the layers clear
 
-- **MCP:** access to tools and context through a standard interface. Lab 04 uses the official SDK, discovery, and a tool call.
+- **MCP:** access to tools and context through a standard interface. Lab 03 uses the official SDK, discovery, and a tool call.
 - **A2A:** capability discovery and messages between agent interfaces. Lab 05 uses the official SDK and a tiny greeting exchange.
 - **Skills:** reusable procedural instructions and optional supporting resources. They do not themselves execute a tool or enforce a permission.
 - **Frameworks:** state and orchestration abstractions. Lab 07 uses actual LangGraph while preserving a plain-Python comparison.

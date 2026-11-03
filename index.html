@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Eight hands-on introductory labs in general agentic AI: LLMs and prompting, RAG, agents and patterns, tools and MCP, A2A, skills, and frameworks. Python and Google Colab.">
+  <meta name="description" content="Eight hands-on introductory labs in general agentic AI: LLMs and prompting, RAG, agents, tools and MCP, agentic patterns, A2A, skills, and frameworks. Python and Google Colab.">
   <meta name="theme-color" content="#1A1A1A">
   <meta name="author" content="Mustafa Assaf">
   <title>Agentic AI, Step by Step — An introductory lab course</title>
@@ -22,7 +22,7 @@
   <div class="hero-copy">
     <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> Python → LLMs → Agentic patterns</p>
     <h1>One call.<br>Many possibilities.</h1>
-    <p class="hero-description">Learn the building blocks of agentic AI, one experiment at a time. Eight practical labs connect LLMs and RAG to agentic patterns, tools and MCP, agent communication with A2A, reusable skills, and frameworks.</p>
+    <p class="hero-description">Learn the building blocks of agentic AI, one experiment at a time. Eight practical labs connect LLMs and RAG to tools and MCP, agentic patterns, agent communication with A2A, reusable skills, and frameworks.</p>
     <p class="course-byline">Prepared by <strong>Mustafa Assaf</strong></p>
     <div class="hero-actions"><a class="button primary" href="#lab-00">Start lab 00 <span aria-hidden="true">↗</span></a><a class="text-link" href="#labs">Explore all eight labs <span aria-hidden="true">↓</span></a></div>
     <div class="hero-meta"><span><strong>8</strong> introductory labs</span><span><strong>60–90 min</strong> per lab</span><span><strong>Google Colab</strong> ready</span></div>
@@ -33,7 +33,7 @@
     <div class="flow-line" aria-hidden="true"></div>
     <div class="flow-node"><span class="flow-index">02</span><div><strong>Give it context & control</strong><small>Prompt · retrieve · validate</small></div></div>
     <div class="flow-line" aria-hidden="true"></div>
-    <div class="flow-node"><span class="flow-index">03</span><div><strong>Connect tools & agents</strong><small>Patterns · MCP · A2A</small></div></div>
+    <div class="flow-node"><span class="flow-index">03</span><div><strong>Connect tools & agents</strong><small>MCP · Patterns · A2A</small></div></div>
     <div class="flow-line" aria-hidden="true"></div>
     <div class="capabilities-strip"><span>Tools</span><span>Skills</span><span>Frameworks</span></div>
     <div class="flow-node flow-final"><span class="flow-index">04</span><div><strong>Compose. Inspect. Evaluate.</strong><small>Reusable capabilities + observable control flow</small></div></div>
@@ -57,18 +57,20 @@
   <div class="section-heading"><div><p class="eyebrow">What you will learn</p><h2>Build a clear picture of the whole stack.</h2><p>Each area answers a different question. Together, they help you decide what belongs in an agent system—and what a simple model call can already do.</p></div></div>
   <div class="topic-grid">
     <article><span class="tag">Labs 00–01</span><h3>LLMs and Prompting<br>RAG Systems</h3><p>How do we ask a model for useful output, supply relevant evidence, and check the result? Start with messages, prompt design, structured responses, retrieval, and citations.</p><a class="text-link" href="#lab-00">Begin with the model ↗</a></article>
-    <article><span class="tag">Labs 02–03</span><h3>Foundations of AI Agents<br>Agentic Patterns</h3><p>How does a program move from one call to a controlled process? Explore state, actions, observations, stopping rules, chaining, routing, parallelization, and critique.</p><a class="text-link" href="#lab-02">Understand the control flow ↗</a></article>
-    <article><span class="tag">Labs 04–05</span><h3>Tools and MCP<br>A2A Protocol</h3><p>How do agents access capabilities and collaborate across interfaces? Use an MCP client and server, then inspect A2A capability discovery and message exchange.</p><a class="text-link" href="#lab-04">Connect capabilities ↗</a></article>
+    <article><span class="tag">Labs 02 &amp; 04</span><h3>Foundations of AI Agents<br>Agentic Patterns</h3><p>How does a program move from one call to a controlled process? Explore state, actions, observations, stopping rules, chaining, routing, parallelization, and critique.</p><a class="text-link" href="#lab-02">Understand the control flow ↗</a></article>
+    <article><span class="tag">Labs 03 &amp; 05</span><h3>Tools and MCP<br>A2A Protocol</h3><p>How do agents access capabilities and collaborate across interfaces? Use an MCP client and server, then inspect A2A capability discovery and message exchange.</p><a class="text-link" href="#lab-03">Connect capabilities ↗</a></article>
     <article><span class="tag">Labs 06–07</span><h3>Skills<br>Frameworks</h3><p>How do we package reusable procedures and organize a larger system? Create a skill folder, build a small LangGraph workflow, and evaluate it against a simpler baseline.</p><a class="text-link" href="#lab-06">Make the pieces reusable ↗</a></article>
   </div>
   <p class="small-note">Examples use everyday assistants for support, research, and task handling. Each lab adds one building block and a small check you can explain.</p>
 </section>
 <section class="resources-section" id="resources"><div class="wrap section">
-  <div class="section-heading"><div><p class="eyebrow">Read a little. Build a lot.</p><h2>A small, useful resource library.</h2><p>Start with the lab. Use these primary sources to go deeper.</p></div></div>
+  <div class="section-heading"><div><p class="eyebrow">Read a little. Build a lot.</p><h2>A small, useful resource library.</h2><p>Start with a lab, then explore these learning resources and technical references.</p></div></div>
   <div class="resource-grid">
+    <article><span class="tag">More hands-on practice</span><h3><a href="https://github.com/mkassaf/agentic-ai-learning-lab">Agentic AI Learning Lab ↗</a></h3><p>A browser-based practice app with examples progressing from a single prompt to tool use, reflection, and multi-agent workflows.</p></article>
+    <article><span class="tag">Go deeper with LangGraph</span><h3><a href="https://github.com/mkassaf/langgraph-complete-guide">LangGraph Complete Guide ↗</a></h3><p>Continue beyond Lab 07 with Python examples covering chatbots, ReAct agents, supervisor patterns, and research workflows.</p></article>
     <article><span class="tag">LLMs & retrieval</span><h3><a href="https://developers.openai.com/api/reference/chat-completions/overview">Chat Completions ↗</a></h3><p>The message-response format used by the compatible API adapter. Pair it with the original <a href="https://arxiv.org/abs/2005.11401">RAG paper</a> and <a href="https://doc.freeinference.org/">FreeInference documentation</a>.</p></article>
     <article><span class="tag">Agents & patterns</span><h3><a href="https://www.anthropic.com/research/building-effective-agents">Building effective agents ↗</a></h3><p>Workflows, agents, chaining, routing, parallelization, and evaluator–optimizer patterns. For action/observation loops, see <a href="https://arxiv.org/abs/2210.03629">ReAct</a>.</p></article>
-    <article><span class="tag">Tools & MCP</span><h3><a href="https://modelcontextprotocol.io/docs/getting-started/intro">Model Context Protocol ↗</a></h3><p>The standard for connecting AI applications to tools, data, and other context. Lab 04 uses the SDK to make the interface concrete.</p></article>
+    <article><span class="tag">Tools & MCP</span><h3><a href="https://modelcontextprotocol.io/docs/getting-started/intro">Model Context Protocol ↗</a></h3><p>The standard for connecting AI applications to tools, data, and other context. Lab 03 uses the SDK to make the interface concrete.</p></article>
     <article><span class="tag">Agent communication</span><h3><a href="https://a2a-protocol.org/latest/">A2A Protocol ↗</a></h3><p>Capability discovery and communication between agents. Lab 05 distinguishes an agent interface from a local function call.</p></article>
     <article><span class="tag">Reusable capabilities</span><h3><a href="https://agentskills.io/home">Agent Skills ↗</a></h3><p>An open format for packaging procedural instructions and supporting resources. Read the <a href="https://agentskills.io/specification">format specification</a> before extending your skill.</p></article>
     <article><span class="tag">Frameworks</span><h3><a href="https://docs.langchain.com/oss/python/langgraph/overview">LangGraph ↗</a></h3><p>Explicit state, nodes, and edges for orchestration. Lab 07 maps a Python workflow to a graph, then measures behavior instead of assuming a framework makes it better.</p></article>

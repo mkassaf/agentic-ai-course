@@ -1,11 +1,11 @@
 {
-  "slug": "04_tools_mcp",
+  "slug": "03_tools_mcp",
   "title": "Tools and MCP",
   "section": "Core protocols",
   "cells": [
     {
       "type": "markdown",
-      "source": "## What you will learn\n\nExpose one Python function through **Model Context Protocol (MCP)**, discover its input schema, and call it from a separate client. Then check one invalid call. Allow 60–90 minutes, including the exercise.\n\nThe example is deliberately small: a study-note lookup. A model can suggest the topic, but Python and the MCP server control execution. The server is a real subprocess speaking MCP over **stdio**. No public server, tunnel, or API key is needed for the protocol demonstration."
+      "source": "## What you will learn\n\nExpose one Python function through **Model Context Protocol (MCP)**, discover its input schema, and call it from a separate client. Then check one invalid call. Allow 60\u201390 minutes, including the exercise.\n\nThe example is deliberately small: a study-note lookup. A model can suggest the topic, but Python and the MCP server control execution. The server is a real subprocess speaking MCP over **stdio**. No public server, tunnel, or API key is needed for the protocol demonstration."
     },
     {
       "type": "markdown",

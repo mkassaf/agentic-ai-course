@@ -1,4 +1,13 @@
-# Technical references
+# Learning resources and technical references
+
+## More hands-on learning
+
+- [Agentic AI Learning Lab](https://github.com/mkassaf/agentic-ai-learning-lab): a browser-based practice app with examples progressing from a single prompt to tools, reflection, and multi-agent workflows.
+- [LangGraph Complete Guide](https://github.com/mkassaf/langgraph-complete-guide): Python examples for chatbots, ReAct agents, supervisor patterns, and research workflows; a follow-up to Lab 07.
+
+Follow each repository's README for its own setup and run instructions.
+
+## Technical references
 
 These primary sources support the course concepts and interfaces. The notebooks keep the main examples small; use these pages for detail and further exercises.
 

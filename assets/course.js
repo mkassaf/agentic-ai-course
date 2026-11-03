@@ -31,17 +31,7 @@ const labs = [
     bridge: 'The model can suggest an action. The host program remains responsible for execution and limits.'
   },
   {
-    id: '03', file: '03_agentic_patterns', title: 'Agentic patterns', subtitle: 'Try chaining, routing, parallel work, and a revision step', topics: 'patterns workflow chain routing parallelization reflection evaluator optimizer',
-    idea: 'Patterns are reusable ways to connect calls. Begin with a fixed workflow when you already know the steps; let the model choose only where that choice is useful.',
-    flow: 'chain: extract → summarize\nroute: classify → choose handler\nparallel: independent checks → combine\nrevise: draft → critique → improve',
-    objectives: ['Recognize the control flow of four small patterns.', 'Choose a pattern for a simple task.'],
-    example: 'Process a short incoming message. Extract its topic, route it to a handler, or review it from two independent angles. Compare which calls each approach adds.',
-    exercise: 'Add one category to the router and test a message from that category.',
-    checks: 'Expect the message to reach the intended handler. Count the calls, keep branch results associated with their inputs, and bound revision attempts. More steps do not guarantee a better answer.',
-    bridge: 'A pattern describes the arrangement of work. You can implement it in plain Python or in a framework.'
-  },
-  {
-    id: '04', file: '04_tools_mcp', title: 'Tools and MCP', subtitle: 'Expose one small tool and call it through an MCP client', topics: 'tools mcp model context protocol client server sdk discovery',
+    id: '03', file: '03_tools_mcp', title: 'Tools and MCP', subtitle: 'Expose one small tool and call it through an MCP client', topics: 'tools mcp model context protocol client server sdk discovery',
     idea: 'A tool is a capability your program exposes. Model Context Protocol standardizes how an AI application connects to such capabilities and context.',
     flow: 'MCP client → discover tools → call lookup_note(topic) → note',
     objectives: ['Distinguish a Python tool from its protocol interface.', 'Discover and call a tool using the MCP SDK.'],
@@ -49,6 +39,16 @@ const labs = [
     exercise: 'Change the requested topic. Then omit the required argument and inspect the error result.',
     checks: 'Expect the matching note as the tool result. A call missing the required topic should return an error. Inspect the SDK result object as well as the text; a protocol does not supply permissions automatically.',
     bridge: 'MCP connects applications to tools and context. The agent loop still decides when to use them.'
+  },
+  {
+    id: '04', file: '04_agentic_patterns', title: 'Agentic patterns', subtitle: 'Try chaining, routing, parallel work, and a revision step', topics: 'patterns workflow chain routing parallelization reflection evaluator optimizer',
+    idea: 'Patterns are reusable ways to connect calls. Begin with a fixed workflow when you already know the steps; let the model choose only where that choice is useful.',
+    flow: 'chain: extract → summarize\nroute: classify → choose handler\nparallel: independent checks → combine\nrevise: draft → critique → improve',
+    objectives: ['Recognize the control flow of four small patterns.', 'Choose a pattern for a simple task.'],
+    example: 'Process a short incoming message. Extract its topic, route it to a handler, or review it from two independent angles. Compare which calls each approach adds.',
+    exercise: 'Add one category to the router and test a message from that category.',
+    checks: 'Expect the message to reach the intended handler. Count the calls, keep branch results associated with their inputs, and bound revision attempts. More steps do not guarantee a better answer.',
+    bridge: 'A pattern describes the arrangement of work. You can implement it in plain Python or in a framework.'
   },
   {
     id: '05', file: '05_a2a_protocol', title: 'A2A protocol', subtitle: 'Inspect an agent’s capability card and exchange a small message', topics: 'a2a agent2agent communication agent card message task sdk discovery',

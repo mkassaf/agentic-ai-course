@@ -7,8 +7,8 @@ Eight introductory labs teach general agentic AI through small, inspectable exam
 | Area | Labs | Central question |
 | --- | --- | --- |
 | LLMs and Prompting · RAG Systems | 00–01 | How do we ask clearly and supply useful evidence? |
-| Foundations of AI Agents · Agentic Patterns | 02–03 | How do we control a sequence of model decisions? |
-| Tools and MCP · A2A Protocol | 04–05 | How do capabilities and agents connect through standard interfaces? |
+| Foundations of AI Agents · Agentic Patterns | 02 & 04 | How do we control a sequence of model decisions? |
+| Tools and MCP · A2A Protocol | 03 & 05 | How do capabilities and agents connect through standard interfaces? |
 | Skills · Frameworks | 06–07 | How do we package procedures and organize a larger workflow? |
 
 ## Lab sequence
@@ -18,8 +18,8 @@ Eight introductory labs teach general agentic AI through small, inspectable exam
 | **00 · LLMs and prompting** | Messages, clear task/context/format, few-shot prompting, structured output | Write a short customer-support reply | Change tone; check format and avoid invented facts |
 | **01 · RAG systems** | Retrieval, context assembly, source IDs, missing information | Answer a library-hours question from a few notes | Add a note; test an unsupported question |
 | **02 · Foundations of AI agents** | State, actions, observations, allowed tools, stopping | Let an assistant perform one lookup | Lower the step budget; reject an unknown action |
-| **03 · Agentic patterns** | Chaining, routing, parallelization, critique/revision | Route a short message and compare small workflows | Add a category; count calls and inspect outputs |
-| **04 · Tools and MCP** | Tools versus protocol, client/server discovery and invocation | Discover and call `lookup_note(topic)` through the MCP SDK | Inspect the input schema; reject a missing argument |
+| **03 · Tools and MCP** | Tools versus protocol, client/server discovery and invocation | Discover and call `lookup_note(topic)` through the MCP SDK | Inspect the input schema; reject a missing argument |
+| **04 · Agentic patterns** | Chaining, routing, parallelization, critique/revision | Route a short message and compare small workflows | Add a category; count calls and inspect outputs |
 | **05 · A2A protocol** | Agent Card, capability discovery, messages and responses | Discover a greeting agent and send `Ada` | Expect `Hello, Ada!`; inspect identifiers and text parts |
 | **06 · Agent skills** | SKILL.md metadata, reusable instructions, progressive loading | Package a short note-summary procedure | Change the output format without embedding the task input |
 | **07 · Frameworks and evaluation** | State, nodes, edges, LangGraph, simple baselines | A classify-and-reply graph | Compare the graph with the same plain-Python steps |
