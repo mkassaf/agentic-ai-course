@@ -1,6 +1,6 @@
 # From LLM Calls to Agentic Systems
 
-Prepared by **Mustafa Assaf** · Teaching assistant
+Prepared by **Mustafa Assaf**
 
 **[Course website](https://mkassaf.github.io/agentic-ai-course/)** · **[GitHub repository](https://github.com/mkassaf/agentic-ai-course)**
 
