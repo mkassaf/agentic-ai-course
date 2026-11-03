@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Eight hands-on introductory labs: from your first LLM call to an evidence-grounded, evaluated council of AI architects. Plain Python, Google Colab, and a configurable model API.">
+  <meta name="theme-color" content="#1A1A1A">
+  <meta name="author" content="Mustafa Assaf">
+  <title>Agentic AI, Step by Step — An introductory lab course</title>
+  <link rel="stylesheet" href="assets/styles.css">
+  <script src="assets/config.js" defer></script>
+  <script src="assets/course.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to course content</a>
+<header class="site-header">
+  <a class="brand" href="#home" aria-label="Agentic AI course home"><span class="brand-mark" aria-hidden="true">a<span>i</span></span><span>Agentic AI <small>the introductory lab course</small></span></a>
+  <nav aria-label="Main navigation"><a href="#labs">Labs</a><a href="#setup">Get ready</a><a href="#project">The project</a><a href="#resources">Resources</a><a class="repo-link" href="README.md">Course files ↗</a></nav>
+</header>
+<main id="main">
+<section class="hero wrap" id="home">
+  <div class="hero-copy">
+    <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> Python → LLMs → Agentic patterns</p>
+    <h1>One call.<br>Many possibilities.</h1>
+    <p class="hero-description">Learn to build agents by understanding what happens between the calls. Eight practical labs take you from a simple prompt to a council of AI architects—with tools, evidence, disagreement, and tests along the way.</p>
+    <p class="course-byline">Prepared by <strong>Mustafa Assaf</strong> · Teaching assistant</p>
+    <div class="hero-actions"><a class="button primary" href="#lab-00">Start lab 00 <span aria-hidden="true">↗</span></a><a class="text-link" href="#labs">Explore all eight labs <span aria-hidden="true">↓</span></a></div>
+    <div class="hero-meta"><span><strong>8</strong> introductory labs</span><span><strong>60–90 min</strong> per lab</span><span><strong>Google Colab</strong> ready</span></div>
+  </div>
+  <aside class="hero-system" aria-label="Course progression from a language model call to a tested agent system">
+    <div class="system-top"><span class="mono">THE LEARNING PATH</span><span class="pill">Plain Python first</span></div>
+    <div class="flow-node flow-single"><span class="flow-index">01</span><div><strong>Ask a model</strong><small>Prompt → response</small></div><span aria-hidden="true">↗</span></div>
+    <div class="flow-line" aria-hidden="true"></div>
+    <div class="flow-node"><span class="flow-index">02</span><div><strong>Give it structure & evidence</strong><small>Validate · retrieve · cite</small></div></div>
+    <div class="flow-line" aria-hidden="true"></div>
+    <div class="flow-node"><span class="flow-index">03</span><div><strong>Connect actions & patterns</strong><small>Tools · workflows · revision</small></div></div>
+    <div class="flow-line" aria-hidden="true"></div>
+    <div class="council-strip"><span>Pragmatist</span><span>Guardian</span><span>Skeptic</span></div>
+    <div class="flow-node flow-final"><span class="flow-index">04</span><div><strong>Compare. Debate. Evaluate.</strong><small>Proposal + evidence + dissent → human</small></div></div>
+    <p class="system-note">More agents are a design choice.<br>Better decisions are a hypothesis to test.</p>
+  </aside>
+</section>
+<div class="intro-band"><div class="wrap"><p>Built for students who know basic Python.</p><p>No agent framework required. A configurable API for live models, starting with FreeInference. Scripted practice for checking the mechanics.</p></div></div>
+<section class="wrap section" id="labs">
+  <div class="section-heading"><div><p class="eyebrow">The curriculum</p><h2>Eight labs. One connected project.</h2><p>Read the idea, run the notebook, change something, and explain the result.</p></div><div class="progress-block"><span id="progress-label">0 / 8 labs explored</span><progress id="course-progress" value="0" max="8" aria-labelledby="progress-label"></progress><button class="quiet-button" id="reset-progress" type="button">Reset my progress</button></div></div>
+  <div class="curriculum-tools"><label for="lab-search">Find a topic <input id="lab-search" type="search" placeholder="Try tools, grounding, evaluation…" autocomplete="off"></label><p id="filter-status" role="status">All 8 labs</p></div>
+  <div id="lab-list"></div>
+  <noscript><p class="notice">Enable JavaScript to read the expandable lesson notes. Every notebook is also available in the <a href="notebooks/">notebooks folder</a>, and the complete sequence is in the <a href="docs/curriculum.md">curriculum guide</a>.</p></noscript>
+</section>
+<section class="setup-section" id="setup"><div class="wrap section">
+  <div class="section-heading"><div><p class="eyebrow">Before your first call</p><h2>A notebook and a little Python.</h2><p>Use the same setup in each lab. You do not need a GPU or an agent framework.</p></div><span class="large-number" aria-hidden="true">{ }</span></div>
+  <div class="setup-grid"><article><span class="step-label">01 / Bring the basics</span><h3>Know your Python building blocks</h3><p>Functions, lists, dictionaries, JSON, loops, and simple assertions. Know how to run a notebook cell and read an exception.</p></article><article><span class="step-label">02 / Open a notebook</span><h3>Run it in Google Colab</h3><p>Open a lab with its Colab button. Until the repository is configured, download the notebook and use <strong>File → Upload notebook</strong> in Colab. Choose a CPU runtime.</p></article><article><span class="step-label">03 / Choose a run mode</span><h3>Practice, then call a real model</h3><p>Run the scripted examples first. Start with <code>MODE="practice"</code>. For live work, the initial settings use <code>BASE_URL="https://freeinference.org/v1"</code> and <code>MODEL="qwen3.6-35b"</code>. Add <code>FREEINFERENCE_API_KEY</code> to Colab Secrets, or enter it privately when prompted. Change <code>BASE_URL</code>, <code>MODEL</code>, and <code>SECRET_NAME</code> to use another compatible service.</p></article><article><span class="step-label">04 / Observe the result</span><h3>Make every call count</h3><p>Read the input, response, validation checks, and trace. Keep the call budget small. Never commit a credential or assume a green assertion proves an architecture recommendation is correct.</p></article></div>
+  <div class="notice"><strong>One interface, configurable providers:</strong> the live adapter expects an OpenAI-compatible Chat Completions API. FreeInference is the initial configuration; a university gateway or another compatible service can use the same adapter. Check current model access, quota, and API compatibility before class. The initial Qwen model is enough for the introductory calls; live council labs require three distinct model families configured separately.</div>
+  <p class="setup-links"><a href="docs/api-setup.md">Model API setup ↗</a><a href="docs/instructor-guide.md">TA preparation guide ↗</a><a href="README.md">Local setup and repository instructions ↗</a></p>
+</div></section>
+<section class="wrap section" id="project">
+  <div class="section-heading"><div><p class="eyebrow">Where this leads</p><h2>A council of AI architects.</h2><p>The labs prepare you for the course project: architects that propose independently, challenge one another, and present a traceable recommendation to a human.</p></div></div>
+  <div class="project-grid"><article class="project-main"><span class="tag">Software architecture project</span><h3>Think alone.<br>Debate together.<br>Keep the evidence.</h3><p>Give every architect the same requirements and knowledge base. Use different model families and explicit stances. Record proposals, critiques, revisions, the chair’s decision, and any minority view.</p><a class="button dark" href="docs/project-bridge.md">Connect the labs to the project <span aria-hidden="true">↗</span></a></article><div class="project-principles"><article><span class="step-label">Diversity</span><h3>Three agents are not automatically three perspectives.</h3><p>The project calls for at least three different model families. Changing a system prompt or temperature on one model is useful practice; it does not meet that requirement.</p></article><article><span class="step-label">Control</span><h3>A debate needs an ending.</h3><p>Bound the rounds and tool calls. Specify a deadlock rule. Record dissent and escalate unresolved decisions. The human architect retains the final decision.</p></article><article><span class="step-label">Evidence</span><h3>Measure whether it helped.</h3><p>Compare with each constituent model used alone under the same scenario and evidence. Learn only from the feedback set, then evaluate on held-out scenarios. Report cost and latency alongside decision quality.</p></article></div></div>
+  <p class="small-note">These are learning exercises, not a finished project submission. The toy examples do not establish that a council outperforms a single model. Your project needs its own design, expert-reviewed benchmark, and evaluation.</p>
+</section>
+<section class="resources-section" id="resources"><div class="wrap section">
+  <div class="section-heading"><div><p class="eyebrow">Read a little. Build a lot.</p><h2>A small, useful resource library.</h2><p>Start with the lab. Use these primary sources to go deeper.</p></div></div>
+  <div class="resource-grid"><article><span class="tag">Patterns</span><h3><a href="https://www.anthropic.com/research/building-effective-agents">Building effective agents ↗</a></h3><p>Anthropic’s distinction between workflows and agents, with chaining, routing, parallelization, orchestration, and evaluation patterns.</p></article><article><span class="tag">Grounding</span><h3><a href="https://arxiv.org/abs/2005.11401">Retrieval-augmented generation ↗</a></h3><p>Lewis et al. introduce RAG. Lab 02 uses a small lexical retriever so you can inspect every retrieved source before adding embeddings.</p></article><article><span class="tag">Actions</span><h3><a href="https://arxiv.org/abs/2210.03629">ReAct ↗</a></h3><p>Yao et al. study reasoning and acting. Our tool lab focuses on explicit actions and observations rather than private model reasoning.</p></article><article><span class="tag">API reference</span><h3><a href="https://developers.openai.com/api/reference/chat-completions/overview">Chat Completions ↗</a></h3><p>The message-response interface used by the course’s compatible API adapter. For the initial service, see the <a href="https://doc.freeinference.org/">FreeInference documentation ↗</a>; verify current access and supported models.</p></article><article><span class="tag">Beyond the labs</span><h3><a href="https://modelcontextprotocol.io/docs/getting-started/intro">Model Context Protocol ↗</a> & <a href="https://a2a-protocol.org/latest/">A2A ↗</a></h3><p>Standards for tool/context access and agent interoperability. Treat them as optional extensions after you understand the underlying control flow.</p></article><article><span class="tag">Inspiration</span><h3><a href="https://karthikv1392.github.io/sdu-aai/">Engineering Agentic AI at SDU ↗</a></h3><p>Karthik Vaidhyanathan’s course inspired the progression and resource-hub format. These lessons and notebooks are original; participant-only materials are not reproduced.</p></article></div>
+</div></section>
+<section class="wrap closing"><div><p class="eyebrow">Begin with the simplest working system</p><h2>Your first agent starts<br>with one good experiment.</h2></div><a class="button primary" href="#lab-00">Go to lab 00 <span aria-hidden="true">↗</span></a></section>
+</main>
+<footer class="wrap"><p><strong>Agentic AI, Step by Step</strong><br>Prepared by Mustafa Assaf · Teaching assistant<br>An introductory lab course for software architecture students.</p><p>Progress is saved only in this browser.<br><a href="docs/curriculum.md">Curriculum</a> · <a href="docs/sources.md">Sources</a> · <a href="docs/project-bridge.md">Project bridge</a> · <a href="README.md">Repository guide</a></p></footer>
+</body>
+</html>

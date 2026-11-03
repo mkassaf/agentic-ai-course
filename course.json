@@ -1,0 +1,15 @@
+{
+  "title": "Agentic AI, Step by Step",
+  "repo": "mkassaf/agentic-ai-course",
+  "ref": "main",
+  "labs": [
+    "00_llm_basics",
+    "01_structured_outputs",
+    "02_grounding",
+    "03_tool_use",
+    "04_workflows",
+    "05_reflection",
+    "06_architect_council",
+    "07_feedback_evaluation"
+  ]
+}
