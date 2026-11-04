@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Eight tiny agentic AI labs using one software architecture decision: rules, prompts, evaluation, RAG, MCP tools, ReAct, skills, A2A, and LangGraph. Python and Google Colab.">
+  <meta name="description" content="Eight step-by-step agentic AI labs using one software architecture decision: rules, prompts, evaluation, RAG, MCP tools, ReAct, skills, A2A, and LangGraph. Python and Google Colab.">
   <meta name="theme-color" content="#1A1A1A">
   <meta name="author" content="Mustafa Assaf">
   <title>Agentic AI, Step by Step — An introductory lab course</title>
@@ -25,7 +25,7 @@
     <p class="hero-description">Learn agentic AI through one small software architecture question: modular monolith or microservices? Start with Python rules, then add prompts, evaluation, RAG, MCP tools, agentic patterns, skills, A2A, and a framework.</p>
     <p class="course-byline">Prepared by <strong>Mustafa Assaf</strong></p>
     <div class="hero-actions"><a class="button primary" href="#lab-00">Start lab 00 <span aria-hidden="true">↗</span></a><a class="text-link" href="#labs">Explore all eight labs <span aria-hidden="true">↓</span></a></div>
-    <div class="hero-meta"><span><strong>8</strong> introductory labs</span><span><strong>5–10 min</strong> worked examples</span><span><strong>Google Colab</strong> ready</span></div>
+    <div class="hero-meta"><span><strong>8</strong> introductory labs</span><span><strong>15–20 min</strong> labs</span><span><strong>Google Colab</strong> ready</span></div>
   </div>
   <aside class="hero-system" aria-label="Course progression from a rule-based architecture decision to an agent workflow">
     <div class="system-top"><span class="mono">THE LEARNING PATH</span><span class="pill">Plain Python first</span></div>
@@ -42,13 +42,13 @@
 </section>
 <div class="intro-band"><div class="wrap"><p>Built for students who know basic Python.</p><p>One architecture case throughout. Plain Python first, then real protocol and framework SDKs. Live models use a configurable API.</p></div></div>
 <section class="wrap section" id="labs">
-  <div class="section-heading"><div><p class="eyebrow">The curriculum</p><h2>Eight labs. Four core areas.</h2><p>One tiny example, one check, and one small change in each lab. The architecture question stays familiar as the agentic AI concepts grow.</p></div><div class="progress-block"><span id="progress-label">0 / 8 labs explored</span><progress id="course-progress" value="0" max="8" aria-labelledby="progress-label"></progress><button class="quiet-button" id="reset-progress" type="button">Reset my progress</button></div></div>
+  <div class="section-heading"><div><p class="eyebrow">The curriculum</p><h2>Eight labs. Four core areas.</h2><p>Each lab builds one example in short steps, checks the result, and invites small changes. The architecture question stays familiar as the agentic AI concepts grow.</p></div><div class="progress-block"><span id="progress-label">0 / 8 labs explored</span><progress id="course-progress" value="0" max="8" aria-labelledby="progress-label"></progress><button class="quiet-button" id="reset-progress" type="button">Reset my progress</button></div></div>
   <div class="curriculum-tools"><label for="lab-search">Find a topic <input id="lab-search" type="search" placeholder="Try tools, RAG, skills…" autocomplete="off"></label><p id="filter-status" role="status">All 8 labs</p></div>
   <div id="lab-list"></div>
   <noscript><p class="notice">Enable JavaScript to read the expandable lesson notes. Every notebook is also available in the <a href="notebooks/">notebooks folder</a>, and the complete sequence is in the <a href="docs/curriculum.md">curriculum guide</a>.</p></noscript>
 </section>
 <section class="setup-section" id="setup"><div class="wrap section">
-  <div class="section-heading"><div><p class="eyebrow">Before your first call</p><h2>A notebook and a little Python.</h2><p>Use a CPU runtime. Run one setup cell, then the short example. First-time package installation takes extra time.</p></div><span class="large-number" aria-hidden="true">{ }</span></div>
+  <div class="section-heading"><div><p class="eyebrow">Before your first call</p><h2>A notebook and a little Python.</h2><p>Use a CPU runtime. Run one setup cell, then the steps in order. First-time package installation takes extra time.</p></div><span class="large-number" aria-hidden="true">{ }</span></div>
   <div class="setup-grid"><article><span class="step-label">01 / Bring the basics</span><h3>Know your Python building blocks</h3><p>Functions, lists, dictionaries, JSON, loops, and simple assertions. Know how to run a notebook cell and read an exception.</p></article><article><span class="step-label">02 / Open a notebook</span><h3>Run it in Google Colab</h3><p>Open a lab with its Colab button. Save a working copy in your Drive, then run the cells from top to bottom. You can also download a notebook and use <strong>File → Upload notebook</strong>. Choose a CPU runtime.</p></article><article><span class="step-label">03 / Choose a run mode</span><h3>Practice, then call a real model</h3><p>Start with <code>MODE="practice"</code> for scripted examples. Practice results do not measure model quality. To try a live model, add <code>FREEINFERENCE_API_KEY</code> to Colab Secrets and set <code>MODE="live"</code>. The helper uses FreeInference <code>qwen3.6-35b</code> by default. Other providers can be selected through <code>make_ask(...)</code>.</p></article><article><span class="step-label">04 / Observe the result</span><h3>Make every call count</h3><p>Read the answer, run the one check, then change one input. Check policy adherence and explain a consequence. Keep credentials private. A passing check confirms one condition; read the result yourself too.</p></article></div>
   <div class="notice"><strong>One interface, configurable providers:</strong> the live adapter expects an OpenAI-compatible Chat Completions API. FreeInference is the initial configuration; a university gateway or another compatible service can use the same adapter. Check current model access, quota, and API compatibility before class. The same model can serve every introductory example. One setup cell installs reusable course helpers from a pinned public GitHub revision, plus the relevant SDK where needed. Supporting code lives in the package, outside the notebooks.</div>
   <p class="setup-links"><a href="docs/api-setup.md">Model API setup ↗</a><a href="docs/instructor-guide.md">Instructor guide ↗</a><a href="README.md">Local setup and repository instructions ↗</a></p>
@@ -78,6 +78,6 @@
 </div></section>
 <section class="wrap closing"><div><p class="eyebrow">Begin with the simplest working system</p><h2>Your first agent starts<br>with one good experiment.</h2></div><a class="button primary" href="#lab-00">Go to lab 00 <span aria-hidden="true">↗</span></a></section>
 </main>
-<footer class="wrap"><p><strong>Agentic AI, Step by Step</strong><br>Prepared by Mustafa Assaf<br>Agentic AI taught through tiny software architecture examples.</p><p>Progress is saved only in this browser.<br><a href="docs/curriculum.md">Curriculum</a> · <a href="docs/sources.md">Sources</a> · <a href="README.md">Repository guide</a></p></footer>
+<footer class="wrap"><p><strong>Agentic AI, Step by Step</strong><br>Prepared by Mustafa Assaf<br>Agentic AI taught through one software architecture question.</p><p>Progress is saved only in this browser.<br><a href="docs/curriculum.md">Curriculum</a> · <a href="docs/sources.md">Sources</a> · <a href="README.md">Repository guide</a></p></footer>
 </body>
 </html>

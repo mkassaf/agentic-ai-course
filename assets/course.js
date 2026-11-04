@@ -3,137 +3,145 @@ const labs = [
   {
     "id": "00",
     "file": "00_rules_and_llms",
-    "title": "Rules, then one LLM call",
-    "subtitle": "Compare Python rules with one prompt",
+    "title": "Rules, then LLM calls",
+    "subtitle": "A Python rule on four projects, then a model's guesses",
     "topics": "rules llm prompt architecture monolith microservices baseline",
-    "idea": "Start with a rule you can inspect, then ask a model the same architecture question.",
-    "flow": "case → Python rule / one prompt → compare",
+    "idea": "Write the policy as a function that explains its answer, then see where a model that never saw the policy disagrees.",
+    "flow": "projects → decide() and ask() → to_label() → agreement count",
     "objectives": [
-      "Run a deterministic rule.",
-      "Compare it with one model prediction."
+      "Write a rule that returns a decision and a reason.",
+      "Turn free-text model replies into labels.",
+      "Count how often a model agrees with the rule."
     ],
-    "example": "A three-person team has no independent deployment requirement. Compare a Python decision with a single architecture prompt.",
-    "exercise": "Increase the team size and request independent deployments.",
-    "checks": "The course policy selects a modular monolith for the original case. Compare the model’s label with that baseline.",
-    "bridge": "A clear baseline gives later experiments something to compare."
+    "example": "Run the policy on four projects that cover every combination of the two facts, then ask a model about the same projects.",
+    "exercise": "Add an 8-person project with independent deploys, then test the boundary by changing >= to >.",
+    "checks": "Only the Payments platform gets microservices. The scripted model agrees on 2 of 4 projects and gets both mixed cases wrong.",
+    "bridge": "A disagreement shows what the model is missing: the policy itself."
   },
   {
     "id": "01",
     "file": "01_prompting_evaluation",
     "title": "Better prompts and small evaluations",
-    "subtitle": "Explicit criteria, one example, three test cases",
+    "subtitle": "A guided prompt, a strict parser, and a five-case quality gate",
     "topics": "prompting cot criteria few shot json evaluation testing",
-    "idea": "Give the model explicit criteria and a small worked example, then check its output.",
-    "flow": "policy + example + case → JSON → score",
+    "idea": "Give the model explicit criteria and a worked example, reject badly formatted replies, and score the prompt on labelled cases.",
+    "flow": "policy + example + case → JSON → parse → pass / fail / invalid → gate",
     "objectives": [
       "Write a precise, structured prompt.",
-      "Check policy adherence on three cases."
+      "Validate model output before trusting it.",
+      "Score a prompt on a labelled test set."
     ],
-    "example": "Build a four-part guided prompt (policy, worked example, case, JSON format), then score it on three cases.",
-    "exercise": "Simulate a model that always says microservices, then add team_size=7 with independent deployments.",
-    "checks": "Read the three-case score and inspect failures. Practice scores only test the scripted example, not model quality.",
+    "example": "Build a four-part guided prompt, parse its JSON reply, and score it on five cases, including the boundary of exactly 8 people.",
+    "exercise": "Fix the scripted mistake, then break the format with an unknown label and watch the quality gate stop the run.",
+    "checks": "Four of five scripted replies pass (80%), which just meets the gate. Practice scores test the evaluation code, not model quality.",
     "bridge": "Use checkable criteria and brief justifications; more reasoning text does not prove a better design."
   },
   {
     "id": "02",
     "file": "02_rag_systems",
     "title": "Retrieve architecture rules with RAG",
-    "subtitle": "Retrieve a stored rule before answering",
+    "subtitle": "Score, rank, and retrieve, then answer with citations",
     "topics": "rag retrieval rules source architecture context",
-    "idea": "Store the policy as text, retrieve a matching rule, and use it as model context.",
-    "flow": "question → retrieve policy → grounded answer",
+    "idea": "Store several policies, retrieve only the strong matches, and check that the answer cites the evidence it was given.",
+    "flow": "question → score policies → keep strong matches → grounded answer → citation check",
     "objectives": [
-      "Retrieve the relevant rule.",
-      "Trace the answer back to its source."
+      "Rank stored policies by shared words.",
+      "Abstain when no evidence matches.",
+      "Check that citations match the retrieved evidence."
     ],
-    "example": "Retrieve the architecture policy from a two-record store, then answer and cite its rule ID.",
-    "exercise": "Ask which deployment region to use; expect no matching rule.",
-    "checks": "Check the retrieved rule and source. A missing rule should produce no match rather than unrelated evidence.",
+    "example": "Retrieve from a four-policy store for an architecture question, a database question, and an off-topic lunch question.",
+    "exercise": "Add a deployment-region question, raise the match threshold, and break a citation.",
+    "checks": "The architecture question retrieves R1, the billing question R2, and the lunch question nothing. Both answers are grounded.",
     "bridge": "This transparent keyword retriever illustrates RAG; larger systems may use embeddings and ranking."
   },
   {
     "id": "03",
     "file": "03_tools_mcp",
     "title": "Architecture tools and our own MCP server",
-    "subtitle": "Build a tiny metrics tool and save action",
+    "subtitle": "Read and write tools with validation and errors",
     "topics": "tools mcp server client extract action agent foundations",
-    "idea": "A tool reads data or performs an allowed action; MCP exposes its interface to a client.",
-    "flow": "read_metrics → inspect → save_decision",
+    "idea": "A tool reads data or performs an allowed action; MCP publishes its name, description, and input schema to any client.",
+    "flow": "list_tools → get_project → apply policy → save_decision → error results",
     "objectives": [
-      "Build and call your own MCP tools.",
-      "Distinguish a read from an action."
+      "Build MCP tools with typed arguments.",
+      "Discover tools and their schemas as a client.",
+      "Handle tool errors without changing state."
     ],
-    "example": "Expose project metrics and save one architecture decision to an in-memory list through the real MCP SDK.",
-    "exercise": "Add a service_name field to the metrics fixture and inspect it.",
-    "checks": "Check the extracted metrics and saved value. The action changes only the notebook’s in-memory data.",
+    "example": "Serve get_project and save_decision through the real MCP SDK, run a fixed workflow over two projects, then send three bad calls.",
+    "exercise": "Add a project, add a list_projects tool, and send an argument of the wrong type.",
+    "checks": "Both decisions are saved. Each bad call returns is_error=True, and the saved state does not change.",
     "bridge": "These fixed client calls become model-chosen actions in the next lab."
   },
   {
     "id": "04",
     "file": "04_agentic_patterns",
     "title": "ReAct: choose a tool, then decide",
-    "subtitle": "A bounded ReAct-style tool loop",
+    "subtitle": "A guarded ReAct loop with a history",
     "topics": "agent foundations patterns react action observation loop chaining routing",
-    "idea": "An agent chooses an allowed action, reads the observation, and decides when to finish.",
-    "flow": "choose action → read_metrics → observe → finish",
+    "idea": "The model chooses each action and sees every observation so far; our code owns the tools, the guards, and the turn limit.",
+    "flow": "goal + history → action → tool → observation → … → finish → check",
     "objectives": [
-      "Follow model-selected actions.",
-      "Explain the loop’s stopping limit."
+      "Follow a model-selected sequence of actions.",
+      "Explain each guard and the turn limit.",
+      "Check the agent's final decision."
     ],
-    "example": "Let a tiny architecture assistant request the project metrics before returning a decision.",
-    "exercise": "Change the team metrics and predict the next decision.",
-    "checks": "Check the observation, final answer, and stop condition. Reaching the turn limit alone is not success.",
+    "example": "The goal names “our wiki project”, so the agent must list the projects, read the right one, and then decide.",
+    "exercise": "Make the agent finish too early, recover from a wrong project name, and change the goal.",
+    "checks": "Three turns: list_projects, get_project, finish. The decision matches the policy after two tool calls.",
     "bridge": "ReAct-style action and observation follows tools and MCP; larger patterns are further practice."
   },
   {
     "id": "05",
     "file": "05_agent_skills",
     "title": "A skill for a short architecture decision record",
-    "subtitle": "Write a three-part decision record",
+    "subtitle": "Choose a skill from a catalog, then check its output",
     "topics": "skills skill.md adr architecture decision record reusable",
-    "idea": "A skill packages a reusable procedure separately from the current project data.",
-    "flow": "load ADR skill + case → decision record",
+    "idea": "A skill packages a procedure with a name and a description; an agent chooses from the descriptions and loads only the chosen instructions.",
+    "flow": "catalog of descriptions → choose skill → load instructions + case → ADR → checker",
     "objectives": [
-      "Read a small SKILL.md file.",
-      "Apply it to a new architecture case."
+      "Split a SKILL.md file into its header and body.",
+      "Explain progressive disclosure.",
+      "Check a skill's output format."
     ],
-    "example": "Use short instructions to write Context, Decision, and Consequence for the same case.",
-    "exercise": "Request a Risk line, then update the practice answer and the check.",
-    "checks": "Check the three sections, policy-consistent choice, and a supported consequence.",
-    "bridge": "This example loads instructions directly; a skill-aware host can select them when needed."
+    "example": "Pick the ADR skill from a three-skill catalog, then write and check decision records for two projects.",
+    "exercise": "Give an incident task, add a Risk line to an ADR, and write a fourth skill.",
+    "checks": "The ADR skill is chosen. Both records have Context, Decision, and Consequence, with a policy-consistent decision.",
+    "bridge": "Only the chosen skill's instructions enter the prompt, so the catalog can grow."
   },
   {
     "id": "06",
     "file": "06_a2a_protocol",
     "title": "Delegate an architecture review with A2A",
-    "subtitle": "Send a proposal to a reviewer agent",
+    "subtitle": "Propose, review over A2A, and revise",
     "topics": "a2a agent card discovery message review architecture",
-    "idea": "A2A lets one application discover an agent and send it a message.",
-    "flow": "discover reviewer → send proposal → review",
+    "idea": "A2A lets one agent discover another through its Agent Card and exchange messages; the reviewer's feedback can drive a revision.",
+    "flow": "propose → A2A review → FAIL? revise with feedback → review again",
     "objectives": [
-      "Discover an architecture reviewer.",
-      "Inspect its policy review response."
+      "Discover a reviewer agent and read its reply.",
+      "Use another agent's feedback to revise.",
+      "Bound a multi-agent exchange."
     ],
-    "example": "Send the tiny case and a proposed decision through real A2A protocol routes using the course helper.",
-    "exercise": "Propose microservices for the same small case; expect a failed review.",
-    "checks": "Expect Architecture reviewer and a PASS review for modular monolith. A microservices proposal should produce FAIL.",
-    "bridge": "The reviewer is deterministic; the protocol exchange needs no model API key."
+    "example": "Our model proposes a decision for four projects. A reviewer agent rejects one proposal, and the revision passes.",
+    "exercise": "Add a second mistake, then make a revision wrong too.",
+    "checks": "All four projects pass, with one revision for the Internal wiki.",
+    "bridge": "The reviewer is deterministic and runs over real local A2A routes; practice mode needs no API key."
   },
   {
     "id": "07",
     "file": "07_frameworks_evaluation",
     "title": "A framework for choosing and checking",
-    "subtitle": "A two-node LangGraph choose-and-check workflow",
+    "subtitle": "A LangGraph loop with a conditional retry",
     "topics": "framework langgraph state nodes edges evaluate architecture",
-    "idea": "A framework makes the sequence and shared state explicit.",
-    "flow": "START → choose → check → END",
+    "idea": "A framework makes the steps, the shared state, and the decision to retry explicit.",
+    "flow": "START → choose → check → retry? → choose … → END",
     "objectives": [
-      "Run two real LangGraph nodes.",
+      "Define graph state and nodes.",
+      "Route with a conditional edge.",
       "Keep generation separate from validation."
     ],
-    "example": "One node proposes the architecture; the next checks it against the course policy.",
-    "exercise": "Change the case and inspect the final state.",
-    "checks": "Inspect the decision and policy-check result. Then explain one consequence the automatic check does not assess.",
+    "example": "Run a choose-and-check graph on four projects. One project fails, gets feedback, and passes on its second attempt.",
+    "exercise": "Use up the attempts, allow a third attempt, and add a fifth project.",
+    "checks": "All four projects pass, the Internal wiki after two attempts, for five model calls in total.",
     "bridge": "Passing a policy check is useful evidence, but does not establish overall architecture quality."
   }
 ];
@@ -164,7 +172,7 @@ labs.forEach((lab, i) => {
   detail.className = 'lab';
   detail.id = `lab-${lab.id}`;
   detail.dataset.search = `${lab.title} ${lab.subtitle} ${lab.topics}`.toLowerCase();
-  detail.innerHTML = `<summary><span class="lab-number">${String(i).padStart(2, '0')}</span><div><h3>${esc(lab.title)}</h3><p>${esc(lab.subtitle)}</p></div><span class="lab-time">5–10 min example</span><span class="expand-icon" aria-hidden="true">+</span></summary><div class="lab-body"><p class="lab-intro">${esc(lab.idea)}</p><pre class="lab-flow" aria-label="Control flow for ${esc(lab.title)}">${esc(lab.flow)}</pre><div class="lesson-grid"><div><h4>What you will learn</h4><ul>${lab.objectives.map(t => `<li>${esc(t)}</li>`).join('')}</ul></div><div><h4>Walk through an example</h4><p>${esc(lab.example)}</p></div><div><h4>Make it your own</h4><p>${esc(lab.exercise)}</p></div><div><h4>Expected output & check</h4><p>${esc(lab.checks)}</p></div></div><p class="lesson-takeaway"><strong>Takeaway.</strong> ${esc(lab.bridge)}</p><div class="lab-actions">${notebookActions(lab)}<label class="completion"><input type="checkbox" data-lab="${lab.id}" ${completed.includes(lab.id) ? 'checked' : ''}> I explored lab ${String(i).padStart(2, '0')}</label></div>${configured ? '' : '<p class="publish-note">Download this notebook and upload it to Colab, or configure the repository links.</p>'}</div>`;
+  detail.innerHTML = `<summary><span class="lab-number">${String(i).padStart(2, '0')}</span><div><h3>${esc(lab.title)}</h3><p>${esc(lab.subtitle)}</p></div><span class="lab-time">15–20 min</span><span class="expand-icon" aria-hidden="true">+</span></summary><div class="lab-body"><p class="lab-intro">${esc(lab.idea)}</p><pre class="lab-flow" aria-label="Control flow for ${esc(lab.title)}">${esc(lab.flow)}</pre><div class="lesson-grid"><div><h4>What you will learn</h4><ul>${lab.objectives.map(t => `<li>${esc(t)}</li>`).join('')}</ul></div><div><h4>Walk through an example</h4><p>${esc(lab.example)}</p></div><div><h4>Make it your own</h4><p>${esc(lab.exercise)}</p></div><div><h4>Expected output & check</h4><p>${esc(lab.checks)}</p></div></div><p class="lesson-takeaway"><strong>Takeaway.</strong> ${esc(lab.bridge)}</p><div class="lab-actions">${notebookActions(lab)}<label class="completion"><input type="checkbox" data-lab="${lab.id}" ${completed.includes(lab.id) ? 'checked' : ''}> I explored lab ${String(i).padStart(2, '0')}</label></div>${configured ? '' : '<p class="publish-note">Download this notebook and upload it to Colab, or configure the repository links.</p>'}</div>`;
   list.appendChild(detail);
 });
 

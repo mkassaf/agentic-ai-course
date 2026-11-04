@@ -5,27 +5,51 @@
   "cells": [
     {
       "type": "markdown",
-      "source": "## Package a procedure as a reusable skill\n\n**So far:** each lab wrote its instructions directly into the prompt.\n\n**New:** a *skill*, which is a `SKILL.md` file that packages a procedure with a name and a description so it can be reused on any case.\n\nOur skill writes a short *architecture decision record* (ADR) with three lines: context, decision, and consequence. Here is the whole file:\n\n```markdown\n---\nname: architecture-decision\ndescription: Write a short ADR using the course architecture policy.\n---\nChoose microservices only if team_size >= 8 AND independent_deploys is true; otherwise choose modular monolith.\nReturn three lines: Context, Decision, Consequence.\nUse only supplied facts. State one likely trade-off.\n```\n\nThe part between the `---` lines is the header. A skill-aware host first reads only the name and description, and loads the instructions when a task needs them. This notebook loads the file directly so that each step is visible. It does not implement automatic discovery."
+      "source": "## Package a procedure as a reusable skill\n\n**So far:** each lab wrote its instructions directly into the prompt.\n\n**New:** *skills*. A skill is a `SKILL.md` file: a short header with a `name` and a `description`, then the instructions. An agent first sees only the names and descriptions of all its skills. It picks one, and only then loads that skill's full instructions. This is called *progressive disclosure*, and it keeps the prompt small even when there are many skills.\n\nOur main skill writes a short *architecture decision record* (ADR) with three lines: Context, Decision, and Consequence."
     },
     {
       "type": "markdown",
-      "source": "## Step 1 · Load the skill file\n\nThe file ships inside the course package ([view it on GitHub](https://github.com/mkassaf/agentic-ai-course/blob/main/coursekit/skills/architecture-decision/SKILL.md)). `importlib.resources` finds it wherever pip installed the package."
+      "source": "## Step 1 · Read a skill file\n\nThe skill ships inside the `coursekit` package. The header sits between two `---` lines. `read_skill` splits the file there, turns each `key: value` header line into a dictionary entry, and keeps the rest as the instruction body."
     },
     {
       "type": "code",
-      "source": "from importlib.resources import files\nskill = files(\"coursekit\").joinpath(\"skills/architecture-decision/SKILL.md\").read_text()\nprint(skill)"
+      "source": "from importlib.resources import files\n\ndef read_skill(text):\n    \"\"\"Split a SKILL.md file into its header fields and its instruction body.\"\"\"\n    _, header, body = text.split(\"---\", 2)\n    fields = dict(line.split(\": \", 1) for line in header.strip().splitlines())\n    return fields, body.strip()\n\nadr_skill = files(\"coursekit\").joinpath(\"skills/architecture-decision/SKILL.md\").read_text()\nfields, body = read_skill(adr_skill)\nprint(fields)\nprint(body)"
     },
     {
       "type": "markdown",
-      "source": "## Step 2 · Apply the skill to our case\n\nThe prompt is the skill text followed by the case. A different case would reuse the same skill unchanged."
+      "source": "## Step 2 · Build a catalog of skills\n\nA real agent has many skills. We add two more, written as `SKILL.md` text in the notebook. The *catalog* lists only each skill's name and description. That is all the model sees when it chooses."
     },
     {
       "type": "code",
-      "source": "case = {\"team_size\": 3, \"independent_deploys\": False}\npractice_adr = (\"Context: Three developers; no independent deployment requirement.\\n\"\n                \"Decision: Modular monolith.\\n\"\n                \"Consequence: Simpler deployment, but all modules share one release.\")\nadr = ask(f\"{skill}\\nCase: {case}\", example=practice_adr)\nprint(adr)\nfor label in (\"Context\", \"Decision\", \"Consequence\"):\n    assert f\"{label}:\" in adr, f\"The ADR has no {label} line.\""
+      "source": "incident_skill = \"\"\"---\nname: incident-summary\ndescription: Summarise a production incident as Impact, Cause, and Fix.\n---\nReturn three lines: Impact, Cause, Fix. Use only supplied facts.\"\"\"\nrelease_skill = \"\"\"---\nname: release-notes\ndescription: Turn a list of merged changes into short user-facing release notes.\n---\nWrite one bullet per user-visible change. Skip internal refactors.\"\"\"\n\nskills = {}\nfor text in [adr_skill, incident_skill, release_skill]:\n    fields, body = read_skill(text)\n    skills[fields[\"name\"]] = {\"description\": fields[\"description\"], \"body\": body}\ncatalog = \"\\n\".join(f\"- {name}: {skill['description']}\" for name, skill in skills.items())\nprint(catalog)"
     },
     {
       "type": "markdown",
-      "source": "## What you should see\n\nThe skill file, then a three-line ADR that chooses a modular monolith. The check confirms that each heading is present. A person still needs to confirm that the decision follows the policy, that the context uses only real facts, and that the consequence makes sense. Correct formatting does not make an answer correct.\n\n## Try it\n\nAsk for a fourth line without editing the file. Change the prompt to `f\"{skill}\\nAlso add a Risk line.\\nCase: {case}\"`, add a `Risk:` line to `practice_adr`, and add `\"Risk\"` to the checked labels. Name one plausible risk without inventing project facts.\n\n## Takeaway\n\nA skill supplies *instructions*. A tool (Lab 03) *reads or changes data*. Loading a skill runs no tool, although a skill can tell an agent when to use one.\n\n## Read further\n\n- [Agent Skills specification](https://agentskills.io/specification)"
+      "source": "## Step 3 · Let the model pick a skill\n\nThe prompt holds the catalog and the task, but no skill instructions yet. Our code checks that the reply names a real skill before loading it."
+    },
+    {
+      "type": "code",
+      "source": "task = \"Our 3-person team ships the course portal as one release. Record the architecture decision.\"\nprompt = f\"Available skills:\\n{catalog}\\n\\nTask: {task}\\nReply with the name of the one skill to use.\"\nchoice = ask(prompt, example=\"architecture-decision\").strip()\nif choice not in skills:\n    raise ValueError(f\"The model picked an unknown skill: {choice!r}\")\nprint(\"Chosen skill:\", choice)\nprint(\"Instructions loaded now:\\n\" + skills[choice][\"body\"])"
+    },
+    {
+      "type": "markdown",
+      "source": "## Step 4 · Write a checker for the skill's output\n\nThe skill promises three labelled lines. `adr_problems` returns a list of everything that is wrong, and an empty list means the ADR passes. Collecting every problem, instead of stopping at the first one, makes a failing reply easier to fix."
+    },
+    {
+      "type": "code",
+      "source": "def adr_problems(adr, expected):\n    \"\"\"List what is wrong with an ADR. An empty list means it passes.\"\"\"\n    pairs = [line.split(\":\", 1) for line in adr.strip().splitlines() if \":\" in line]\n    adr_fields = {label.strip(): value.strip() for label, value in pairs}\n    problems = []\n    if list(adr_fields) != [\"Context\", \"Decision\", \"Consequence\"]:\n        problems.append(f\"expected Context, Decision, Consequence; got {list(adr_fields)}\")\n    if adr_fields.get(\"Decision\", \"\").rstrip(\".\").lower() != expected:\n        problems.append(f\"Decision should be {expected!r}\")\n    return problems\n\nprint(adr_problems(\"Decision: microservices\", \"modular monolith\"))"
+    },
+    {
+      "type": "markdown",
+      "source": "## Step 5 · Run the skill on two projects\n\nThe same skill instructions work for any case. That is the point of packaging them. Each ADR is checked for its format and for its decision."
+    },
+    {
+      "type": "code",
+      "source": "cases = [({\"team_size\": 3, \"independent_deploys\": False}, \"modular monolith\"),\n         ({\"team_size\": 12, \"independent_deploys\": True}, \"microservices\")]\nscripted = [\"Context: 3 people; no independent deploys.\\nDecision: modular monolith\\n\"\n            \"Consequence: One release keeps operations simple, but module boundaries need care.\",\n            \"Context: 12 people; services deploy independently.\\nDecision: microservices\\n\"\n            \"Consequence: Teams can ship on their own schedules, but operations cost more.\"]\nfor (case, expected), example in zip(cases, scripted):\n    adr = ask(f\"{skills[choice]['body']}\\n\\nCase: {case}\", example=example)\n    problems = adr_problems(adr, expected)\n    print(f\"{adr}\\n-> {problems or 'passes'}\\n\")\n    assert not problems, problems"
+    },
+    {
+      "type": "markdown",
+      "source": "## What you should see\n\nStep 2 prints a three-line catalog. Step 3 prints `Chosen skill: architecture-decision`, followed by its instructions. Step 4 prints two problems for the one-line test ADR. Step 5 prints two ADRs, each followed by `-> passes`.\n\n## Try it\n\n1. Change the task in Step 3 to \"Checkout failed for an hour after a bad config push. Write it up.\" Which skill should be chosen? Set the scripted `example` to that name and run Step 3 only.\n2. Add a line such as `\\nRisk: Shared code can slow every release.` to the end of the first scripted ADR. Step 5 names the extra label and stops.\n3. Write a fourth skill and add it to the loop in Step 2. Does the catalog stay short?\n\n## Takeaway\n\nA skill packages a procedure with a name and a description, so an agent can find it and reuse it. The agent loads only the skill it needs, and your code still checks what the skill produces. Lab 06 hands the review to a separate agent.\n\n## Read further\n\n- [Agent Skills specification](https://agentskills.io/specification)"
     }
   ]
 }

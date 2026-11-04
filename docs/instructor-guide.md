@@ -1,12 +1,12 @@
 # Instructor guide
 
-Use the same small architecture case throughout. Students spend their attention on the new agentic AI mechanism instead of learning a new domain story in every lab. Each example has at most **20 main Python lines**, two main code blocks, one check, and one exercise. Allow **5–10 minutes**, plus first-run setup.
+Use the same small architecture case throughout. Students spend their attention on the new agentic AI mechanism instead of learning a new domain story in every lab. Each lab has two to five numbered steps (one code cell each, at most **20 lines**), a check, and small exercises. Allow **15–20 minutes**, plus first-run setup.
 
 ## Before teaching
 
 Run the checks in the [README](../README.md), then open the notebooks in Colab. One setup cell installs `coursekit` from a pinned public GitHub revision. Protocol and framework lessons also install the relevant SDK. Supporting transport code is in that package.
 
-The starting case has `team_size=3` and `independent_deploys=False`. The fictional policy chooses microservices only for a team of at least eight people that also needs independent deployments; otherwise it chooses a modular monolith. Explain that this is a teaching fixture. Ask students which real architecture concerns this rule omits.
+The labs share four fictional projects, one for each combination of the two facts. Lab 00 starts with the Course portal: `team_size=3` and `independent_deploys=False`. The fictional policy chooses microservices only for a team of at least eight people that also needs independent deployments; otherwise it chooses a modular monolith. Explain that this is a teaching fixture. Ask students which real architecture concerns this rule omits.
 
 Test one small live call with student-equivalent access. Defaults: FreeInference, `qwen3.6-35b`, and Colab Secret `FREEINFERENCE_API_KEY`. Service, model, and secret name are configurable. Verify current access and quotas; keep keys out of code and outputs.
 
@@ -18,28 +18,28 @@ Test one small live call with student-equivalent access. Defaults: FreeInference
 4. Explain the new result and one consequence.
 5. Compare with the earlier, simpler approach.
 
-Every notebook has the same shape: **So far / New** (the one idea added since the previous lab), setup, one or two short steps, *What you should see*, *Try it*, and a *Takeaway*. Students can predict where to look in each lab.
+Every notebook has the same shape: **So far / New** (the one idea added since the previous lab), setup, two to five numbered steps, *What you should see*, *Try it*, and a *Takeaway*. Students can predict where to look in each lab.
 
-A 60–90 minute session can add paired practice, discussion, and optional live runs. Keep the introductory example small.
+A 60–90 minute session can add paired practice, discussion, and optional live runs. Each step adds one piece of logic, so students can stop after any step and still have working code.
 
 ## One question per lab
 
 | Lab | Ask |
 | --- | --- |
-| 00 | When is the Python rule sufficient, and why might the unguided model disagree? |
+| 00 | Where does the model without the policy disagree with the rule, and why are those the mixed cases? |
 | 01 | Which part of the guided prompt removes Lab 00's guesswork, and which test case could reveal a mistake? |
-| 02 | Which stored rule was retrieved, and what happens when no rule matches? |
-| 03 | Which tool extracts information, and which tool changes state? |
-| 04 | What action did the model choose, what did it observe, and why did it stop? |
-| 05 | Which ADR instruction stays the same when the case changes? |
-| 06 | What did the reviewer receive, and why did it accept or reject the proposal? |
-| 07 | What is stored in graph state, and what does the check leave unassessed? |
+| 02 | Which policy was retrieved for each question, and why does the lunch question get no answer? |
+| 03 | Which tool reads, which tool changes state, and why does a rejected call leave the state unchanged? |
+| 04 | Which actions did the model choose, what did it observe, and which guard would stop a bad run? |
+| 05 | What did the model see when it chose a skill, and what did it see only afterwards? |
+| 06 | What did the reviewer receive, and how did its feedback change the proposal? |
+| 07 | What is stored in graph state, what decides between retrying and finishing, and what does the check leave unassessed? |
 
 ## Evaluate useful behavior
 
-Use a small rubric: **policy adherence**, **grounding in supplied facts**, and **one clear consequence**. A matching label is only the first check. For prompting, inspect the three cases and add a boundary or counterexample. For RAG, inspect the retrieved record. For tools and agent loops, inspect the action, observation, state change, and stop condition.
+Use a small rubric: **policy adherence**, **grounding in supplied facts**, and **one clear consequence**. A matching label is only the first check. For prompting, inspect the five cases and add a boundary or counterexample. For RAG, inspect the scores and the retrieved policies. For tools and agent loops, inspect the action, observation, state change, and stop condition.
 
-Practice replies and scores are scripted; they test the exercise’s plumbing, not an LLM. Run the same cases live before drawing conclusions about prompting. With a tiny test set, describe observed results rather than claiming general model accuracy.
+Practice replies and scores are scripted; they test the exercise’s plumbing, not an LLM. Run the same cases live before drawing conclusions about prompting. With a small test set, describe observed results rather than claiming general model accuracy.
 
 For chain-of-thought-style prompting, teach explicit criterion checks and brief justifications. This is a teaching adaptation, not a reproduction of the original CoT method or access to private reasoning. ReAct-style loops make actions and observations visible after the tools lesson; the compact control-flow adaptation still needs allowed actions and a turn limit.
 
@@ -47,6 +47,6 @@ For a formative submission, request one changed input, its result, and two sente
 
 ## Keep the implementation honest
 
-The MCP lab builds its own small server and makes fixed client calls. The next lab adds model-selected actions. MCP’s save action changes an in-memory list only. A2A’s deterministic reviewer uses real local protocol routes and needs no live model. The skill example applies instructions directly. These boundaries let students distinguish data, actions, agent messages, reusable procedures, and orchestration.
+The MCP lab builds its own small server and makes fixed client calls. The next lab adds model-selected actions. MCP’s save action changes an in-memory dictionary only. A2A’s reviewer is deterministic and uses real local protocol routes; the proposer is the course model, scripted in practice mode. The skills lab chooses from a small in-notebook catalog instead of a full skill host. These boundaries let students distinguish data, actions, agent messages, reusable procedures, and orchestration.
 
-Parallel workers, larger skill catalogs, production hosting, vector databases, and larger evaluation suites can follow once the tiny examples are clear. Continue with the linked learning resources.
+Parallel workers, larger skill catalogs, production hosting, vector databases, and larger evaluation suites can follow once these examples are clear. Continue with the linked learning resources.

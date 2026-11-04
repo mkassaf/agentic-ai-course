@@ -8,27 +8,51 @@
   "cells": [
     {
       "type": "markdown",
-      "source": "## Give the program tools through MCP\n\n**So far:** the model only read text that we put into the prompt.\n\n**New:** *tools*, which are functions that read data or take an action. The **Model Context Protocol (MCP)** publishes tools so that any MCP client can discover and call them.\n\nWe build a tiny MCP server with two tools. `read_metrics` *reads* project facts. `save_decision` *changes state* by adding a decision to a Python list. The official MCP SDK connects the client and server inside this notebook, so no port, external service, or model key is needed."
+      "source": "## Give the program tools through MCP\n\n**So far:** the model only read text that we put into the prompt.\n\n**New:** *tools*, which are functions that read data or take an action. The **Model Context Protocol (MCP)** publishes tools so that any MCP client can discover and call them, with typed arguments and clear errors.\n\nWe build an MCP server with two tools. `get_project` *reads* the facts of one project. `save_decision` *changes state* by recording a decision, and it refuses bad input. The official MCP SDK connects the client and server inside this notebook, so no port, external service, or model key is needed."
     },
     {
       "type": "markdown",
-      "source": "## Step 1 · Build a server with two tools\n\n`@server.tool(...)` publishes an ordinary Python function as a tool. A client sees each tool's `description`, and in Lab 04 a model uses this kind of text to pick a tool. Type hints such as `choice: str` become the tool's argument schema."
+      "source": "## Step 1 · A server with a read tool\n\n`@server.tool(...)` registers a normal Python function as an MCP tool. The SDK reads the type hints (`name: str`) to build an input schema for clients. When a request cannot be served, the tool raises `ToolError` with a message for the caller. The SDK then sends back an error result instead of crashing."
     },
     {
       "type": "code",
-      "source": "from mcp import Client\nfrom mcp.server import MCPServer\nserver = MCPServer(\"Architecture tools\")\nsaved = []  # stands in for a real decision log\n@server.tool(description=\"Read the team size and whether services must deploy independently.\")\ndef read_metrics() -> dict:\n    return {\"team_size\": 3, \"independent_deploys\": False}\n@server.tool(description=\"Save the chosen architecture.\")\ndef save_decision(choice: str) -> str:\n    saved.append(choice)\n    return f\"Saved: {choice}\""
+      "source": "from mcp.server import MCPServer\nfrom mcp.server.mcpserver.exceptions import ToolError\n\nPROJECTS = {\n    \"Course portal\":     {\"team_size\": 3,  \"independent_deploys\": False},\n    \"Payments platform\": {\"team_size\": 12, \"independent_deploys\": True},\n}\nserver = MCPServer(\"architecture-tools\")\n\n@server.tool(description=\"Read the team size and deployment facts of one project.\")\ndef get_project(name: str) -> dict:\n    if name not in PROJECTS:\n        raise ToolError(f\"Unknown project {name!r}. Known projects: {sorted(PROJECTS)}\")\n    return PROJECTS[name]\n\nprint(get_project(\"Course portal\"))  # the decorator leaves a normal Python function"
     },
     {
       "type": "markdown",
-      "source": "## Step 2 · Discover the tools, then call them\n\nThe client first asks which tools exist, then calls them by name with arguments. Here *our code* chooses the order: it reads the facts, applies the policy itself (3 people means modular monolith), and saves that choice. In Lab 04 the model chooses the next step.\n\nA notebook lets you use `await` directly in a cell, and the MCP client needs it."
+      "source": "## Step 2 · A write tool that validates its input\n\nA tool that changes state needs stricter checks than a tool that only reads. `save_decision` accepts only a known project and one of our two labels. It records the decision in the `decisions` dictionary, which stands in for a real database."
     },
     {
       "type": "code",
-      "source": "async with Client(server) as client:\n    listing = await client.list_tools()\n    for tool in listing.tools:\n        print(\"Tool:\", tool.name, \"-\", tool.description)\n    metrics = await client.call_tool(\"read_metrics\", {})\n    print(\"Read:\", metrics.content[0].text)\n    result = await client.call_tool(\"save_decision\", {\"choice\": \"modular monolith\"})\n    print(result.content[0].text)\nassert saved == [\"modular monolith\"], \"save_decision should have added one decision.\""
+      "source": "LABELS = (\"modular monolith\", \"microservices\")\ndecisions = {}  # the state that save_decision changes\n\n@server.tool(description=\"Record the architecture decision for one project.\")\ndef save_decision(project: str, choice: str) -> str:\n    if project not in PROJECTS:\n        raise ToolError(f\"Unknown project {project!r}\")\n    if choice not in LABELS:\n        raise ToolError(f\"choice must be one of {LABELS}\")\n    decisions[project] = choice\n    return f\"Saved {choice!r} for {project}\""
     },
     {
       "type": "markdown",
-      "source": "## What you should see\n\nTwo tools with their descriptions, the project facts as JSON, then `Saved: modular monolith`. The check confirms that `save_decision` changed the `saved` list.\n\n## Try it\n\nAdd `\"service_name\": \"orders\"` to the dictionary that `read_metrics` returns. Run both steps and find the new field in the output. The client needs no change, because it prints whatever the tool returns.\n\n## Takeaway\n\nA *read* is safe to repeat. An *action* changes something, so a real system checks an action before running it. MCP describes and transports tools. It does not choose the architecture or check whether the saved choice is right.\n\n## Read further\n\n- [Official SDK client guide](https://py.sdk.modelcontextprotocol.io/client/)\n- [MCP architecture](https://modelcontextprotocol.io/docs/learn/architecture)"
+      "source": "## Step 3 · Discover the tools as a client\n\nThe client does not read our Python code. It asks the server for its tools and gets back each tool's name, description, and input schema. Lab 04's model needs exactly this information to choose a tool. `await` is needed because MCP messages are asynchronous, and Colab notebooks accept `await` directly."
+    },
+    {
+      "type": "code",
+      "source": "from mcp import Client\n\nasync with Client(server) as client:\n    listing = await client.list_tools()\nfor tool in listing.tools:\n    args = \", \".join(f\"{name}: {spec['type']}\" for name, spec in tool.input_schema[\"properties\"].items())\n    print(f\"{tool.name}({args})\\n    {tool.description}\")"
+    },
+    {
+      "type": "markdown",
+      "source": "## Step 4 · Call the tools in a fixed workflow\n\nFor each project, our code reads the facts, applies the policy in Python, and saves the result. A dictionary result comes back as JSON text, so `json.loads` turns it into a dictionary again. The order of the calls is fixed by our code. In Lab 04 the model chooses the order."
+    },
+    {
+      "type": "code",
+      "source": "import json\n\nasync with Client(server) as client:\n    for name in PROJECTS:\n        result = await client.call_tool(\"get_project\", {\"name\": name})\n        facts = json.loads(result.content[0].text)\n        both = facts[\"team_size\"] >= 8 and facts[\"independent_deploys\"]\n        choice = \"microservices\" if both else \"modular monolith\"\n        saved = await client.call_tool(\"save_decision\", {\"project\": name, \"choice\": choice})\n        print(saved.content[0].text)\nprint(\"Server state:\", decisions)\nassert decisions == {\"Course portal\": \"modular monolith\", \"Payments platform\": \"microservices\"}"
+    },
+    {
+      "type": "markdown",
+      "source": "## Step 5 · See how tools report errors\n\nA client must handle failures. Each bad call below returns a result with `is_error=True` and a message, instead of raising an exception in the client. The SDK also checks arguments against the input schema, so a missing argument is rejected before our function runs. We print only the first line of each message. Rejected calls must not change the saved state."
+    },
+    {
+      "type": "code",
+      "source": "bad_calls = [(\"get_project\", {\"name\": \"Billing\"}),\n             (\"save_decision\", {\"project\": \"Course portal\", \"choice\": \"serverless\"}),\n             (\"save_decision\", {\"project\": \"Course portal\"})]  # missing the choice argument\nasync with Client(server) as client:\n    for tool, arguments in bad_calls:\n        result = await client.call_tool(tool, arguments)\n        print(f\"is_error={result.is_error}: {result.content[0].text.splitlines()[0]}\")\nassert decisions[\"Course portal\"] == \"modular monolith\", \"A rejected call must not change state.\""
+    },
+    {
+      "type": "markdown",
+      "source": "## What you should see\n\nStep 1 prints the Course portal's facts. Step 3 lists `get_project(name: string)` and `save_decision(project: string, choice: string)` with their descriptions. Step 4 prints two `Saved ...` lines and the server state with both decisions. Step 5 prints three lines that start with `is_error=True`. The server may also log each failure on a separate line. That log is the server's view of the same errors.\n\n## Try it\n\n1. Add `\"Internal wiki\": {\"team_size\": 9, \"independent_deploys\": False}` to `PROJECTS`. Run Steps 1 to 4 again, and update the final `assert` to include it.\n2. Add a third tool, `list_projects() -> list`, that returns `sorted(PROJECTS)`. Run Step 3 and find it in the listing.\n3. In Step 5, change `\"Billing\"` to the number `42`. Read how the SDK reports an argument of the wrong type.\n\n## Takeaway\n\nMCP separates *what a tool offers* (a name, a description, and a schema) from *who calls it*. Tools validate their own input, and errors come back as data that a client, or a model, can read and act on. Lab 04 lets the model decide which tool to call next.\n\n## Read further\n\n- [Official SDK client guide](https://py.sdk.modelcontextprotocol.io/client/)\n- [MCP architecture](https://modelcontextprotocol.io/docs/learn/architecture)"
     }
   ]
 }

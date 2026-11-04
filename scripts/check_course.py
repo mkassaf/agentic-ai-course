@@ -63,12 +63,13 @@ def main():
         if "make_ask" in text and ("practice" not in text or "live" not in text):
             issues.append(f"{path.name}: needs practice and live explanations")
         examples = [c for c in notebook.cells if c.cell_type == "code" and "setup" not in c.metadata.get("tags", [])]
-        if not 1 <= len(examples) <= 2:
-            issues.append(f"{path.name}: keep one or two example code cells")
-        if sum(len(c.source.splitlines()) for c in examples) > 20:
-            issues.append(f"{path.name}: example exceeds the 20-line beginner limit")
-        if sum(len(c.source.splitlines()) for c in notebook.cells if c.cell_type == "code") > 25:
-            issues.append(f"{path.name}: notebook exceeds 25 Python lines including setup")
+        # Each step is one short cell, so a beginner reads one idea at a time.
+        if not 2 <= len(examples) <= 5:
+            issues.append(f"{path.name}: use two to five step code cells")
+        if any(len(c.source.splitlines()) > 20 for c in examples):
+            issues.append(f"{path.name}: a step cell exceeds 20 lines; split it into two steps")
+        if sum(len(c.source.splitlines()) for c in examples) > 60:
+            issues.append(f"{path.name}: example code exceeds the 60-line lab limit")
         for cell in notebook.cells:
             if cell.cell_type == "code":
                 if cell.get("outputs") or cell.get("execution_count") is not None:

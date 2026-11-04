@@ -4,7 +4,7 @@ Prepared by **Mustafa Assaf**
 
 **[Course website](https://mkassaf.github.io/agentic-ai-course/)** · **[GitHub repository](https://github.com/mkassaf/agentic-ai-course)**
 
-Eight beginner labs in **general agentic AI**, connected by one small software architecture decision: **modular monolith or microservices?** Compare Python rules with a single prompt, improve and evaluate the prompt, retrieve a stored policy, then add tools, patterns, skills, agent communication, and a framework. Each lab has one tiny worked example, one check, and one small exercise.
+Eight beginner labs in **general agentic AI**, connected by one small software architecture decision: **modular monolith or microservices?** Compare Python rules with a single prompt, improve and evaluate the prompt, retrieve a stored policy, then add tools, patterns, skills, agent communication, and a framework. Each lab builds one worked example in short, numbered steps, checks the result, and ends with small exercises.
 
 The fictional course policy selects microservices only when `team_size >= 8` **and** `independent_deploys` is true; otherwise it selects a modular monolith. The starting case has a three-person team and no independent deployment requirement. This policy is a teaching fixture, not a general architecture recommendation.
 
@@ -17,20 +17,20 @@ The four core areas are:
 
 ## Start learning
 
-Open a notebook in **Google Colab**, save a copy to your Drive, and run the cells in order. A CPU runtime is sufficient. Allow **5–10 minutes for each worked example**, plus first-run setup. In class, use optional discussion and practice to fill a 60–90 minute session. Students should know basic Python functions, lists, dictionaries, loops, and JSON.
+Open a notebook in **Google Colab**, save a copy to your Drive, and run the cells in order. A CPU runtime is sufficient. Allow **15–20 minutes for each lab**, plus first-run setup. In class, use optional discussion and practice to fill a 60–90 minute session. Students should know basic Python functions, lists, dictionaries, loops, and JSON.
 
-| Lab | Small example | Colab | Notebook |
+| Lab | Worked example | Colab | Notebook |
 | --- | --- | --- | --- |
-| 00 · Rules and a first LLM call | Compare a Python rule with one architecture prompt | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/00_rules_and_llms.ipynb) | [View](notebooks/00_rules_and_llms.ipynb) |
-| 01 · Better prompts and evaluation | Explicit criteria, a worked example, JSON, and three cases | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/01_prompting_evaluation.ipynb) | [View](notebooks/01_prompting_evaluation.ipynb) |
-| 02 · RAG for architecture rules | Retrieve the stored deployment policy before answering | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/02_rag_systems.ipynb) | [View](notebooks/02_rag_systems.ipynb) |
-| 03 · Tools and MCP | Build metrics and save-decision tools through MCP | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/03_tools_mcp.ipynb) | [View](notebooks/03_tools_mcp.ipynb) |
-| 04 · Agent foundations and patterns | Read metrics in a bounded ReAct-style action loop | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/04_agentic_patterns.ipynb) | [View](notebooks/04_agentic_patterns.ipynb) |
-| 05 · Reusable architecture skills | Apply a small ADR-writing SKILL.md | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/05_agent_skills.ipynb) | [View](notebooks/05_agent_skills.ipynb) |
-| 06 · A2A architecture review | Send a proposal to a policy reviewer | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/06_a2a_protocol.ipynb) | [View](notebooks/06_a2a_protocol.ipynb) |
-| 07 · Frameworks and a final check | Run a two-node LangGraph choose-and-check workflow | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/07_frameworks_evaluation.ipynb) | [View](notebooks/07_frameworks_evaluation.ipynb) |
+| 00 · Rules, then LLM calls | Run a Python rule on four projects, then count how often a model agrees | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/00_rules_and_llms.ipynb) | [View](notebooks/00_rules_and_llms.ipynb) |
+| 01 · Better prompts and small evaluations | A guided prompt, a strict JSON parser, and a five-case quality gate | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/01_prompting_evaluation.ipynb) | [View](notebooks/01_prompting_evaluation.ipynb) |
+| 02 · Retrieve architecture rules with RAG | Rank stored policies, abstain when nothing matches, and check citations | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/02_rag_systems.ipynb) | [View](notebooks/02_rag_systems.ipynb) |
+| 03 · Architecture tools and our own MCP server | Read and write tools with validation, discovery, and error results | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/03_tools_mcp.ipynb) | [View](notebooks/03_tools_mcp.ipynb) |
+| 04 · ReAct: choose a tool, then decide | A guarded agent loop that finds a project, reads it, and decides | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/04_agentic_patterns.ipynb) | [View](notebooks/04_agentic_patterns.ipynb) |
+| 05 · A skill for a short architecture decision record | Choose a skill from a catalog, write two ADRs, and check them | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/05_agent_skills.ipynb) | [View](notebooks/05_agent_skills.ipynb) |
+| 06 · Delegate an architecture review with A2A | Propose, have a reviewer agent check it over A2A, and revise | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/06_a2a_protocol.ipynb) | [View](notebooks/06_a2a_protocol.ipynb) |
+| 07 · A framework for choosing and checking | A LangGraph choose-and-check loop with a conditional retry | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/07_frameworks_evaluation.ipynb) | [View](notebooks/07_frameworks_evaluation.ipynb) |
 
-Each notebook opens with what is new since the previous lab, then one setup cell that installs the reusable `coursekit` package from a pinned public GitHub revision. MCP, A2A, and LangGraph labs also install their relevant official SDK. Supporting transport code lives in the package, outside the notebooks. The main example stays within 20 visible Python lines and two code blocks; the whole notebook has at most 25 Python lines, including setup. You do not need a paid framework account.
+Each notebook opens with what is new since the previous lab, then one setup cell that installs the reusable `coursekit` package from a pinned public GitHub revision. MCP, A2A, and LangGraph labs also install their relevant official SDK. Supporting transport code lives in the package, outside the notebooks. Each step is one code cell of at most 20 lines, and a lab has at most 60 lines of example code. You do not need a paid framework account.
 
 ## Use a live model
 
@@ -43,7 +43,7 @@ MODE = "live"
 ask = make_ask(mode=MODE)
 ```
 
-This uses FreeInference `qwen3.6-35b` by default. `make_ask` also accepts `base_url`, `model`, and `secret_name` for another compatible service. MCP/A2A demonstrations need no live model. See [API setup](docs/api-setup.md).
+This uses FreeInference `qwen3.6-35b` by default. `make_ask` also accepts `base_url`, `model`, and `secret_name` for another compatible service. The MCP lab needs no live model; in the A2A lab, a live model proposes and a deterministic agent reviews. See [API setup](docs/api-setup.md).
 
 ## Teaching guides
 

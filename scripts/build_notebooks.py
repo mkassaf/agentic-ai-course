@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build tiny notebooks; reusable implementation belongs in the course package."""
+"""Build the lab notebooks; reusable implementation belongs in the course package."""
 from pathlib import Path
 import hashlib
 import json
@@ -14,7 +14,7 @@ EXTRAS = {
     "06_a2a_protocol": ("a2a", "a2a"),
     "07_frameworks_evaluation": ("framework", "langgraph"),
 }
-PROTOCOL_LABS = {"03_tools_mcp", "06_a2a_protocol"}
+NO_MODEL_LABS = {"03_tools_mcp"}  # these labs never call ask()
 
 
 def source_cell(kind, source):
@@ -31,7 +31,7 @@ def setup_for(slug, revision):
     source = ("from importlib.util import find_spec\n"
               f"if not all(find_spec(name) for name in {modules!r}):\n"
               f'    %pip install -q "{package} @ {url}"')
-    if slug not in PROTOCOL_LABS:
+    if slug not in NO_MODEL_LABS:
         source += '\nfrom coursekit import make_ask\nMODE = "practice"\nask = make_ask(mode=MODE)'
     return source
 
@@ -39,14 +39,14 @@ def setup_for(slug, revision):
 def build(lesson, revision):
     slug = lesson["slug"]
     number = slug.split("_", 1)[0]
-    intro = f'# Lab {number} · {lesson["title"]}\n\n**Prepared by Mustafa Assaf** · 5–10 minute example'
+    intro = f'# Lab {number} · {lesson["title"]}\n\n**Prepared by Mustafa Assaf** · 15–20 minute lab'
     setup_note = '## Setup\nRun this cell once to load the course helpers, then run the steps below in order.'
-    if slug not in PROTOCOL_LABS:
+    if slug not in NO_MODEL_LABS:
         setup_note += (' Practice answers are scripted. For a live model, save '
                        '`FREEINFERENCE_API_KEY` in Colab Secrets and change `MODE` to `"live"`. '
                        '`ask` stops after 12 calls; run this cell again to reset the count.')
     else:
-        setup_note += ' This protocol example needs no model key.'
+        setup_note += ' This lab needs no model key.'
     # The lesson's first cell states the idea, so learners read it before the setup boilerplate.
     overview, *steps = lesson["cells"]
     if overview["type"] != "markdown":

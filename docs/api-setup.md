@@ -1,6 +1,6 @@
 # Model API setup
 
-Model-based notebooks can use **practice** responses or a **live** model. Practice mode returns the explicit `example` text without a model request. Live mode sends the prompt to the selected service. MCP and A2A examples need no model key.
+Model-based notebooks can use **practice** responses or a **live** model. Practice mode returns the explicit `example` text without a model request. Live mode sends the prompt to the selected service. The MCP lab needs no model key. In the A2A lab, the reviewer agent never calls a model; only the proposer does.
 
 The initial configuration uses **FreeInference**, but the teaching adapter is provider-neutral.
 
