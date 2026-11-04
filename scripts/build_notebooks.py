@@ -40,16 +40,21 @@ def build(lesson, revision):
     slug = lesson["slug"]
     number = slug.split("_", 1)[0]
     intro = f'# Lab {number} · {lesson["title"]}\n\n**Prepared by Mustafa Assaf** · 5–10 minute example'
-    setup_note = '## Setup\nRun this cell once. It loads the reusable helpers; the example follows below.'
+    setup_note = '## Setup\nRun this cell once to load the course helpers, then run the steps below in order.'
     if slug not in PROTOCOL_LABS:
         setup_note += (' Practice answers are scripted. For a live model, save '
-                       '`FREEINFERENCE_API_KEY` in Colab Secrets and change `MODE` to `"live"`.')
+                       '`FREEINFERENCE_API_KEY` in Colab Secrets and change `MODE` to `"live"`. '
+                       '`ask` stops after 12 calls; run this cell again to reset the count.')
     else:
         setup_note += ' This protocol example needs no model key.'
-    cells = [source_cell("markdown", intro), source_cell("markdown", setup_note),
-             source_cell("code", setup_for(slug, revision))]
+    # The lesson's first cell states the idea, so learners read it before the setup boilerplate.
+    overview, *steps = lesson["cells"]
+    if overview["type"] != "markdown":
+        raise ValueError(f"{slug}: the first lesson cell must be a markdown overview")
+    cells = [source_cell("markdown", intro), source_cell("markdown", overview["source"]),
+             source_cell("markdown", setup_note), source_cell("code", setup_for(slug, revision))]
     cells[-1].metadata["tags"] = ["setup"]
-    for cell in lesson["cells"]:
+    for cell in steps:
         if cell["type"] not in ("markdown", "code"):
             raise ValueError(f"Unknown cell type in {slug}")
         cells.append(source_cell(cell["type"], cell["source"]))

@@ -30,7 +30,7 @@ Open a notebook in **Google Colab**, save a copy to your Drive, and run the cell
 | 06 · A2A architecture review | Send a proposal to a policy reviewer | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/06_a2a_protocol.ipynb) | [View](notebooks/06_a2a_protocol.ipynb) |
 | 07 · Frameworks and a final check | Run a two-node LangGraph choose-and-check workflow | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/07_frameworks_evaluation.ipynb) | [View](notebooks/07_frameworks_evaluation.ipynb) |
 
-Each notebook starts with one setup cell that installs the reusable `coursekit` package from a pinned public GitHub revision. MCP, A2A, and LangGraph labs also install their relevant official SDK. Supporting transport code lives in the package, outside the notebooks. The main example stays within 20 visible Python lines and two code blocks; the whole notebook has at most 25 Python lines, including setup. You do not need a paid framework account.
+Each notebook opens with what is new since the previous lab, then one setup cell that installs the reusable `coursekit` package from a pinned public GitHub revision. MCP, A2A, and LangGraph labs also install their relevant official SDK. Supporting transport code lives in the package, outside the notebooks. The main example stays within 20 visible Python lines and two code blocks; the whole notebook has at most 25 Python lines, including setup. You do not need a paid framework account.
 
 ## Use a live model
 

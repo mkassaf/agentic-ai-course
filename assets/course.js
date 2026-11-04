@@ -29,8 +29,8 @@ const labs = [
       "Write a precise, structured prompt.",
       "Check policy adherence on three cases."
     ],
-    "example": "Compare basic and guided prompts on three cases. Read the JSON decision and brief reason.",
-    "exercise": "Add team_size=7 with independent deployment required and compare live.",
+    "example": "Build a four-part guided prompt (policy, worked example, case, JSON format), then score it on three cases.",
+    "exercise": "Simulate a model that always says microservices, then add team_size=7 with independent deployments.",
     "checks": "Read the three-case score and inspect failures. Practice scores only test the scripted example, not model quality.",
     "bridge": "Use checkable criteria and brief justifications; more reasoning text does not prove a better design."
   },
@@ -46,7 +46,7 @@ const labs = [
       "Retrieve the relevant rule.",
       "Trace the answer back to its source."
     ],
-    "example": "Find the deployment rule in a tiny rule collection, then answer the same architecture question.",
+    "example": "Retrieve the architecture policy from a two-record store, then answer and cite its rule ID.",
     "exercise": "Ask which deployment region to use; expect no matching rule.",
     "checks": "Check the retrieved rule and source. A missing rule should produce no match rather than unrelated evidence.",
     "bridge": "This transparent keyword retriever illustrates RAG; larger systems may use embeddings and ranking."
@@ -98,7 +98,7 @@ const labs = [
       "Apply it to a new architecture case."
     ],
     "example": "Use short instructions to write Context, Decision, and Consequence for the same case.",
-    "exercise": "Add a Risk section to the skill, practice answer, and check.",
+    "exercise": "Request a Risk line, then update the practice answer and the check.",
     "checks": "Check the three sections, policy-consistent choice, and a supported consequence.",
     "bridge": "This example loads instructions directly; a skill-aware host can select them when needed."
   },

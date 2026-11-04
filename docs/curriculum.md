@@ -12,6 +12,8 @@ This deliberately small policy makes comparisons easy. It is not a real-world ar
 
 ## Eight steps
 
+Each lab adds one mechanism to the previous one and says so at the top: **So far** recalls the last lab, **New** names the single addition. The same case, policy sentence, and variable names (`case`, `policy`, `expected`) recur, so only the new idea needs attention.
+
 | Lab | New mechanism | Student comparison |
 | --- | --- | --- |
 | **00 · Rules and a first LLM call** | Python baseline, then one prompt | Does the model match the rule without being given it? |

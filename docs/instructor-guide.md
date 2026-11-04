@@ -18,6 +18,8 @@ Test one small live call with student-equivalent access. Defaults: FreeInference
 4. Explain the new result and one consequence.
 5. Compare with the earlier, simpler approach.
 
+Every notebook has the same shape: **So far / New** (the one idea added since the previous lab), setup, one or two short steps, *What you should see*, *Try it*, and a *Takeaway*. Students can predict where to look in each lab.
+
 A 60–90 minute session can add paired practice, discussion, and optional live runs. Keep the introductory example small.
 
 ## One question per lab
@@ -25,7 +27,7 @@ A 60–90 minute session can add paired practice, discussion, and optional live 
 | Lab | Ask |
 | --- | --- |
 | 00 | When is the Python rule sufficient, and why might the unguided model disagree? |
-| 01 | Which prompt change helped, and which test case could reveal a mistake? |
+| 01 | Which part of the guided prompt removes Lab 00's guesswork, and which test case could reveal a mistake? |
 | 02 | Which stored rule was retrieved, and what happens when no rule matches? |
 | 03 | Which tool extracts information, and which tool changes state? |
 | 04 | What action did the model choose, what did it observe, and why did it stop? |

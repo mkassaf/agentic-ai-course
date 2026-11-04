@@ -5,15 +5,27 @@
   "cells": [
     {
       "type": "markdown",
-      "source": "## Store the rule as text, then retrieve it\n\nInstead of copying the policy into every prompt, keep short records and retrieve the relevant one. Our transparent retriever matches a topic tag to a word in the question. It uses no embeddings or vector database.\n\nThe model receives the retrieved policy as context. A question with no matching tag skips the model call."
-    },
-    {
-      "type": "code",
-      "source": "rules = [{\"topic\": \"architecture\", \"text\": \"R1: Choose microservices only if team_size >= 8 AND independent_deploys is true; otherwise choose modular monolith.\"},\n         {\"topic\": \"database\", \"text\": \"R2: Use transactions when updating account balances.\"}]\nquestion = \"Which architecture fits team_size=3 and independent_deploys=False?\"\nmatches = [rule[\"text\"] for rule in rules if rule[\"topic\"] in question.lower().split()]\ncontext = \"\\n\".join(matches)\nprint(\"Retrieved:\", context or \"No matching rule.\")\nanswer = ask(f\"Use only this policy: {context}\\n{question} Reply with the choice and rule ID.\", example=\"modular monolith (R1)\") if matches else \"No matching rule.\"\nprint(answer)\nassert matches == [rules[0][\"text\"]] and \"R1\" in answer"
+      "source": "## Retrieve the policy instead of pasting it\n\n**So far:** in Lab 01 we pasted the policy into every prompt.\n\n**New:** keep policies in a small store, *retrieve* the one that matches the question, and give only that text to the model. This is retrieval-augmented generation (RAG).\n\nOur retriever is simple on purpose. It returns a record when the record's topic word appears in the question. Real systems often use embeddings and a vector database, but the idea is the same: find the evidence first, then answer from it."
     },
     {
       "type": "markdown",
-      "source": "**Expected practice output:** the architecture policy, then `modular monolith (R1)`. The check verifies retrieval and a rule reference. Read the answer to check whether that reference actually supports the choice.\n\n**Small exercise:** ask `Which deployment region should we use?` Neither topic matches. Expect `No matching rule.` and update the assertion to check that abstention. No practice answer is needed because no model is called.\n\n## Read further\n\n- [The original RAG paper](https://arxiv.org/abs/2005.11401)"
+      "source": "## Step 1 · Store records and retrieve the relevant one\n\nEach record has an ID, a topic, and text. `R1` is our architecture policy. `R2` is an unrelated rule that should *not* be retrieved."
+    },
+    {
+      "type": "code",
+      "source": "policies = [\n    {\"id\": \"R1\", \"topic\": \"architecture\",\n     \"text\": \"Choose microservices only if team_size >= 8 AND independent_deploys is true; otherwise choose modular monolith.\"},\n    {\"id\": \"R2\", \"topic\": \"database\", \"text\": \"Use transactions when updating account balances.\"},\n]\ndef retrieve(question):\n    words = question.lower().split()\n    return [record for record in policies if record[\"topic\"] in words]\nquestion = \"Which architecture fits team_size=3 and independent_deploys=False?\"\nfound = retrieve(question)\nprint(\"Retrieved:\", [record[\"id\"] for record in found])"
+    },
+    {
+      "type": "markdown",
+      "source": "## Step 2 · Answer from the retrieved text\n\nThe retrieved records become the prompt's *context*. If nothing was retrieved, the code does not call the model. It reports that no rule matched. The prompt asks for the rule ID, so the answer can be traced back to its source."
+    },
+    {
+      "type": "code",
+      "source": "if found:\n    context = \"\\n\".join(f\"{record['id']}: {record['text']}\" for record in found)\n    prompt = f\"Use only this policy:\\n{context}\\n\\n{question}\\nReply with the choice and the rule ID.\"\n    answer = ask(prompt, example=\"modular monolith (R1)\")\nelse:\n    answer = \"No matching rule.\"  # no evidence, so no model call\nprint(answer)\nassert \"R1\" in answer, \"The answer should cite the retrieved rule R1.\""
+    },
+    {
+      "type": "markdown",
+      "source": "## What you should see\n\n`Retrieved: ['R1']`, then `modular monolith (R1)`. The check confirms that the answer cites R1. Read the answer yourself to confirm that R1 actually supports the choice.\n\n## Try it\n\nSet `question = \"Which deployment region should we use?\"` and predict what `retrieve` returns. No topic matches, so Step 2 prints `No matching rule.` without calling the model. Change the `assert` to check for that answer.\n\n## Takeaway\n\nRetrieval is only as good as its matching. This keyword retriever misses synonyms, such as \"design\" for \"architecture\". When nothing relevant is found, saying so is better than answering without evidence.\n\n## Read further\n\n- [The original RAG paper](https://arxiv.org/abs/2005.11401)"
     }
   ]
 }

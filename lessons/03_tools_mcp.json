@@ -8,23 +8,27 @@
   "cells": [
     {
       "type": "markdown",
-      "source": "## Read project facts, then save a decision\n\nA tool performs an operation. Our own MCP server offers two: read a tiny JSON project fixture and save a decision in a notebook list. Nothing is written to an external service.\n\nThe **official MCP SDK** supplies discovery, argument schemas, and an in-process connection. No port or model key is needed. The fictional course case has three developers and no independent deployments."
-    },
-    {
-      "type": "code",
-      "source": "import json\nfrom mcp import Client as MCPClient\nfrom mcp.server import MCPServer\nserver = MCPServer(\"Architecture tools\")\nsaved = []\n@server.tool()\ndef read_metrics() -> dict:\n    return json.loads('{\"team_size\": 3, \"independent_deploys\": false}')\n@server.tool()\ndef save_decision(choice: str) -> str:\n    saved.append(choice)\n    return choice"
+      "source": "## Give the program tools through MCP\n\n**So far:** the model only read text that we put into the prompt.\n\n**New:** *tools*, which are functions that read data or take an action. The **Model Context Protocol (MCP)** publishes tools so that any MCP client can discover and call them.\n\nWe build a tiny MCP server with two tools. `read_metrics` *reads* project facts. `save_decision` *changes state* by adding a decision to a Python list. The official MCP SDK connects the client and server inside this notebook, so no port, external service, or model key is needed."
     },
     {
       "type": "markdown",
-      "source": "## Discover and call the tools\n\nThe client reads the JSON fields and saves the decision from our course rule. These calls are a fixed workflow; the next lab lets the model choose its next action."
+      "source": "## Step 1 · Build a server with two tools\n\n`@server.tool(...)` publishes an ordinary Python function as a tool. A client sees each tool's `description`, and in Lab 04 a model uses this kind of text to pick a tool. Type hints such as `choice: str` become the tool's argument schema."
     },
     {
       "type": "code",
-      "source": "async with MCPClient(server) as connection:\n    print([tool.name for tool in (await connection.list_tools()).tools])\n    metrics = await connection.call_tool(\"read_metrics\", {})\n    print(metrics.content[0].text)\n    result = await connection.call_tool(\"save_decision\", {\"choice\": \"modular monolith\"})\n    print(result.content[0].text)\nassert saved == [\"modular monolith\"]"
+      "source": "from mcp import Client\nfrom mcp.server import MCPServer\nserver = MCPServer(\"Architecture tools\")\nsaved = []  # stands in for a real decision log\n@server.tool(description=\"Read the team size and whether services must deploy independently.\")\ndef read_metrics() -> dict:\n    return {\"team_size\": 3, \"independent_deploys\": False}\n@server.tool(description=\"Save the chosen architecture.\")\ndef save_decision(choice: str) -> str:\n    saved.append(choice)\n    return f\"Saved: {choice}\""
     },
     {
       "type": "markdown",
-      "source": "**Expected output:** two discovered tools, the project's JSON fields, then `modular monolith`. The check confirms the save action changed the list.\n\n**Small exercise:** add a `service_name` field to the JSON fixture and inspect the returned data.\n\nReading JSON is structured data extraction, not interpretation of a design document. MCP exposes operations; it does not select the architecture or validate the saved choice. The course rule is a teaching policy, not general architecture advice.\n\n[Official SDK client guide](https://py.sdk.modelcontextprotocol.io/client/) · [MCP architecture](https://modelcontextprotocol.io/docs/learn/architecture)"
+      "source": "## Step 2 · Discover the tools, then call them\n\nThe client first asks which tools exist, then calls them by name with arguments. Here *our code* chooses the order: it reads the facts, applies the policy itself (3 people means modular monolith), and saves that choice. In Lab 04 the model chooses the next step.\n\nA notebook lets you use `await` directly in a cell, and the MCP client needs it."
+    },
+    {
+      "type": "code",
+      "source": "async with Client(server) as client:\n    listing = await client.list_tools()\n    for tool in listing.tools:\n        print(\"Tool:\", tool.name, \"-\", tool.description)\n    metrics = await client.call_tool(\"read_metrics\", {})\n    print(\"Read:\", metrics.content[0].text)\n    result = await client.call_tool(\"save_decision\", {\"choice\": \"modular monolith\"})\n    print(result.content[0].text)\nassert saved == [\"modular monolith\"], \"save_decision should have added one decision.\""
+    },
+    {
+      "type": "markdown",
+      "source": "## What you should see\n\nTwo tools with their descriptions, the project facts as JSON, then `Saved: modular monolith`. The check confirms that `save_decision` changed the `saved` list.\n\n## Try it\n\nAdd `\"service_name\": \"orders\"` to the dictionary that `read_metrics` returns. Run both steps and find the new field in the output. The client needs no change, because it prints whatever the tool returns.\n\n## Takeaway\n\nA *read* is safe to repeat. An *action* changes something, so a real system checks an action before running it. MCP describes and transports tools. It does not choose the architecture or check whether the saved choice is right.\n\n## Read further\n\n- [Official SDK client guide](https://py.sdk.modelcontextprotocol.io/client/)\n- [MCP architecture](https://modelcontextprotocol.io/docs/learn/architecture)"
     }
   ]
 }

@@ -5,15 +5,27 @@
   "cells": [
     {
       "type": "markdown",
-      "source": "## Make the criteria explicit, then test them\n\nCompare a basic prompt with one that adds our rule, a worked example, and explicit criteria. Both request JSON containing a decision and a brief reason.\n\nThis uses decomposition into two checkable criteria, often associated with chain-of-thought prompting. Request a short explanation, not a long private reasoning trace. ReAct adds actions and observations in Lab 04, after tools.\n\nThe three cases include the boundary at team size 8 and a case where only one criterion holds."
-    },
-    {
-      "type": "code",
-      "source": "import json\nrule = 'Choose microservices only if team_size >= 8 AND independent_deploys is true; otherwise choose modular monolith.'\ncases = [(3, False, \"modular monolith\"), (8, True, \"microservices\"), (8, False, \"modular monolith\")]\nscores = {\"basic\": 0, \"guided\": 0}\nfor size, independent, expected in cases:\n    case = {\"team_size\": size, \"independent_deploys\": independent}\n    basic = f\"Choose modular monolith or microservices for {case}. Return JSON with decision and a brief reason.\"\n    guided = rule + \" Example: team_size=2, independent_deploys=True -> modular monolith. Check both criteria. \" + basic\n    for name, prompt in {\"basic\": basic, \"guided\": guided}.items():\n        fixture = {\"decision\": expected if name == \"guided\" else \"modular monolith\", \"reason\": \"Both criteria must hold.\"}\n        text = ask(prompt, example=json.dumps(fixture))\n        print(name, case, text)\n        try: result = json.loads(text)\n        except json.JSONDecodeError: result = {}\n        scores[name] += int(isinstance(result, dict) and result.get(\"decision\") == expected)\nprint(\"Policy matches:\", scores, \"out of\", len(cases))\nassert scores[\"guided\"] == len(cases), \"Inspect the failed policy match.\""
+      "source": "## Give the model the policy, then test it\n\n**So far:** in Lab 00 the model answered without seeing the policy, and we compared one answer.\n\n**New:** a *guided prompt* that contains the policy, and a small *evaluation* that checks the model on three cases.\n\nA guided prompt has four labelled parts: the policy, one worked example, the case, and the exact reply format. JSON lets our code read the decision reliably. The one-sentence reason is for a person to check. Asking the model to check both criteria is a short, visible form of step-by-step reasoning. We do not ask for a long reasoning trace."
     },
     {
       "type": "markdown",
-      "source": "**Expected practice output:** `basic: 2`, `guided: 3`. The basic fixture intentionally gives the wrong answer once, so the evaluator detects it. These scripted scores are not model results or evidence that a prompt is better.\n\nIn live mode, compare policy matches and manually check each brief reason. Three cases measure limited policy adherence, not real architecture quality. Malformed JSON scores zero; a wrong decision fails the final check.\n\n**Small exercise:** add `(7, True, \"modular monolith\")` and try the comparison live. Does either prompt violate the threshold?\n\n## Read further\n\n- [Chain-of-thought prompting](https://arxiv.org/abs/2201.11903)\n- [Prompt engineering](https://developers.openai.com/api/docs/guides/prompt-engineering)"
+      "source": "## Step 1 · Build a guided prompt\n\n`guided_prompt(case)` builds the complete prompt for any case. Printing it shows exactly what the model receives."
+    },
+    {
+      "type": "code",
+      "source": "import json\npolicy = \"Choose microservices only if team_size >= 8 AND independent_deploys is true; otherwise choose modular monolith.\"\nreply_format = '{\"decision\": \"...\", \"reason\": \"one short sentence\"}'\ndef guided_prompt(case):\n    return (f\"Policy: {policy}\\nWorked example: team_size=2, independent_deploys=True -> modular monolith\\n\"\n            f\"Case: {case}\\nCheck both criteria. Reply with only this JSON: {reply_format}\")\nprint(guided_prompt({\"team_size\": 3, \"independent_deploys\": False}))"
+    },
+    {
+      "type": "markdown",
+      "source": "## Step 2 · Evaluate on three cases\n\nAn evaluation is a list of cases with their expected answers. These three are the course case, a case where both criteria hold, and a boundary case where only one holds. For each case, the code calls the model, reads the JSON with `json.loads`, and compares the decision with the expected answer.\n\nTwo different things are called \"example\" here. The *worked example* is part of the prompt, and the model reads it. The `example=` argument is the scripted practice reply, and no model ever sees it."
+    },
+    {
+      "type": "code",
+      "source": "tests = [(3, False, \"modular monolith\"),   # the course case\n         (8, True, \"microservices\"),       # both criteria hold\n         (8, False, \"modular monolith\")]   # boundary: only one criterion holds\npassed = 0\nfor size, independent, expected in tests:\n    case = {\"team_size\": size, \"independent_deploys\": independent}\n    reply = ask(guided_prompt(case), example=json.dumps({\"decision\": expected, \"reason\": \"Scripted practice reply.\"}))\n    decision = json.loads(reply)[\"decision\"].strip().lower()\n    print(case, \"->\", decision, \"| expected:\", expected)\n    passed += decision == expected  # True counts as 1\nprint(f\"Passed {passed} of {len(tests)}\")\nassert passed == len(tests), \"A case failed. Read its line above.\""
+    },
+    {
+      "type": "markdown",
+      "source": "## What you should see\n\nThe four-part prompt, then three lines where the decision matches the expected answer, then `Passed 3 of 3`. Practice replies are scripted to be correct, so this score tests your evaluation code, not a model. Run live to test a real model. If a live reply is not plain JSON, `json.loads` raises an error. That is a format failure, so print `reply` to see what the model sent.\n\n## Try it\n\nSimulate a model that always picks microservices: in the `example=` reply, replace `expected` with `\"microservices\"`. Predict the score, then run Step 2. The evaluation finds the mistakes and the `assert` stops with an error. Put `expected` back, then add the case `(7, True, \"modular monolith\")`, which is one person below the threshold.\n\n## Takeaway\n\nThree cases test whether the model follows one simple policy. They say little about architecture quality. Read each `reason` too: a correct label with an invented reason is still a weak answer.\n\n## Read further\n\n- [Chain-of-thought prompting](https://arxiv.org/abs/2201.11903)\n- [Prompt engineering](https://developers.openai.com/api/docs/guides/prompt-engineering)"
     }
   ]
 }
