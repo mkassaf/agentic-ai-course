@@ -7,8 +7,22 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-# Shared by every Client in this notebook/process, including parallel workflows.
-_NETWORK_SLOTS = threading.BoundedSemaphore(2)
+# Some gateways (FreeInference included) reject urllib's default User-Agent with HTTP 403.
+USER_AGENT = "agentic-ai-coursekit"
+
+# Requests in flight per host, shared by every Client in this process, including parallel workflows.
+# FreeInference's free tier answers a second concurrent request with HTTP 429.
+_HOST_LIMITS = {"freeinference.org": 1}
+_DEFAULT_HOST_LIMIT = 2
+_HOST_SLOTS = {}
+_HOST_SLOTS_LOCK = threading.Lock()
+
+
+def _host_slots(host):
+    with _HOST_SLOTS_LOCK:
+        if host not in _HOST_SLOTS:
+            _HOST_SLOTS[host] = threading.BoundedSemaphore(_HOST_LIMITS.get(host, _DEFAULT_HOST_LIMIT))
+        return _HOST_SLOTS[host]
 
 
 class _NoRedirect(urllib.request.HTTPRedirectHandler):
@@ -66,9 +80,10 @@ class Client:
                     body.update({"stream": False, "thinking": {"type": "disabled"}})
                 req = urllib.request.Request(self.base_url + "/chat/completions",
                     data=json.dumps(body).encode(), method="POST",
-                    headers={"Authorization": "Bearer " + self._api_key, "Content-Type": "application/json"})
+                    headers={"Authorization": "Bearer " + self._api_key, "Content-Type": "application/json",
+                             "User-Agent": USER_AGENT})
                 try:
-                    with _NETWORK_SLOTS:
+                    with _host_slots(urllib.parse.urlsplit(self.base_url).hostname):
                         with urllib.request.build_opener(_NoRedirect).open(req, timeout=self.timeout) as response:
                             payload = json.load(response)
                 except urllib.error.HTTPError as exc:

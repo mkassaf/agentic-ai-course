@@ -42,10 +42,22 @@ class ClientTests(unittest.TestCase):
             self.assertEqual(sent["messages"][-1]["content"], "real prompt")
             self.assertEqual(sent["max_completion_tokens"], 123)
             self.assertNotIn("fixture ignored", request.data.decode())
+            self.assertEqual(request.get_header("User-agent"), "agentic-ai-coursekit")  # not urllib's default
         self.assertEqual(model.trace[0]["input_tokens"], 11)
         self.assertEqual(model.trace[0]["output_tokens"], 7)
         self.assertNotIn("UNITTEST_ONLY_KEY", json.dumps(model.trace))
         self.assertNotIn("real prompt", json.dumps(model.trace))
+
+    def test_freeinference_runs_one_request_at_a_time_and_other_hosts_two(self):
+        from coursekit import runtime
+        free, other = runtime._host_slots("freeinference.org"), runtime._host_slots("gateway.university.example")
+        self.assertIs(free, runtime._host_slots("freeinference.org"))
+        self.assertTrue(free.acquire(blocking=False))
+        self.assertFalse(free.acquire(blocking=False))
+        free.release()
+        self.assertTrue(other.acquire(blocking=False) and other.acquire(blocking=False))
+        self.assertFalse(other.acquire(blocking=False))
+        other.release(), other.release()
 
     def test_gateway_error_is_redacted_and_consumes_budget(self):
         model = client(max_calls=1)
