@@ -42,7 +42,7 @@ def setup_for(slug, revision):
     return source
 
 
-def build(lesson, revision, diagrams):
+def build(lesson, revision, diagrams, site_lab):
     slug = lesson["slug"]
     number = slug.split("_", 1)[0]
     intro = (f'# Lab {number} · {lesson["title"]}\n\n'
@@ -64,7 +64,12 @@ def build(lesson, revision, diagrams):
         patterns.append(source_cell("markdown", steps.pop(0)["source"]))
     alt = diagrams[number].replace("[", "(").replace("]", ")")
     picture = f'\n\n**At a glance**\n\n![Lab {number} at a glance: {alt}]({DIAGRAM_URL.format(number=number)})'
-    cells = [source_cell("markdown", intro), source_cell("markdown", overview["source"] + picture), *patterns,
+    # The background and key terms are shared with the course site (assets/course.js).
+    terms = "\n".join(f"| **{term}** | {meaning} |" for term, meaning in site_lab["terms"])
+    context = ("## The idea in context\n\n" + "\n\n".join(site_lab["background"])
+               + f"\n\n| Key term | Meaning |\n| --- | --- |\n{terms}")
+    cells = [source_cell("markdown", intro), source_cell("markdown", overview["source"] + picture),
+             source_cell("markdown", context), *patterns,
              source_cell("markdown", setup_note), source_cell("code", setup_for(slug, revision))]
     cells[-1].metadata["tags"] = ["setup"]
     for cell in steps:
@@ -91,11 +96,13 @@ def main():
     if not re.fullmatch(r"[0-9a-f]{40}", revision):
         raise ValueError("coursekit-ref.txt must contain a published commit SHA")
     diagrams = json.loads((ROOT / "assets" / "diagrams" / "descriptions.json").read_text())
+    site = (ROOT / "assets" / "course.js").read_text()
+    site_labs = {lab["file"]: lab for lab in json.loads(re.search(r"const labs = (\[.*?\n\]);", site, re.S)[1])}
     for slug in config["labs"]:
         lesson = json.loads((ROOT / "lessons" / (slug + ".json")).read_text())
         if lesson["slug"] != slug:
             raise ValueError(f"Lesson/file slug mismatch: {slug}")
-        build(lesson, revision, diagrams)
+        build(lesson, revision, diagrams, site_labs[slug])
 
 
 if __name__ == "__main__":

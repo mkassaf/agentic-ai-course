@@ -41,3 +41,76 @@
 .dg-key-gate:before{width:9px;height:9px;transform:rotate(45deg);border:1.6px solid var(--ink);border-radius:1px;margin-right:8px}
 .dg-key-human:before{background:#e8f5e4;border-color:var(--accent)}
 @media(max-width:760px){.lab-diagram{padding:16px 12px 12px}}
+
+/* Lab list: pattern chips, step counts, completion, section bar, pager */
+.visually-hidden{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.pattern-chip{display:inline-block;font-size:11px;font-weight:500;color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:1px 9px;margin:0 6px 4px 0;line-height:1.6;white-space:nowrap}
+.lab summary p{display:flex;flex-wrap:wrap;align-items:center}
+.lab-subtitle{margin-bottom:4px}
+.lab-number{position:relative;display:inline-grid;place-items:center start}
+.lab-number .tick{display:none;width:40px;height:40px;border-radius:50%;background:var(--accent);color:#fff;font-size:18px;place-items:center}
+.lab.done .lab-number .num{display:none}
+.lab.done .lab-number .tick{display:grid}
+.lab summary:hover h3{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:6px}
+.track-jump{position:sticky;top:0;z-index:5;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:10px 0;margin-bottom:28px;background:rgba(255,255,255,.94);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+.track-jump a{display:block;text-decoration:none;border:1px solid var(--line);border-radius:8px;padding:8px 12px;background:#fff}
+.track-jump a:hover{border-color:var(--ink)}
+.track-jump strong{display:block;font-size:13px;font-weight:600}
+.track-jump small{display:block;font-size:11px;color:var(--muted)}
+.track{scroll-margin-top:90px}
+.track-meta{display:flex;align-items:center;gap:12px}
+.track-progress{font-size:11px;color:var(--muted)}
+.lab{scroll-margin-top:84px}
+.lab-lead{display:flex;justify-content:space-between;align-items:flex-start;gap:30px;margin-bottom:22px}
+.lab-lead .lab-intro{margin:0}
+.lab-lead .notebook-actions{flex-shrink:0}
+.lab-actions{border-top:1px solid var(--line);padding-top:20px}
+.lab-pager{display:flex;align-items:stretch;gap:12px;margin-left:auto}
+.lab-pager a{display:block;text-decoration:none;font-size:13px;font-weight:500;border:1px solid var(--line);border-radius:8px;padding:9px 14px;max-width:270px}
+.lab-pager a:hover{border-color:var(--ink)}
+.lab-pager .next{text-align:right}
+.lab-pager small{display:block;font-size:11px;color:var(--muted);font-weight:400}
+
+/* Patterns map */
+.patterns-section{padding-top:0}
+.patterns-section .section-heading{border-top:1px solid var(--line);padding-top:60px}
+.patterns-section .section-heading a{color:var(--ink)}
+.pattern-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;align-items:start}
+.pattern-column{border:1px solid var(--line);border-radius:12px;padding:22px}
+.pattern-column h3{font-size:12px;text-transform:uppercase;letter-spacing:1px;font-weight:600;margin-bottom:12px}
+.pattern-column ul{list-style:none;margin:0;padding:0}
+.pattern-column li{padding:10px 0;border-top:1px solid var(--line);font-size:14px}
+.pattern-column li:first-child{border-top:0;padding-top:0}
+.pattern-name{display:block;font-weight:500}
+.pattern-labs{display:flex;flex-wrap:wrap;gap:6px;margin-top:5px}
+.pattern-labs a{font-size:11px;text-decoration:none;border:1px solid var(--line);border-radius:20px;padding:1px 9px}
+.pattern-labs a:hover{border-color:var(--ink)}
+.pattern-column small{display:block;font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5}
+
+/* Provider table */
+.providers p{margin:0}
+.providers table{width:100%;max-width:640px;border-collapse:collapse;margin:14px 0}
+.providers th,.providers td{text-align:left;padding:8px 12px 8px 0;border-bottom:1px solid var(--line);font-size:13px}
+.providers th{font-size:11px;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);font-weight:600}
+.default-tag{font-size:10px;text-transform:uppercase;letter-spacing:.6px;color:var(--cta);font-weight:600;margin-left:6px}
+.providers-note{color:var(--muted)}
+a.flow-node{color:inherit;text-decoration:none}
+a.flow-node:hover{border-color:#fff}
+a.flow-final{color:var(--ink)}
+a.flow-final:hover{border-color:var(--accent)}
+
+@media(max-width:1000px){.pattern-grid{grid-template-columns:1fr 1fr}.lab-lead{flex-direction:column;gap:16px}}
+@media(max-width:760px){.track-jump{gap:6px}.track-jump a{padding:6px 8px}.track-jump strong{font-size:12px}.lab-time{display:none}.lab-pager{margin-left:0;width:100%}.lab-pager a{flex:1;max-width:none}.lab-number .tick{width:32px;height:32px;font-size:15px}}
+@media(max-width:450px){.pattern-grid{grid-template-columns:1fr}.lab-pager{flex-direction:column}}
+
+/* The idea in context: background paragraphs and key terms */
+.lab-context{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:34px;margin:6px 0 30px}
+.lab-context h4,.diagram-heading{font-size:13px;text-transform:uppercase;letter-spacing:.8px;margin:0 0 12px;font-weight:600}
+.lab-context p{font-size:15px;line-height:1.7;color:#333;margin:0 0 14px;max-width:720px}
+.lab-context p:last-child{margin-bottom:0}
+.key-terms{background:var(--surface);border-radius:10px;padding:20px 22px;align-self:start}
+.key-terms dl{margin:0}
+.key-terms dt{font-size:13px;font-weight:600;margin-top:12px}
+.key-terms dt:first-child{margin-top:0}
+.key-terms dd{margin:2px 0 0;font-size:13px;line-height:1.5;color:var(--muted)}
+@media(max-width:1000px){.lab-context{grid-template-columns:1fr;gap:20px}}
