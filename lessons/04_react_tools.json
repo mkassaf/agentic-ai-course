@@ -1,11 +1,11 @@
 {
-  "slug": "04_agentic_patterns",
+  "slug": "04_react_tools",
   "title": "ReAct: choose a tool, then decide",
-  "section": "Agent foundations and patterns",
+  "section": "Lecture 2: Chain, act, debate",
   "cells": [
     {
       "type": "markdown",
-      "source": "## Let the model choose the next step\n\n**So far:** in Lab 03 our code called the tools in a fixed order.\n\n**New:** an *agent loop*. The model chooses an action, our code runs it, and the result (the *observation*) goes into the next prompt as part of the *history*. This act-then-observe cycle is the core of the ReAct pattern.\n\nOur code stays in control. It runs only known tools, refuses to finish before any project facts were read, and stops after five turns. The tools are plain Python copies of Lab 03's tools, so the loop is easy to follow."
+      "source": "## Let the model choose the next step\n\n**So far:** in Lab 03, our code fixed the order of the steps, and the model filled in each one.\n\n**New:** an *agent loop*. The model chooses an action, our code runs it, and the result (the *observation*) goes into the next prompt as part of the *history*. This act-then-observe cycle is the core of the ReAct pattern.\n\nOur code stays in control. It runs only known tools, refuses to finish before any project facts were read, and stops after five turns. A *tool* is a function that the model may ask our code to run. Ours are plain Python functions, so the loop is easy to follow; self-study Lab 09 serves tools like these through MCP."
     },
     {
       "type": "markdown",
@@ -41,7 +41,7 @@
     },
     {
       "type": "markdown",
-      "source": "## What you should see\n\nStep 1 prints the error message for the unknown name `wiki`. Step 3 shows three turns: `list_projects`, then `get_project('Internal wiki')` with its facts, then `finish('modular monolith')`. Step 4 prints `Agent decided: modular monolith | policy expects: modular monolith | tool calls: 2`.\n\n## Try it\n\n1. Make the agent skip the lookup: delete the first two scripted replies, leaving only `finish`. Run Steps 2 and 3. The finish guard stops the run.\n2. Make the agent guess a name: change the second scripted reply's input to `\"wiki\"`. Its observation is now an error message. Add a fourth scripted reply that calls `get_project` with `\"Internal wiki\"` before `finish`, and the agent recovers.\n3. Change the goal to the payments project, and update the script and the project name in Step 4. What should the decision be?\n4. In live mode, how many turns does a real model take for the original goal?\n\n## Takeaway\n\nAn agent is a loop: decide, act, observe, repeat. The model chooses the steps, but our code owns the tools, the guards, and the turn limit, and it checks the result at the end. Lab 05 packages the decision procedure as a reusable *skill*.\n\n## Read further\n\n- [ReAct](https://arxiv.org/abs/2210.03629)\n- [Workflows and agentic patterns](https://www.anthropic.com/research/building-effective-agents)"
+      "source": "## What you should see\n\nStep 1 prints the error message for the unknown name `wiki`. Step 3 shows three turns: `list_projects`, then `get_project('Internal wiki')` with its facts, then `finish('modular monolith')`. Step 4 prints `Agent decided: modular monolith | policy expects: modular monolith | tool calls: 2`.\n\n## Try it\n\n1. Make the agent skip the lookup: delete the first two scripted replies, leaving only `finish`. Run Steps 2 and 3. The finish guard stops the run.\n2. Make the agent guess a name: change the second scripted reply's input to `\"wiki\"`. Its observation is now an error message. Add a fourth scripted reply that calls `get_project` with `\"Internal wiki\"` before `finish`, and the agent recovers.\n3. Change the goal to the payments project, and update the script and the project name in Step 4. What should the decision be?\n4. In live mode, how many turns does a real model take for the original goal?\n\n## Takeaway\n\nAn agent is a loop: decide, act, observe, repeat. The model chooses the steps, but our code owns the tools, the guards, and the turn limit, and it checks the result at the end. Lab 05 puts three architects, each driven by its own model, into one council.\n\n## Read further\n\n- [ReAct](https://arxiv.org/abs/2210.03629)\n- [Workflows and agentic patterns](https://www.anthropic.com/research/building-effective-agents)"
     }
   ]
 }

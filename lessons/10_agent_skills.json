@@ -1,7 +1,7 @@
 {
-  "slug": "05_agent_skills",
+  "slug": "10_agent_skills",
   "title": "A skill for a short architecture decision record",
-  "section": "Skills and frameworks",
+  "section": "Self-study: Connect and organize your council",
   "cells": [
     {
       "type": "markdown",
@@ -49,7 +49,7 @@
     },
     {
       "type": "markdown",
-      "source": "## What you should see\n\nStep 2 prints a three-line catalog. Step 3 prints `Chosen skill: architecture-decision`, followed by its instructions. Step 4 prints two problems for the one-line test ADR. Step 5 prints two ADRs, each followed by `-> passes`.\n\n## Try it\n\n1. Change the task in Step 3 to \"Checkout failed for an hour after a bad config push. Write it up.\" Which skill should be chosen? Set the scripted `example` to that name and run Step 3 only.\n2. Add a line such as `\\nRisk: Shared code can slow every release.` to the end of the first scripted ADR. Step 5 names the extra label and stops.\n3. Write a fourth skill and add it to the loop in Step 2. Does the catalog stay short?\n\n## Takeaway\n\nA skill packages a procedure with a name and a description, so an agent can find it and reuse it. The agent loads only the skill it needs, and your code still checks what the skill produces. Lab 06 hands the review to a separate agent.\n\n## Read further\n\n- [Agent Skills specification](https://agentskills.io/specification)"
+      "source": "## What you should see\n\nStep 2 prints a three-line catalog. Step 3 prints `Chosen skill: architecture-decision`, followed by its instructions. Step 4 prints two problems for the one-line test ADR. Step 5 prints two ADRs, each followed by `-> passes`.\n\n## Try it\n\n1. Change the task in Step 3 to \"Checkout failed for an hour after a bad config push. Write it up.\" Which skill should be chosen? Set the scripted `example` to that name and run Step 3 only.\n2. Add a line such as `\\nRisk: Shared code can slow every release.` to the end of the first scripted ADR. Step 5 names the extra label and stops.\n3. Write a fourth skill and add it to the loop in Step 2. Does the catalog stay short?\n4. **Use it in your council.** Write a `council-decision-record` skill whose record also lists the dissent from Lab 05, and extend `adr_problems` to check that line.\n\n## Takeaway\n\nA skill packages a procedure with a name and a description, so an agent can find it and reuse it. The agent loads only the skill it needs, and your code still checks what the skill produces. Lab 11 hands the review to a separate agent.\n\n## Read further\n\n- [Agent Skills specification](https://agentskills.io/specification)"
     }
   ]
 }

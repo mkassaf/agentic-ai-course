@@ -6,15 +6,15 @@
     "00_rules_and_llms",
     "01_prompting_evaluation",
     "02_rag_systems",
-    "03_tools_mcp",
-    "04_agentic_patterns",
-    "05_agent_skills",
-    "06_a2a_protocol",
-    "07_frameworks_evaluation",
-    "08_prompt_chaining",
-    "09_architecture_council",
-    "10_human_feedback_memory",
-    "11_routing",
-    "12_council_evaluation"
+    "03_prompt_chaining",
+    "04_react_tools",
+    "05_architecture_council",
+    "06_human_feedback_memory",
+    "07_routing",
+    "08_council_evaluation",
+    "09_tools_mcp",
+    "10_agent_skills",
+    "11_a2a_protocol",
+    "12_frameworks_langgraph"
   ]
 }

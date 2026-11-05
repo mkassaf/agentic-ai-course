@@ -1,7 +1,7 @@
 {
   "slug": "01_prompting_evaluation",
   "title": "Better prompts and small evaluations",
-  "section": "LLMs and prompting",
+  "section": "Lecture 1: Ask, check, retrieve",
   "cells": [
     {
       "type": "markdown",
@@ -41,7 +41,7 @@
     },
     {
       "type": "markdown",
-      "source": "## What you should see\n\nStep 2 prints `accepted: modular monolith`, then two `rejected:` lines. Step 4 prints five rows. Four are `PASS`, and the `big team only` row is `FAIL`, because its scripted reply says `microservices`. The last line is `{'pass': 4, 'fail': 1, 'invalid': 0} accuracy: 80%`, which just meets the gate.\n\nPractice scores only test the evaluation code, not a model. In live mode, the score shows how this prompt did on these five cases. Five cases cannot prove that a prompt is good in general.\n\n## Try it\n\n1. Fix the deliberate mistake: change the third scripted label to `\"modular monolith\"`. Accuracy becomes 100%.\n2. Change the **first** scripted label to `\"serverless\"`. Its row becomes `INVALID`, and the gate stops the run, because only 3 of 5 tests pass.\n3. Add a test for 7 people with independent deploys, and a scripted label for it. Which bucket does it land in?\n4. In live mode, compare this score with Lab 00's agreement count. Which part of the guided prompt made the difference?\n\n## Takeaway\n\nA clear prompt, a strict parser, and a labelled test set turn \"the answer looks right\" into a number you can track. Labs 02 to 07 keep this habit: they always compare the model's decision with the policy. Next, Lab 02 stops pasting the policy into the prompt and retrieves it from a store instead.\n\n## Read further\n\n- [Chain-of-thought prompting](https://arxiv.org/abs/2201.11903)\n- [Prompt engineering](https://developers.openai.com/api/docs/guides/prompt-engineering)"
+      "source": "## What you should see\n\nStep 2 prints `accepted: modular monolith`, then two `rejected:` lines. Step 4 prints five rows. Four are `PASS`, and the `big team only` row is `FAIL`, because its scripted reply says `microservices`. The last line is `{'pass': 4, 'fail': 1, 'invalid': 0} accuracy: 80%`, which just meets the gate.\n\nPractice scores only test the evaluation code, not a model. In live mode, the score shows how this prompt did on these five cases. Five cases cannot prove that a prompt is good in general.\n\n## Try it\n\n1. Fix the deliberate mistake: change the third scripted label to `\"modular monolith\"`. Accuracy becomes 100%.\n2. Change the **first** scripted label to `\"serverless\"`. Its row becomes `INVALID`, and the gate stops the run, because only 3 of 5 tests pass.\n3. Add a test for 7 people with independent deploys, and a scripted label for it. Which bucket does it land in?\n4. In live mode, compare this score with Lab 00's agreement count. Which part of the guided prompt made the difference?\n\n## Takeaway\n\nA clear prompt, a strict parser, and a labelled test set turn \"the answer looks right\" into a number you can track. Every later lab keeps this habit: it checks the model's output before trusting it. Next, Lab 02 stops pasting the policy into the prompt and retrieves it from a store instead.\n\n## Read further\n\n- [Chain-of-thought prompting](https://arxiv.org/abs/2201.11903)\n- [Prompt engineering](https://developers.openai.com/api/docs/guides/prompt-engineering)"
     }
   ]
 }

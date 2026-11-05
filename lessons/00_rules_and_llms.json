@@ -1,7 +1,7 @@
 {
   "slug": "00_rules_and_llms",
   "title": "Rules, then LLM calls",
-  "section": "LLMs and prompting",
+  "section": "Lecture 1: Ask, check, retrieve",
   "cells": [
     {
       "type": "markdown",

@@ -1,7 +1,7 @@
 {
-  "slug": "06_a2a_protocol",
+  "slug": "11_a2a_protocol",
   "title": "Delegate an architecture review with A2A",
-  "section": "Core protocols",
+  "section": "Self-study: Connect and organize your council",
   "packages": [
     "a2a-sdk[http-server]==1.3.0"
   ],
@@ -44,7 +44,7 @@
     },
     {
       "type": "markdown",
-      "source": "## What you should see\n\nStep 1 prints `Discovered agent: Architecture reviewer`, `Status: FAIL`, and `Feedback: course policy expects modular monolith.` In Step 3, three projects pass at once. The Internal wiki is first proposed as `'microservices'` and fails, then the revision `'modular monolith'` passes. Step 4 shows every project as `True` and `Revisions needed: 1`.\n\n## Try it\n\n1. Make the Mobile backend's first scripted reply `\"microservices\"`, and add `\"modular monolith\"` as its revision. Run Steps 2 to 4. Now two projects need a revision.\n2. Make a revision wrong too, for example `[\"microservices\", \"microservices\"]`. The final check stops the run.\n3. In live mode, the model's revisions are real. Does a real model take the reviewer's feedback?\n\n## Takeaway\n\nA2A lets one agent find another agent through its Agent Card and exchange messages with it, without sharing code. A separate reviewer gives a second, independent check, and its feedback can drive a revision. Lab 07 builds the same choose, check, and retry loop with a framework.\n\n## Read further\n\n- [Official A2A SDK](https://github.com/a2aproject/a2a-python)\n- [Agent discovery](https://a2a-protocol.org/latest/topics/agent-discovery/)"
+      "source": "## What you should see\n\nStep 1 prints `Discovered agent: Architecture reviewer`, `Status: FAIL`, and `Feedback: course policy expects modular monolith.` In Step 3, three projects pass at once. The Internal wiki is first proposed as `'microservices'` and fails, then the revision `'modular monolith'` passes. Step 4 shows every project as `True` and `Revisions needed: 1`.\n\n## Try it\n\n1. Make the Mobile backend's first scripted reply `\"microservices\"`, and add `\"modular monolith\"` as its revision. Run Steps 2 to 4. Now two projects need a revision.\n2. Make a revision wrong too, for example `[\"microservices\", \"microservices\"]`. The final check stops the run.\n3. In live mode, the model's revisions are real. Does a real model take the reviewer's feedback?\n4. **Use it in your council.** Run one architect from Lab 05 as an A2A agent with its own Agent Card. What must each message carry so that the chair's transcript stays traceable?\n\n## Takeaway\n\nA2A lets one agent find another agent through its Agent Card and exchange messages with it, without sharing code. A separate reviewer gives a second, independent check, and its feedback can drive a revision. Lab 12 builds the same choose, check, and retry loop with a framework.\n\n## Read further\n\n- [Official A2A SDK](https://github.com/a2aproject/a2a-python)\n- [Agent discovery](https://a2a-protocol.org/latest/topics/agent-discovery/)"
     }
   ]
 }

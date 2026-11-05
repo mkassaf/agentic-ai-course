@@ -10,7 +10,7 @@ The labs share four fictional projects, one for each combination of the two fact
 
 Test one small live call with student-equivalent access. Defaults: FreeInference, `qwen3.6-35b`, and Colab Secret `FREEINFERENCE_API_KEY`. Service, model, and secret name are configurable. Verify current access and quotas; keep keys out of code and outputs.
 
-The council lab (09) needs three model families in live mode. FreeInference currently serves the Qwen family, and its free tier takes one request at a time (the course client queues the rest). Before class, choose a second OpenAI-compatible service for the other two architects, such as a university gateway, and give students its base URL, model ids, and secret name.
+The council lab (05) needs three model families in live mode. FreeInference currently serves the Qwen family, and its free tier takes one request at a time (the course client queues the rest). Before class, choose a second OpenAI-compatible service for the other two architects, such as a university gateway, and give students its base URL, model ids, and secret name.
 
 ## A short teaching rhythm
 
@@ -22,7 +22,27 @@ The council lab (09) needs three model families in live mode. FreeInference curr
 
 Every notebook has the same shape: **So far / New** (the one idea added since the previous lab), setup, two to five numbered steps, *What you should see*, *Try it*, and a *Takeaway*. Students can predict where to look in each lab.
 
-A 60–90 minute session can add paired practice, discussion, and optional live runs. Each step adds one piece of logic, so students can stop after any step and still have working code.
+Each step adds one piece of logic, so students can stop after any step and still have working code.
+
+## Three 90-minute lectures
+
+| Lecture | Labs | Theme |
+| --- | --- | --- |
+| 1 | 00 Rules and LLM calls · 01 Prompts and evaluation · 02 RAG | Ask, check, retrieve |
+| 2 | 03 Prompt chaining · 04 ReAct with tools · 05 The council | Chain, act, debate |
+| 3 | 06 Human and memory · 07 Routing · 08 Evaluating the council | Decide, learn, measure |
+
+A plan for each lecture:
+
+| Minutes | Activity |
+| --- | --- |
+| 0–10 | Introduce the lecture's idea and the case. In Lecture 1, open Colab and save a copy first; in Lecture 3, mention that Lab 06 downloads an 80 MB embedding model. |
+| 10–30 | First lab: predict, run, check. |
+| 30–50 | Second lab. |
+| 50–75 | Third lab, the longest of the three (02, 05, and 08 each have five steps). |
+| 75–90 | Discussion of the lecture's question, one live-mode run if time allows, and the self-study pointer. |
+
+Keep the *Try it* exercises that need live mode, and the last one or two exercises of each lab, as homework. After Lecture 2, point students to self-study Labs 09 (MCP) and 11 (A2A); after Lecture 3, to Labs 10 (skills) and 12 (LangGraph). Each self-study lab ends with a challenge that applies it to the student's own council, which is a natural first project milestone.
 
 ## One question per lab
 
@@ -31,16 +51,16 @@ A 60–90 minute session can add paired practice, discussion, and optional live 
 | 00 | Where does the model without the policy disagree with the rule, and why are those the mixed cases? |
 | 01 | Which part of the guided prompt removes Lab 00's guesswork, and which test case could reveal a mistake? |
 | 02 | Why do embeddings find R1 for the reworded question when word matching does not, and why does the lunch question get no answer? |
-| 03 | Which tool reads, which tool changes state, and why does a rejected call leave the state unchanged? |
+| 03 | What does each link of the chain receive, and what can a gate check that a single prompt hides? |
 | 04 | Which actions did the model choose, what did it observe, and which guard would stop a bad run? |
-| 05 | What did the model see when it chose a skill, and what did it see only afterwards? |
-| 06 | What did the reviewer receive, and how did its feedback change the proposal? |
-| 07 | What is stored in graph state, what decides between retrying and finishing, and what does the check leave unassessed? |
-| 08 | What does each link of the chain receive, and what can a gate check that a single prompt hides? |
-| 09 | Why must the architects propose alone first, which claim was challenged, and why was the dissent kept? |
-| 10 | Which reason did the human give, which new case recalled it, and why did the lesson apply to only one of them? |
-| 11 | Which case did the router send where, which mistake is costlier, and when does a router cost more than no router? |
-| 12 | Which system is the baseline, where does the council win, at what cost, and why do we check the judge against a human? |
+| 05 | Why must the architects propose alone first, which claim was challenged, and why was the dissent kept? |
+| 06 | Which reason did the human give, which new case recalled it, and why did the lesson apply to only one of them? |
+| 07 | Which case did the router send where, which mistake is costlier, and when does a router cost more than no router? |
+| 08 | Which system is the baseline, where does the council win, at what cost, and why do we check the judge against a human? |
+| 09 | Which tool reads, which tool changes state, and why does a rejected call leave the state unchanged? |
+| 10 | What did the model see when it chose a skill, and what did it see only afterwards? |
+| 11 | What did the reviewer receive, and how did its feedback change the proposal? |
+| 12 | What is stored in graph state, what decides between retrying and finishing, and what does the check leave unassessed? |
 
 ## Evaluate useful behavior
 
@@ -54,6 +74,6 @@ For a formative submission, request one changed input, its result, and two sente
 
 ## Keep the implementation honest
 
-The MCP lab builds its own small server and makes fixed client calls. The next lab adds model-selected actions. MCP’s save action changes an in-memory dictionary only. A2A’s reviewer is deterministic and uses real local protocol routes; the proposer is the course model, scripted in practice mode. The skills lab chooses from a small in-notebook catalog instead of a full skill host. These boundaries let students distinguish data, actions, agent messages, reusable procedures, and orchestration.
+The self-study MCP lab builds its own small server and makes fixed client calls; Lab 04 has already shown model-selected actions. MCP’s save action changes an in-memory dictionary only. A2A’s reviewer is deterministic and uses real local protocol routes; the proposer is the course model, scripted in practice mode. The skills lab chooses from a small in-notebook catalog instead of a full skill host. These boundaries let students distinguish data, actions, agent messages, reusable procedures, and orchestration.
 
-The council labs keep the chair in plain code and replace Lab 09's council with one call in Lab 10, so each pattern stays visible. Larger skill catalogs, production hosting, persistent vector databases, and benchmarks of 20 or more scenarios can follow once these examples are clear. Continue with the linked learning resources.
+The council labs keep the chair in plain code and replace Lab 05's council with one call in Lab 06, so each pattern stays visible. Larger skill catalogs, production hosting, persistent vector databases, and benchmarks of 20 or more scenarios can follow once these examples are clear. Continue with the linked learning resources.

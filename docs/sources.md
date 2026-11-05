@@ -3,7 +3,7 @@
 ## More hands-on learning
 
 - [Agentic AI Learning Lab](https://github.com/mkassaf/agentic-ai-learning-lab): a browser-based practice app with examples progressing from a single prompt to tools, reflection, and multi-agent workflows.
-- [LangGraph Complete Guide](https://github.com/mkassaf/langgraph-complete-guide): Python examples for chatbots, ReAct agents, supervisor patterns, and research workflows; a follow-up to Lab 07.
+- [LangGraph Complete Guide](https://github.com/mkassaf/langgraph-complete-guide): Python examples for chatbots, ReAct agents, supervisor patterns, and research workflows; a follow-up to Lab 12.
 
 Follow each repository's README for its own setup and run instructions.
 
@@ -19,7 +19,7 @@ These primary sources support the course concepts and interfaces. The notebooks 
 | RAG | [Lewis et al., Retrieval-Augmented Generation (2020)](https://arxiv.org/abs/2005.11401) | Retrieval supplies evidence before generation; the classroom store holds four policies |
 | Embeddings and vector search | [Reimers & Gurevych, Sentence-BERT (2019)](https://arxiv.org/abs/1908.10084), the [all-MiniLM-L6-v2 model card](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2), and [Chroma documentation](https://docs.trychroma.com/) | Sentence embeddings, cosine similarity, and an in-memory vector database |
 | Agent actions | [Yao et al., ReAct (2022)](https://arxiv.org/abs/2210.03629) | Actions and observations in a loop; the course does not expose private model reasoning |
-| Workflows and patterns | [Anthropic, Building effective agents](https://www.anthropic.com/research/building-effective-agents) | Chaining (Lab 08), routing (Lab 11), parallelization and orchestration (Lab 09), and evaluator–optimizer loops (Labs 06–07) |
+| Workflows and patterns | [Anthropic, Building effective agents](https://www.anthropic.com/research/building-effective-agents) | Chaining (Lab 03), routing (Lab 07), parallelization and orchestration (Lab 05), and evaluator–optimizer loops (Labs 11–12) |
 | Multi-agent debate | [Du et al., Improving Factuality and Reasoning through Multiagent Debate (2023)](https://arxiv.org/abs/2305.14325) | Several models propose, read each other's answers, and converge; the council adds sources, a chair, and dissent |
 | Independent opinions | [Sharma et al., Towards Understanding Sycophancy in Language Models (2023)](https://arxiv.org/abs/2310.13548) | Why architects propose alone before they read each other |
 | Feedback and memory | [Shinn et al., Reflexion (2023)](https://arxiv.org/abs/2303.11366) and [Park et al., Generative Agents (2023)](https://arxiv.org/abs/2304.03442) | Verbal feedback stored as memory and retrieved for later tasks |

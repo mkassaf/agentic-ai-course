@@ -11,12 +11,12 @@ import nbformat
 ROOT = Path(__file__).resolve().parents[1]
 EXTRAS = {
     "02_rag_systems": ("rag", "chromadb"),
-    "03_tools_mcp": ("mcp", "mcp"),
-    "06_a2a_protocol": ("a2a", "a2a"),
-    "07_frameworks_evaluation": ("framework", "langgraph"),
-    "10_human_feedback_memory": ("rag", "chromadb"),
+    "06_human_feedback_memory": ("rag", "chromadb"),
+    "09_tools_mcp": ("mcp", "mcp"),
+    "11_a2a_protocol": ("a2a", "a2a"),
+    "12_frameworks_langgraph": ("framework", "langgraph"),
 }
-NO_MODEL_LABS = {"03_tools_mcp"}  # these labs never call ask()
+NO_MODEL_LABS = {"09_tools_mcp"}  # these labs never call ask()
 
 
 def source_cell(kind, source):
@@ -41,7 +41,8 @@ def setup_for(slug, revision):
 def build(lesson, revision):
     slug = lesson["slug"]
     number = slug.split("_", 1)[0]
-    intro = f'# Lab {number} · {lesson["title"]}\n\n**Prepared by Mustafa Assaf** · 15–20 minute lab'
+    intro = (f'# Lab {number} · {lesson["title"]}\n\n'
+             f'**Prepared by Mustafa Assaf** · {lesson["section"]} · 15–20 minute lab')
     setup_note = '## Setup\nRun this cell once to load the course helpers, then run the steps below in order.'
     if slug not in NO_MODEL_LABS:
         setup_note += (' Practice answers are scripted. For a live model, save '

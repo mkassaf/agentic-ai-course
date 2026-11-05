@@ -35,7 +35,7 @@ Services with deployment-specific URLs, native Gemini/Messages APIs, SSO-only au
 
 ## Three model families for the council
 
-Lab 09's council needs at least three model families in live mode. FreeInference serves the Qwen family. Point the other two architects at a second compatible service by replacing the placeholders in the lab's `live` settings:
+Lab 05's council needs at least three model families in live mode. FreeInference serves the Qwen family. Point the other two architects at a second compatible service by replacing the placeholders in the lab's `live` settings:
 
 ```python
 GATEWAY = dict(base_url="https://your-gateway.example/v1", secret_name="GATEWAY_API_KEY")
