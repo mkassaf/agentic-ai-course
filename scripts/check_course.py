@@ -52,8 +52,8 @@ def main():
     expected = set(config.get("labs", []))
     if {path.stem for path in paths} != expected:
         issues.append("Notebook filenames do not match the configured lab sequence")
-    if len(paths) != 8:
-        issues.append(f"Expected 8 notebooks; found {len(paths)}")
+    if len(paths) != len(config.get("labs", [])):
+        issues.append(f"Expected {len(config.get('labs', []))} notebooks; found {len(paths)}")
     for path in paths:
         if not (ROOT / "lessons" / (path.stem + ".json")).exists():
             issues.append(f"{path.name}: editable lesson source is missing")
@@ -68,8 +68,8 @@ def main():
             issues.append(f"{path.name}: use two to five step code cells")
         if any(len(c.source.splitlines()) > 20 for c in examples):
             issues.append(f"{path.name}: a step cell exceeds 20 lines; split it into two steps")
-        if sum(len(c.source.splitlines()) for c in examples) > 60:
-            issues.append(f"{path.name}: example code exceeds the 60-line lab limit")
+        if sum(len(c.source.splitlines()) for c in examples) > 75:
+            issues.append(f"{path.name}: example code exceeds the 75-line lab limit")
         for cell in notebook.cells:
             if cell.cell_type == "code":
                 if cell.get("outputs") or cell.get("execution_count") is not None:

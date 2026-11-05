@@ -4,11 +4,13 @@ Use the same small architecture case throughout. Students spend their attention 
 
 ## Before teaching
 
-Run the checks in the [README](../README.md), then open the notebooks in Colab. One setup cell installs `coursekit` from a pinned public GitHub revision. Protocol and framework lessons also install the relevant SDK. Supporting transport code is in that package.
+Run the checks in the [README](../README.md), then open the notebooks in Colab. One setup cell installs `coursekit` from a pinned public GitHub revision. The RAG and memory lessons install Chroma and download a small embedding model on first run; protocol and framework lessons install the relevant SDK. Supporting transport code is in that package.
 
 The labs share four fictional projects, one for each combination of the two facts. Lab 00 starts with the Course portal: `team_size=3` and `independent_deploys=False`. The fictional policy chooses microservices only for a team of at least eight people that also needs independent deployments; otherwise it chooses a modular monolith. Explain that this is a teaching fixture. Ask students which real architecture concerns this rule omits.
 
 Test one small live call with student-equivalent access. Defaults: FreeInference, `qwen3.6-35b`, and Colab Secret `FREEINFERENCE_API_KEY`. Service, model, and secret name are configurable. Verify current access and quotas; keep keys out of code and outputs.
+
+The council lab (09) needs three model families in live mode. FreeInference currently serves the Qwen family, and its free tier takes one request at a time (the course client queues the rest). Before class, choose a second OpenAI-compatible service for the other two architects, such as a university gateway, and give students its base URL, model ids, and secret name.
 
 ## A short teaching rhythm
 
@@ -28,16 +30,21 @@ A 60–90 minute session can add paired practice, discussion, and optional live 
 | --- | --- |
 | 00 | Where does the model without the policy disagree with the rule, and why are those the mixed cases? |
 | 01 | Which part of the guided prompt removes Lab 00's guesswork, and which test case could reveal a mistake? |
-| 02 | Which policy was retrieved for each question, and why does the lunch question get no answer? |
+| 02 | Why do embeddings find R1 for the reworded question when word matching does not, and why does the lunch question get no answer? |
 | 03 | Which tool reads, which tool changes state, and why does a rejected call leave the state unchanged? |
 | 04 | Which actions did the model choose, what did it observe, and which guard would stop a bad run? |
 | 05 | What did the model see when it chose a skill, and what did it see only afterwards? |
 | 06 | What did the reviewer receive, and how did its feedback change the proposal? |
 | 07 | What is stored in graph state, what decides between retrying and finishing, and what does the check leave unassessed? |
+| 08 | What does each link of the chain receive, and what can a gate check that a single prompt hides? |
+| 09 | Why must the architects propose alone first, which claim was challenged, and why was the dissent kept? |
+| 10 | Which reason did the human give, which new case recalled it, and why did the lesson apply to only one of them? |
+| 11 | Which case did the router send where, which mistake is costlier, and when does a router cost more than no router? |
+| 12 | Which system is the baseline, where does the council win, at what cost, and why do we check the judge against a human? |
 
 ## Evaluate useful behavior
 
-Use a small rubric: **policy adherence**, **grounding in supplied facts**, and **one clear consequence**. A matching label is only the first check. For prompting, inspect the five cases and add a boundary or counterexample. For RAG, inspect the scores and the retrieved policies. For tools and agent loops, inspect the action, observation, state change, and stop condition.
+Use a small rubric: **policy adherence**, **grounding in supplied facts**, and **one clear consequence**. A matching label is only the first check. For prompting, inspect the five cases and add a boundary or counterexample. For RAG, inspect the distances and the retrieved policies. For tools and agent loops, inspect the action, observation, state change, and stop condition.
 
 Practice replies and scores are scripted; they test the exercise’s plumbing, not an LLM. Run the same cases live before drawing conclusions about prompting. With a small test set, describe observed results rather than claiming general model accuracy.
 
@@ -49,4 +56,4 @@ For a formative submission, request one changed input, its result, and two sente
 
 The MCP lab builds its own small server and makes fixed client calls. The next lab adds model-selected actions. MCP’s save action changes an in-memory dictionary only. A2A’s reviewer is deterministic and uses real local protocol routes; the proposer is the course model, scripted in practice mode. The skills lab chooses from a small in-notebook catalog instead of a full skill host. These boundaries let students distinguish data, actions, agent messages, reusable procedures, and orchestration.
 
-Parallel workers, larger skill catalogs, production hosting, vector databases, and larger evaluation suites can follow once these examples are clear. Continue with the linked learning resources.
+The council labs keep the chair in plain code and replace Lab 09's council with one call in Lab 10, so each pattern stays visible. Larger skill catalogs, production hosting, persistent vector databases, and benchmarks of 20 or more scenarios can follow once these examples are clear. Continue with the linked learning resources.

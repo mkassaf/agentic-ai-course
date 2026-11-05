@@ -4,7 +4,7 @@ Prepared by **Mustafa Assaf**
 
 **[Course website](https://mkassaf.github.io/agentic-ai-course/)** · **[GitHub repository](https://github.com/mkassaf/agentic-ai-course)**
 
-Eight beginner labs in **general agentic AI**, connected by one small software architecture decision: **modular monolith or microservices?** Compare Python rules with a single prompt, improve and evaluate the prompt, retrieve a stored policy, then add tools, patterns, skills, agent communication, and a framework. Each lab builds one worked example in short, numbered steps, checks the result, and ends with small exercises.
+Thirteen beginner labs in **general agentic AI**, connected by one small software architecture decision: **modular monolith or microservices?** Compare Python rules with a single prompt, improve and evaluate the prompt, retrieve a stored policy with embeddings and a vector database, then add tools, patterns, skills, agent communication, and a framework. The last five labs combine these into an **architecture council** that debates, defers to a human architect, remembers, routes cases, and is evaluated against single models. Each lab builds one worked example in short, numbered steps, checks the result, and ends with small exercises.
 
 The fictional course policy selects microservices only when `team_size >= 8` **and** `independent_deploys` is true; otherwise it selects a modular monolith. The starting case has a three-person team and no independent deployment requirement. This policy is a teaching fixture, not a general architecture recommendation.
 
@@ -23,14 +23,19 @@ Open a notebook in **Google Colab**, save a copy to your Drive, and run the cell
 | --- | --- | --- | --- |
 | 00 · Rules, then LLM calls | Run a Python rule on four projects, then count how often a model agrees | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/00_rules_and_llms.ipynb) | [View](notebooks/00_rules_and_llms.ipynb) |
 | 01 · Better prompts and small evaluations | A guided prompt, a strict JSON parser, and a five-case quality gate | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/01_prompting_evaluation.ipynb) | [View](notebooks/01_prompting_evaluation.ipynb) |
-| 02 · Retrieve architecture rules with RAG | Rank stored policies, abstain when nothing matches, and check citations | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/02_rag_systems.ipynb) | [View](notebooks/02_rag_systems.ipynb) |
+| 02 · Retrieve architecture rules with RAG | Embed policies, store them in a Chroma vector database, retrieve by meaning, and check citations | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/02_rag_systems.ipynb) | [View](notebooks/02_rag_systems.ipynb) |
 | 03 · Architecture tools and our own MCP server | Read and write tools with validation, discovery, and error results | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/03_tools_mcp.ipynb) | [View](notebooks/03_tools_mcp.ipynb) |
 | 04 · ReAct: choose a tool, then decide | A guarded agent loop that finds a project, reads it, and decides | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/04_agentic_patterns.ipynb) | [View](notebooks/04_agentic_patterns.ipynb) |
 | 05 · A skill for a short architecture decision record | Choose a skill from a catalog, write two ADRs, and check them | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/05_agent_skills.ipynb) | [View](notebooks/05_agent_skills.ipynb) |
 | 06 · Delegate an architecture review with A2A | Propose, have a reviewer agent check it over A2A, and revise | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/06_a2a_protocol.ipynb) | [View](notebooks/06_a2a_protocol.ipynb) |
 | 07 · A framework for choosing and checking | A LangGraph choose-and-check loop with a conditional retry | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/07_frameworks_evaluation.ipynb) | [View](notebooks/07_frameworks_evaluation.ipynb) |
+| 08 · Chain the steps of a decision | Requirements, options, trade-offs, and a decision record, with a gate after each step | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/08_prompt_chaining.ipynb) | [View](notebooks/08_prompt_chaining.ipynb) |
+| 09 · A council of architects: propose, challenge, agree | Three architects on three model families propose alone; a chair challenges, counts grounded votes, and keeps the dissent | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/09_architecture_council.ipynb) | [View](notebooks/09_architecture_council.ipynb) |
+| 10 · The human decides, the council learns | Human review and revision, a memory of past decisions, and a held-out before/after score | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/10_human_feedback_memory.ipynb) | [View](notebooks/10_human_feedback_memory.ipynb) |
+| 11 · Route each case: rule or council | A model router with worked examples, a dispatch table, a safe fallback, and the cost of each kind of mistake | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/11_routing.ipynb) | [View](notebooks/11_routing.ipynb) |
+| 12 · Does the council beat a single model? | Compare the council with its models alone; calibrate an LLM judge against human ratings | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/12_council_evaluation.ipynb) | [View](notebooks/12_council_evaluation.ipynb) |
 
-Each notebook opens with what is new since the previous lab, then one setup cell that installs the reusable `coursekit` package from a pinned public GitHub revision. MCP, A2A, and LangGraph labs also install their relevant official SDK. Supporting transport code lives in the package, outside the notebooks. Each step is one code cell of at most 20 lines, and a lab has at most 60 lines of example code. You do not need a paid framework account.
+Each notebook opens with what is new since the previous lab, then one setup cell that installs the reusable `coursekit` package from a pinned public GitHub revision. The RAG and memory labs (02 and 10) also install the Chroma vector database, and their first run downloads a small embedding model (about 80 MB). The MCP, A2A, and LangGraph labs install their official SDKs. Supporting transport code lives in the package, outside the notebooks. Each step is one code cell of at most 20 lines, and a lab has at most 75 lines of example code. You do not need a paid framework account.
 
 ## Use a live model
 
@@ -43,7 +48,7 @@ MODE = "live"
 ask = make_ask(mode=MODE)
 ```
 
-This uses FreeInference `qwen3.6-35b` by default. `make_ask` also accepts `base_url`, `model`, and `secret_name` for another compatible service. The MCP lab needs no live model; in the A2A lab, a live model proposes and a deterministic agent reviews. See [API setup](docs/api-setup.md).
+This uses FreeInference `qwen3.6-35b` by default. `make_ask` also accepts `base_url`, `model`, and `secret_name` for another compatible service. The MCP lab needs no live model; in the A2A lab, a live model proposes and a deterministic agent reviews. The council lab (09) needs **three model families** in live mode: FreeInference serves Qwen, so configure the other two architects with a second compatible service. See [API setup](docs/api-setup.md).
 
 ## Teaching guides
 

@@ -10,9 +10,11 @@ import nbformat
 
 ROOT = Path(__file__).resolve().parents[1]
 EXTRAS = {
+    "02_rag_systems": ("rag", "chromadb"),
     "03_tools_mcp": ("mcp", "mcp"),
     "06_a2a_protocol": ("a2a", "a2a"),
     "07_frameworks_evaluation": ("framework", "langgraph"),
+    "10_human_feedback_memory": ("rag", "chromadb"),
 }
 NO_MODEL_LABS = {"03_tools_mcp"}  # these labs never call ask()
 

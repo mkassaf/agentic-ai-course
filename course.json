@@ -10,6 +10,11 @@
     "04_agentic_patterns",
     "05_agent_skills",
     "06_a2a_protocol",
-    "07_frameworks_evaluation"
+    "07_frameworks_evaluation",
+    "08_prompt_chaining",
+    "09_architecture_council",
+    "10_human_feedback_memory",
+    "11_routing",
+    "12_council_evaluation"
   ]
 }

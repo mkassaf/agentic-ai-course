@@ -40,19 +40,19 @@ const labs = [
     "id": "02",
     "file": "02_rag_systems",
     "title": "Retrieve architecture rules with RAG",
-    "subtitle": "Score, rank, and retrieve, then answer with citations",
-    "topics": "rag retrieval rules source architecture context",
-    "idea": "Store several policies, retrieve only the strong matches, and check that the answer cites the evidence it was given.",
-    "flow": "question → score policies → keep strong matches → grounded answer → citation check",
+    "subtitle": "Embeddings, a vector database, and grounded answers",
+    "topics": "rag retrieval embeddings vectors vector database chroma similarity rules source architecture context",
+    "idea": "Turn policies into embedding vectors, store them in a vector database, retrieve by meaning, and check that the answer cites its evidence.",
+    "flow": "question → embed → nearest policies in Chroma → distance threshold → grounded answer → citation check",
     "objectives": [
-      "Rank stored policies by shared words.",
-      "Abstain when no evidence matches.",
-      "Check that citations match the retrieved evidence."
+      "Explain embeddings and compare two with cosine similarity.",
+      "Store and query vectors in a vector database.",
+      "Abstain when no evidence is close, and check citations."
     ],
-    "example": "Retrieve from a four-policy store for an architecture question, a database question, and an off-topic lunch question.",
-    "exercise": "Add a deployment-region question, raise the match threshold, and break a citation.",
-    "checks": "The architecture question retrieves R1, the billing question R2, and the lunch question nothing. Both answers are grounded.",
-    "bridge": "This transparent keyword retriever illustrates RAG; larger systems may use embeddings and ranking."
+    "example": "Embed four policies with all-MiniLM-L6-v2, store them in Chroma, and retrieve R1 for a reworded question that word matching misses.",
+    "exercise": "Add a cloud-region question, tighten and loosen the distance threshold, and break a citation.",
+    "checks": "The reworded question retrieves R1, the billing question R2, and the lunch question nothing. Both answers are grounded.",
+    "bridge": "The same steps scale up: a larger embedding model, a persistent vector database, and many more documents."
   },
   {
     "id": "03",
@@ -142,7 +142,97 @@ const labs = [
     "example": "Run a choose-and-check graph on four projects. One project fails, gets feedback, and passes on its second attempt.",
     "exercise": "Use up the attempts, allow a third attempt, and add a fifth project.",
     "checks": "All four projects pass, the Internal wiki after two attempts, for five model calls in total.",
-    "bridge": "Passing a policy check is useful evidence, but does not establish overall architecture quality."
+    "bridge": "Passing a policy check is useful evidence, but not architecture quality. Labs 08–10 combine these pieces into an architecture council."
+  },
+  {
+    "id": "08",
+    "file": "08_prompt_chaining",
+    "title": "Chain the steps of a decision",
+    "subtitle": "Requirements, options, trade-offs, and a record, with a gate after each step",
+    "topics": "prompt chaining workflow gate requirements options trade-offs adr patterns council",
+    "idea": "Split one decision into small prompts; each reply feeds the next prompt, and a gate in plain Python stops a bad reply before it spreads.",
+    "flow": "brief → requirements → gate → options → gate → trade-offs → gate → decision record → gate",
+    "objectives": [
+      "Decompose a decision into a chain of prompts.",
+      "Write a gate that checks one step's reply.",
+      "Pass each step only what it needs."
+    ],
+    "example": "Chain four prompts for the Payments platform, whose squads want independent releases while one engineer runs operations.",
+    "exercise": "Break the requirements list, drop a trade-off mark, and make the decision name an option that was never proposed.",
+    "checks": "Every gate passes, and the record chooses microservices while naming the cost for the one operations engineer.",
+    "bridge": "Gates check the shape of each step, not whether the decision is wise; the next lab adds architects who disagree."
+  },
+  {
+    "id": "09",
+    "file": "09_architecture_council",
+    "title": "A council of architects: propose, challenge, agree",
+    "subtitle": "Independent proposals on three model families, challenges, and a chair",
+    "topics": "multi-agent council debate parallel proposals critique revision consensus voting dissent chair coordinator grounding model families patterns",
+    "idea": "Three architects on three model families propose alone and in parallel; a chair challenges unsupported claims, counts grounded votes, keeps the dissent, and escalates a deadlock.",
+    "flow": "shared sources → 3 proposals in parallel → challenge ungrounded claims → revise → grounded votes → decision + dissent | escalation",
+    "objectives": [
+      "Collect independent proposals in parallel.",
+      "Turn disagreement into sourced claims.",
+      "Apply a stopping rule, record dissent, and handle a deadlock."
+    ],
+    "example": "Two architects choose microservices and one the modular monolith; the claim without a source is challenged and revised before the vote.",
+    "exercise": "Cause a deadlock, cite a made-up source, and compare one model family with three in live mode.",
+    "checks": "Six messages over three rounds; microservices wins 2 to 1, and the Guardian's dissent citing F3 is kept.",
+    "bridge": "Live mode needs three model families: FreeInference serves Qwen; point the other two architects at a second compatible service."
+  },
+  {
+    "id": "10",
+    "file": "10_human_feedback_memory",
+    "title": "The human decides, the council learns",
+    "subtitle": "Human review, revision, memory, and a held-out evaluation",
+    "topics": "human in the loop feedback memory vector database chroma lessons evaluation held-out learning patterns council",
+    "idea": "The human architect reviews each proposal and keeps the final say; the accepted decision and its reasons become a memory that later cases recall.",
+    "flow": "proposal → human review → revise with feedback → accept → store lesson → recall for new cases → score before / after",
+    "objectives": [
+      "Keep a human's final authority in a bounded review loop.",
+      "Store and recall lessons from past decisions.",
+      "Measure improvement on held-out cases only."
+    ],
+    "example": "The human rejects microservices for its operating cost; the lesson later changes the Logistics tracker's decision but not the Search platform's.",
+    "exercise": "Accept or reject every proposal, tighten the recall distance, and add a case where the lesson should not apply.",
+    "checks": "The revision is accepted after two reviews. Held-out score: 1 of 2 without memory, 2 of 2 with it.",
+    "bridge": "Similar text does not mean a lesson applies; the project needs 20 or more held-out scenarios and repeated live runs."
+  },
+  {
+    "id": "11",
+    "file": "11_routing",
+    "title": "Route each case: rule or council",
+    "subtitle": "A model router, a dispatch table, a safe fallback, and the cost of each mistake",
+    "topics": "routing router classifier dispatch handlers fallback cost few shot council patterns",
+    "idea": "A router reads each case and picks a handler: plain code for routine cases, the council for contested ones. Code owns the routes and falls back to the council when a reply is unusable.",
+    "flow": "case → router (model) → valid route? → HANDLERS[route] → rule (0 calls) | council (5 calls) → compare with human routes",
+    "objectives": [
+      "Route inputs with a model and a dispatch table.",
+      "Fall back safely on an unusable reply.",
+      "Count routing cost and weigh the two kinds of mistake."
+    ],
+    "example": "Six cases with a note the rule cannot read; the router sends the two cases with one operations engineer to the council.",
+    "exercise": "Skip a needed debate, send an unusable route, change a note, and compare a router with and without worked examples.",
+    "checks": "The router agrees with the human on 5 of 6 cases, skips no needed debate, and costs 21 calls against 30.",
+    "bridge": "Live, worked examples kept the router from skipping debates; a router that wastes too many debates costs more than none."
+  },
+  {
+    "id": "12",
+    "file": "12_council_evaluation",
+    "title": "Does the council beat a single model?",
+    "subtitle": "A baseline comparison with a calibrated LLM judge",
+    "topics": "evaluation baseline experiment llm judge calibration human ratings grounding cost latency council patterns",
+    "idea": "Compare the council with each of its models alone on the same scenarios, by correctness, grounding, a judged trade-off measure, and cost; trust the LLM judge only after it agrees with human ratings.",
+    "flow": "recorded runs → correct / grounded / calls / seconds → LLM judge → agreement with human sample → council vs best single model",
+    "objectives": [
+      "Compare a system with the strongest baseline.",
+      "Use an LLM judge with a narrow rubric.",
+      "Calibrate the judge against human ratings."
+    ],
+    "example": "Four systems answer two held-out scenarios; the judge rates whether each answer names a cost of its option.",
+    "exercise": "Raise the calibration threshold, make the council wrong once, and remove a run.",
+    "checks": "The judge agrees with the human on 3 of 4 answers. The council ties Llama on correctness and beats it on grounding, at 5 times the calls.",
+    "bridge": "Two scenarios demonstrate the method; the project needs 20 or more, and an honest report even when the council does not win."
   }
 ];
 

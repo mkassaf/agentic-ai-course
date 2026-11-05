@@ -1,0 +1,47 @@
+{
+  "slug": "08_prompt_chaining",
+  "title": "Chain the steps of a decision",
+  "section": "Agent foundations and patterns",
+  "cells": [
+    {
+      "type": "markdown",
+      "source": "## Break one decision into checked steps\n\n**So far:** Labs 00–07 each answered the question with one prompt, guided by one small rule.\n\n**New:** *prompt chaining*. The decision becomes a fixed sequence of small prompts: **requirements → options → trade-offs → decision record**. Each step's reply is the input of the next step. Between two steps, a *gate* (plain Python) checks the reply and stops the chain before a bad result spreads.\n\nThe case is now harder than the course rule. The Payments platform's squads want to release on their own schedules, but only one engineer runs operations. Labs 08–10 build an *architecture council* for this case, one pattern at a time:\n\n- **Lab 08:** one architect's decision, as a chain of checked steps.\n- **Lab 09:** three architects on three model families propose alone, challenge each other, and a chair finds the majority.\n- **Lab 10:** a human architect reviews the proposal, and a memory keeps the lesson for later cases."
+    },
+    {
+      "type": "markdown",
+      "source": "## Step 1 · The brief, the question, and a link\n\n`run_step` is one link of the chain. It asks the model, prints the reply, and hands it to a *gate*. A gate returns `None` when the reply is fine, or a message that says what is wrong. A failing gate raises an error, so no later step sees the bad reply. A reply that is not JSON makes `json.loads` raise an error inside the gate, which stops the chain too.\n\n`three_items` is the first gate. The last line tries it on a list of two items, without calling the model."
+    },
+    {
+      "type": "code",
+      "source": "import json\n\nbrief = (\"Payments platform: 12 developers in 3 squads; each squad wants to release on its own schedule. \"\n         \"Payments peak at 400 per second, and one engineer runs operations.\")\nquestion = \"How should the Payments platform be split into deployable units?\"\n\ndef run_step(name, prompt, example, gate):\n    \"\"\"One link of the chain: ask, show the reply, and let the gate check it before the next link uses it.\"\"\"\n    reply = ask(prompt, example=example)\n    print(f\"[{name}] {reply}\")\n    problem = gate(reply)\n    if problem:\n        raise ValueError(f\"The gate after '{name}' stopped the chain: {problem}\")\n    return reply\n\ndef three_items(reply):\n    items = json.loads(reply)\n    return None if isinstance(items, list) and len(items) == 3 else f\"expected a list of 3 items, got {items}\"\n\nprint(three_items('[\"independent releases\", \"low operations effort\"]'))  # a gate explains what is wrong"
+    },
+    {
+      "type": "markdown",
+      "source": "## Step 2 · Requirements, then options\n\nThe first link names the three quality requirements that matter most for the question. The second link uses them to name candidate architectures, and its gate accepts two or three *different* options. Each reply is parsed with `json.loads` and becomes the input of the next link."
+    },
+    {
+      "type": "code",
+      "source": "prompt = (f\"Question: {question}\\nBrief: {brief}\\nName the 3 quality requirements that matter most \"\n          \"for this question, as short labels. Reply with a JSON list only, no code fences.\")\nexample = '[\"independent releases\", \"400 payments per second\", \"low operations effort\"]'\nrequirements = json.loads(run_step(\"requirements\", prompt, example, three_items))\n\ndef two_or_three(reply):\n    items = json.loads(reply)\n    return None if 2 <= len(set(items)) == len(items) <= 3 else f\"expected 2 or 3 different options, got {items}\"\n\nprompt = (f\"Question: {question}\\nBrief: {brief}\\nRequirements: {requirements}\\nName 2 or 3 candidate \"\n          \"architectures. Reply with a JSON list of short labels only, no code fences.\")\noptions = json.loads(run_step(\"options\", prompt, '[\"modular monolith\", \"microservices\"]', two_or_three))"
+    },
+    {
+      "type": "markdown",
+      "source": "## Step 3 · Weigh every option against every requirement\n\nThe third link sees only the options and the requirements, not the brief: each link gets just what its step needs. It fills a small table: for each option and each requirement, `\"+\"` if the option helps and `\"-\"` if it hurts. The gate uses the replies of the earlier links: it checks that every option has a mark for every requirement, and names any cell that is missing."
+    },
+    {
+      "type": "code",
+      "source": "def every_cell(reply):\n    table = json.loads(reply)\n    missing = [f\"{o} / {r}\" for o in options for r in requirements if table.get(o, {}).get(r) not in (\"+\", \"-\")]\n    return f\"missing or invalid marks: {missing}\" if missing else None\n\nprompt = (f\"Options: {options}\\nRequirements: {requirements}\\nFor each option, mark each requirement \"\n          '\"+\" (helps) or \"-\" (hurts). Reply with JSON only, no code fences, in this shape: '\n          '{\"<option>\": {\"<requirement>\": \"+\" or \"-\"}}')\nexample = json.dumps({\n    \"modular monolith\": {\"independent releases\": \"-\", \"400 payments per second\": \"+\", \"low operations effort\": \"+\"},\n    \"microservices\": {\"independent releases\": \"+\", \"400 payments per second\": \"+\", \"low operations effort\": \"-\"}})\ntradeoffs = json.loads(run_step(\"trade-offs\", prompt, example, every_cell))\nfor option, marks in tradeoffs.items():\n    print(f\"   {option:<17}\", \"   \".join(f\"{mark} {requirement}\" for requirement, mark in marks.items()))"
+    },
+    {
+      "type": "markdown",
+      "source": "## Step 4 · Write the decision record\n\nThe last link writes the three-line decision record from Lab 05, using the brief and the trade-off table. Its gate checks the three labels and that the decision is one of the options from Step 2."
+    },
+    {
+      "type": "code",
+      "source": "def record_gate(reply):\n    fields = dict(line.split(\": \", 1) for line in reply.strip().splitlines() if \": \" in line)\n    if list(fields) != [\"Context\", \"Decision\", \"Consequence\"]:\n        return f\"expected Context, Decision, Consequence; got {list(fields)}\"\n    labels = [option.lower() for option in options]\n    return None if fields[\"Decision\"].rstrip(\".\").lower() in labels else f\"the Decision must be one of {options}\"\n\nprompt = (f\"Brief: {brief}\\nTrade-offs: {json.dumps(tradeoffs)}\\nWrite exactly three lines, starting with \"\n          '\"Context: \", \"Decision: \" (one option label only), and \"Consequence: \" (the main cost of the decision).')\nexample = (\"Context: 12 developers in 3 squads want to release on their own schedules.\\nDecision: microservices\\n\"\n           \"Consequence: Squads release independently, but one operations engineer must run every service.\")\nrecord = run_step(\"decision record\", prompt, example, record_gate)"
+    },
+    {
+      "type": "markdown",
+      "source": "## What you should see\n\nStep 1 prints the gate's message for the two-item list. Step 2 prints three requirements and two options. Step 3 prints the reply and then the same marks as a table: the modular monolith hurts independent releases, and microservices hurt low operations effort. Step 4 prints a decision record for `microservices`, whose Consequence names the cost for the one operations engineer.\n\nThe chain made four model calls, and every gate passed. Notice what the gates check: the *shape* of each reply, not whether the decision is wise. The chain saw the operations cost and still chose microservices. One chain gives one architect's view. Lab 09 lets other architects challenge it.\n\n## Try it\n\n1. In Step 2, make the scripted requirements a list of two items. The first gate stops the chain, and the options are never requested.\n2. Delete `\"low operations effort\": \"-\"` from the microservices row in Step 3. The gate names the missing cell.\n3. Change the scripted Decision in Step 4 to `serverless`. Why does the gate reject it, although serverless might be a reasonable design?\n4. In live mode, ask for the decision record directly from the brief, in one prompt. Does that record mention the operations cost? Which steps could you no longer check?\n\n## Takeaway\n\nChaining splits one large request into small steps that you can read and check. Each link sees only what it needs, and a gate stops a bad reply before the next link builds on it. A chain still gives one point of view; the next lab adds architects who disagree.\n\n## Read further\n\n- [Building effective agents: prompt chaining](https://www.anthropic.com/research/building-effective-agents)"
+    }
+  ]
+}

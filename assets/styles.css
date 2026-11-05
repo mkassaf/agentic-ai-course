@@ -7,3 +7,4 @@
 :root .course-byline { color: #5C5C5C; font-size: 15px; margin: 0 0 24px; }
 
 .topic-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px}.topic-grid article{padding:30px;border:1px solid var(--line);border-radius:12px}.topic-grid h3{font-size:25px;line-height:1.3;margin-top:21px}.topic-grid p{font-size:15px;color:var(--muted)}.topic-grid .text-link{font-size:13px}@media(max-width:600px){.topic-grid{grid-template-columns:1fr;gap:18px}.topic-grid article{padding:25px}.topic-grid h3{font-size:23px}}
+.flow-after-strip{margin-top:9px}
