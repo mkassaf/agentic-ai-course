@@ -4,9 +4,9 @@ Prepared by **Mustafa Assaf**
 
 **[Course website](https://mkassaf.github.io/agentic-ai-course/)** · **[GitHub repository](https://github.com/mkassaf/agentic-ai-course)**
 
-Thirteen beginner labs in **general agentic AI**, connected by one small software architecture decision: **modular monolith or microservices?** Compare Python rules with a single prompt, improve and evaluate the prompt, retrieve a stored policy with embeddings and a vector database, then build an **architecture council** that debates, defers to a human architect, remembers, routes cases, and is evaluated against single models.
+Fifteen beginner labs in **general agentic AI**, connected by one small software architecture decision: **modular monolith or microservices?** Compare Python rules with a single prompt, improve and evaluate the prompt, retrieve a stored policy with embeddings and a vector database, then build an **architecture council** that debates, defers to a human architect, remembers, routes cases, and is evaluated against single models.
 
-Nine core labs fit **three 90-minute lectures**, three labs each, and cover every pattern the council project needs. Four **self-study** labs then show the protocols, skills, and framework that students may use to connect and organize their council: MCP, Agent Skills, A2A, and LangGraph. Each self-study lab ends with a challenge for the student's own council. Each lab builds one worked example in short, numbered steps, checks the result, and ends with small exercises.
+Nine core labs fit **three 90-minute lectures**, three labs each, and cover every pattern the council project needs. Six **self-study** labs then cover what the project needs beyond the lectures: MCP, Agent Skills, A2A, and LangGraph to connect and organize the council, quality-attribute framing with a message contract, and a learning-curve experiment with per-model trust. Each self-study lab ends with a challenge for the student's own council. Each lab builds one worked example in short, numbered steps, checks the result, and ends with small exercises. Each lab opens with a pattern card that follows the [Architectural Patterns for Agentic AI](https://karthikv1392.github.io/agentic-patterns/) field guide: its name, context, problem, solution, trade-off, flow, and quality attributes.
 
 The fictional course policy selects microservices only when `team_size >= 8` **and** `independent_deploys` is true; otherwise it selects a modular monolith. The starting case has a three-person team and no independent deployment requirement. This policy is a teaching fixture, not a general architecture recommendation.
 
@@ -45,7 +45,7 @@ Open a notebook in **Google Colab**, save a copy to your Drive, and run the cell
 | 07 · Route each case: rule or council | A model router with worked examples, a dispatch table, a safe fallback, and the cost of each kind of mistake | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/07_routing.ipynb) | [View](notebooks/07_routing.ipynb) |
 | 08 · Does the council beat a single model? | Compare the council with its models alone; calibrate an LLM judge against human ratings | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/08_council_evaluation.ipynb) | [View](notebooks/08_council_evaluation.ipynb) |
 
-**Self-study · Connect and organize your council**
+**Self-study · Build your council further**
 
 | Lab | Worked example | Colab | Notebook |
 | --- | --- | --- | --- |
@@ -53,6 +53,8 @@ Open a notebook in **Google Colab**, save a copy to your Drive, and run the cell
 | 10 · A skill for a short architecture decision record | Choose a skill from a catalog, write two ADRs, and check them | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/10_agent_skills.ipynb) | [View](notebooks/10_agent_skills.ipynb) |
 | 11 · Delegate an architecture review with A2A | Propose, have a reviewer agent check it over A2A, and revise | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/11_a2a_protocol.ipynb) | [View](notebooks/11_a2a_protocol.ipynb) |
 | 12 · A framework for choosing and checking | A LangGraph choose-and-check loop with a conditional retry | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/12_frameworks_langgraph.ipynb) | [View](notebooks/12_frameworks_langgraph.ipynb) |
+| 13 · Frame the debate and agree on a message contract | Quality-attribute scenarios from ISO/IEC 25010, a proposal contract with confidence, and a fourth architect added in one line | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/13_framing_contract.ipynb) | [View](notebooks/13_framing_contract.ipynb) |
+| 14 · Learn from feedback: a learning curve and per-model trust | A feedback/test split, trust-weighted votes, and a learning curve over feedback rounds | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/14_learning_curve_trust.ipynb) | [View](notebooks/14_learning_curve_trust.ipynb) |
 
 Each notebook opens with what is new since the previous lab, then one setup cell that installs the reusable `coursekit` package from a pinned public GitHub revision. The RAG and memory labs (02 and 06) also install the Chroma vector database, and their first run downloads a small embedding model (about 80 MB). The MCP, A2A, and LangGraph labs install their official SDKs. Supporting transport code lives in the package, outside the notebooks. Each step is one code cell of at most 20 lines, and a lab has at most 75 lines of example code. You do not need a paid framework account.
 
@@ -64,10 +66,17 @@ For live model examples, add a Colab Secret named **`FREEINFERENCE_API_KEY`**, g
 
 ```python
 MODE = "live"
-ask = make_ask(mode=MODE)
+PROVIDER = "freeinference"  # or "gemini" or "deepseek"
+ask = make_ask(mode=MODE, provider=PROVIDER)
 ```
 
-This uses FreeInference `qwen3.6-35b` by default. `make_ask` also accepts `base_url`, `model`, and `secret_name` for another compatible service. The MCP lab needs no live model; in the A2A lab, a live model proposes and a deterministic agent reviews. The council lab (05) needs **three model families** in live mode: FreeInference serves Qwen, so configure the other two architects with a second compatible service. See [API setup](docs/api-setup.md).
+| Provider | Default model | Colab Secret |
+| --- | --- | --- |
+| `freeinference` | `qwen3.6-35b` (Qwen) | `FREEINFERENCE_API_KEY` |
+| `gemini` | `gemini-3.5-flash` (Gemini) | `GEMINI_API_KEY` |
+| `deepseek` | `deepseek-flash` (DeepSeek) | `DEEPSEEK_API_KEY` |
+
+`make_ask` also accepts `model`, `base_url`, and `secret_name` to override a provider's defaults or to use another compatible service. The MCP and learning-curve labs need no live model; in the A2A lab, a live model proposes and a deterministic agent reviews. The council lab (05) needs **three model families** in live mode, so it uses all three providers at once and needs all three keys. See [API setup](docs/api-setup.md).
 
 ## Teaching guides
 

@@ -1,11 +1,15 @@
 {
   "slug": "12_frameworks_langgraph",
   "title": "A framework for choosing and checking",
-  "section": "Self-study: Connect and organize your council",
+  "section": "Self-study: Build your council further",
   "cells": [
     {
       "type": "markdown",
       "source": "## Run the same loop in a framework\n\n**So far:** we wrote each workflow by hand. In Lab 11, a loop proposed a decision, had it checked, and retried once on a failure.\n\n**New:** **LangGraph**, a framework that names the parts of a workflow. *Nodes* are steps, *edges* set their order, and the *state* is the data that the nodes share. A *conditional edge* picks the next node from the state. That is how a graph loops back.\n\nOur graph has two nodes. `choose` asks the model for a decision, and `check` tests it against the policy. After `check`, a router either ends the run or sends it back to `choose` with feedback. The framework does not make the model's choice correct. It makes each step and each retry visible."
+    },
+    {
+      "type": "markdown",
+      "source": "## Pattern · Generator–Critic Loop\n\n*Multi-agent pattern from the [Architectural Patterns for Agentic AI](https://karthikv1392.github.io/agentic-patterns/) field guide.*\n\n| | |\n| --- | --- |\n| **Context** | Plans, code, and writing improve through review against explicit criteria rather than one-shot generation. |\n| **Problem** | A generator cannot reliably notice its own omissions, and a critique without revision improves nothing. |\n| **Solution** | Give generation and review to separate agents, and feed the critic's must-fix feedback into the next draft until a pass condition or an iteration cap. |\n| **Use when** | Quality can be checked; revision is cheaper than failure; clear stopping criteria exist. |\n| **Trade-off** | Produces stronger results, but a critic can cause endless churn without a strict budget and pass condition. |\n| **Flow** | Generate → Critique → Revise → Pass gate |\n| **Quality attributes** | Benefits: Accuracy, Reliability, Observability, Modifiability. Liabilities: Latency, Cost, Maintainability, Accuracy, Predictability. |\n| **In this lab** | `choose` generates, `check` critiques, and a conditional edge loops back with the feedback. `route` holds the pass condition and the iteration cap, so the loop always ends. |"
     },
     {
       "type": "markdown",

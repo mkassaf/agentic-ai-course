@@ -1,7 +1,7 @@
 {
   "slug": "09_tools_mcp",
   "title": "Architecture tools and our own MCP server",
-  "section": "Self-study: Connect and organize your council",
+  "section": "Self-study: Build your council further",
   "packages": [
     "mcp==2.3.0"
   ],
@@ -9,6 +9,10 @@
     {
       "type": "markdown",
       "source": "## Give the program tools through MCP\n\n**So far:** in Lab 04, the agent called tools that were plain Python functions inside the notebook. This self-study lab publishes tools through a real protocol, so that any client can find and call them.\n\n**New:** *tools*, which are functions that read data or take an action. The **Model Context Protocol (MCP)** publishes tools so that any MCP client can discover and call them, with typed arguments and clear errors.\n\nWe build an MCP server with two tools. `get_project` *reads* the facts of one project. `save_decision` *changes state* by recording a decision, and it refuses bad input. The official MCP SDK connects the client and server inside this notebook, so no port, external service, or model key is needed."
+    },
+    {
+      "type": "markdown",
+      "source": "## Pattern · Registry & Adapter\n\n*Multi-agent pattern from the [Architectural Patterns for Agentic AI](https://karthikv1392.github.io/agentic-patterns/) field guide.*\n\n| | |\n| --- | --- |\n| **Context** | Agent systems grow to include many tools and agents that evolve independently. |\n| **Problem** | Hard-coded calls couple the caller to every implementation, so each new capability becomes a system-wide change. |\n| **Solution** | Register capabilities with descriptions and schemas, let the caller discover them, and invoke every one through one uniform interface. |\n| **Use when** | Capabilities change often; agents and tools share a workflow; plug-in extensibility is needed. |\n| **Trade-off** | Highly extensible, but schemas, registration quality, and adapter errors become critical infrastructure. |\n| **Flow** | Catalogs → Coordinator → Adapter → Capability |\n| **Quality attributes** | Benefits: Interoperability, Modifiability, Maintainability, Adaptability. Liabilities: Reliability, Latency, Maintainability, Security, Performance. |\n| **In this lab** | The MCP server is the registry: `list_tools` returns each tool's name, description, and input schema, and `call_tool` is the one uniform interface for every tool. Errors come back as data, which addresses the pattern's reliability liability. |"
     },
     {
       "type": "markdown",

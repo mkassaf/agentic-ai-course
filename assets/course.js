@@ -42,8 +42,8 @@ const labs = [
     "id": "02",
     "file": "02_rag_systems",
     "title": "Retrieve architecture rules with RAG",
-    "subtitle": "Embeddings, a vector database, and grounded answers",
-    "topics": "rag retrieval embeddings vectors vector database chroma similarity rules source architecture context",
+    "subtitle": "Retrieval-Augmented Generation · Embeddings, a vector database, and grounded answers",
+    "topics": "rag retrieval embeddings vectors vector database chroma similarity rules source architecture context retrieval-augmented generation",
     "idea": "Turn policies into embedding vectors, store them in a vector database, retrieve by meaning, and check that the answer cites its evidence.",
     "flow": "question → embed → nearest policies in Chroma → distance threshold → grounded answer → citation check",
     "objectives": [
@@ -55,14 +55,15 @@ const labs = [
     "exercise": "Add a cloud-region question, tighten and loosen the distance threshold, and break a citation.",
     "checks": "The reworded question retrieves R1, the billing question R2, and the lunch question nothing. Both answers are grounded.",
     "bridge": "The same steps scale up: a larger embedding model, a persistent vector database, and many more documents.",
-    "track": "lecture-1"
+    "track": "lecture-1",
+    "pattern": "Retrieval-Augmented Generation"
   },
   {
     "id": "03",
     "file": "03_prompt_chaining",
     "title": "Chain the steps of a decision",
-    "subtitle": "Requirements, options, trade-offs, and a record, with a gate after each step",
-    "topics": "prompt chaining workflow gate requirements options trade-offs adr patterns council",
+    "subtitle": "Single-Path Planning · Requirements, options, trade-offs, and a record, with a gate after each step",
+    "topics": "prompt chaining workflow gate requirements options trade-offs adr patterns council single-path planning",
     "idea": "Split one decision into small prompts; each reply feeds the next prompt, and a gate in plain Python stops a bad reply before it spreads.",
     "flow": "brief → requirements → gate → options → gate → trade-offs → gate → decision record → gate",
     "objectives": [
@@ -74,14 +75,15 @@ const labs = [
     "exercise": "Break the requirements list, drop a trade-off mark, and make the decision name an option that was never proposed.",
     "checks": "Every gate passes, and the record chooses microservices while naming the cost for the one operations engineer.",
     "bridge": "Gates check the shape of each step, not whether the decision is wise; Lab 05 adds architects who disagree.",
-    "track": "lecture-2"
+    "track": "lecture-2",
+    "pattern": "Single-Path Planning"
   },
   {
     "id": "04",
     "file": "04_react_tools",
     "title": "ReAct: choose a tool, then decide",
-    "subtitle": "A guarded ReAct loop with a history",
-    "topics": "agent foundations patterns react action observation loop chaining routing",
+    "subtitle": "One-Step Tool Agent in a ReAct loop · A guarded ReAct loop with a history",
+    "topics": "agent foundations patterns react action observation loop chaining routing one-step tool agent in a react loop",
     "idea": "The model chooses each action and sees every observation so far; our code owns the tools, the guards, and the turn limit.",
     "flow": "goal + history → action → tool → observation → … → finish → check",
     "objectives": [
@@ -93,14 +95,15 @@ const labs = [
     "exercise": "Make the agent finish too early, recover from a wrong project name, and change the goal.",
     "checks": "Three turns: list_projects, get_project, finish. The decision matches the policy after two tool calls.",
     "bridge": "The model chooses the steps, but code owns the tools, the guards, and the turn limit. Self-study Lab 09 serves tools through MCP.",
-    "track": "lecture-2"
+    "track": "lecture-2",
+    "pattern": "One-Step Tool Agent in a ReAct loop"
   },
   {
     "id": "05",
     "file": "05_architecture_council",
     "title": "A council of architects: propose, challenge, agree",
-    "subtitle": "Independent proposals on three model families, challenges, and a chair",
-    "topics": "multi-agent council debate parallel proposals critique revision consensus voting dissent chair coordinator grounding model families patterns",
+    "subtitle": "Debate-Based Cooperation · Independent proposals on three model families, challenges, and a chair",
+    "topics": "multi-agent council debate parallel proposals critique revision consensus voting dissent chair coordinator grounding model families patterns debate-based cooperation",
     "idea": "Three architects on three model families propose alone and in parallel; a chair challenges unsupported claims, counts grounded votes, keeps the dissent, and escalates a deadlock.",
     "flow": "shared sources → 3 proposals in parallel → challenge ungrounded claims → revise → grounded votes → decision + dissent | escalation",
     "objectives": [
@@ -110,16 +113,17 @@ const labs = [
     ],
     "example": "Two architects choose microservices and one the modular monolith; the claim without a source is challenged and revised before the vote.",
     "exercise": "Cause a deadlock, cite a made-up source, and compare one model family with three in live mode.",
-    "checks": "Six messages over three rounds; microservices wins 2 to 1, and the Guardian's dissent citing F3 is kept.",
-    "bridge": "Live mode needs three model families: FreeInference serves Qwen; point the other two architects at a second compatible service.",
-    "track": "lecture-2"
+    "checks": "Six messages over three rounds; microservices wins 2 to 1, and the Safeguard's dissent citing F3 is kept.",
+    "bridge": "Live mode uses three model families, each with its own key: Qwen on FreeInference, DeepSeek, and Gemini.",
+    "track": "lecture-2",
+    "pattern": "Debate-Based Cooperation"
   },
   {
     "id": "06",
     "file": "06_human_feedback_memory",
     "title": "The human decides, the council learns",
-    "subtitle": "Human review, revision, memory, and a held-out evaluation",
-    "topics": "human in the loop feedback memory vector database chroma lessons evaluation held-out learning patterns council",
+    "subtitle": "Human in the Loop and Archival Memory · Human review, revision, memory, and a held-out evaluation",
+    "topics": "human in the loop feedback memory vector database chroma lessons evaluation held-out learning patterns council human in the loop and archival memory",
     "idea": "The human architect reviews each proposal and keeps the final say; the accepted decision and its reasons become a memory that later cases recall.",
     "flow": "proposal → human review → revise with feedback → accept → store lesson → recall for new cases → score before / after",
     "objectives": [
@@ -131,13 +135,14 @@ const labs = [
     "exercise": "Accept or reject every proposal, tighten the recall distance, and add a case where the lesson should not apply.",
     "checks": "The revision is accepted after two reviews. Held-out score: 1 of 2 without memory, 2 of 2 with it.",
     "bridge": "Similar text does not mean a lesson applies; the project needs 20 or more held-out scenarios and repeated live runs.",
-    "track": "lecture-3"
+    "track": "lecture-3",
+    "pattern": "Human in the Loop and Archival Memory"
   },
   {
     "id": "07",
     "file": "07_routing",
     "title": "Route each case: rule or council",
-    "subtitle": "A model router, a dispatch table, a safe fallback, and the cost of each mistake",
+    "subtitle": "Routing · A model router, a dispatch table, a safe fallback, and the cost of each mistake",
     "topics": "routing router classifier dispatch handlers fallback cost few shot council patterns",
     "idea": "A router reads each case and picks a handler: plain code for routine cases, the council for contested ones. Code owns the routes and falls back to the council when a reply is unusable.",
     "flow": "case → router (model) → valid route? → HANDLERS[route] → rule (0 calls) | council (5 calls) → compare with human routes",
@@ -150,7 +155,8 @@ const labs = [
     "exercise": "Skip a needed debate, send an unusable route, change a note, and compare a router with and without worked examples.",
     "checks": "The router agrees with the human on 5 of 6 cases, skips no needed debate, and costs 21 calls against 30.",
     "bridge": "Live, worked examples kept the router from skipping debates; a router that wastes too many debates costs more than none.",
-    "track": "lecture-3"
+    "track": "lecture-3",
+    "pattern": "Routing"
   },
   {
     "id": "08",
@@ -167,7 +173,7 @@ const labs = [
     ],
     "example": "Four systems answer two held-out scenarios; the judge rates whether each answer names a cost of its option.",
     "exercise": "Raise the calibration threshold, make the council wrong once, and remove a run.",
-    "checks": "The judge agrees with the human on 3 of 4 answers. The council ties Llama on correctness and beats it on grounding, at 5 times the calls.",
+    "checks": "The judge agrees with the human on 3 of 4 answers. The council ties DeepSeek on correctness and beats it on grounding, at 5 times the calls.",
     "bridge": "Two scenarios demonstrate the method; the project needs 20 or more, and an honest report even when the council does not win.",
     "track": "lecture-3"
   },
@@ -175,8 +181,8 @@ const labs = [
     "id": "09",
     "file": "09_tools_mcp",
     "title": "Architecture tools and our own MCP server",
-    "subtitle": "Read and write tools with validation and errors",
-    "topics": "tools mcp server client extract action agent foundations",
+    "subtitle": "Registry & Adapter · Read and write tools with validation and errors",
+    "topics": "tools mcp server client extract action agent foundations registry & adapter",
     "idea": "A tool reads data or performs an allowed action; MCP publishes its name, description, and input schema to any client.",
     "flow": "list_tools → get_project → apply policy → save_decision → error results",
     "objectives": [
@@ -188,14 +194,15 @@ const labs = [
     "exercise": "Add a project, add a list_projects tool, and send an argument of the wrong type.",
     "checks": "Both decisions are saved. Each bad call returns is_error=True, and the saved state does not change.",
     "bridge": "In a council, one MCP server can give every architect the same tools and sources.",
-    "track": "self-study"
+    "track": "self-study",
+    "pattern": "Registry & Adapter"
   },
   {
     "id": "10",
     "file": "10_agent_skills",
     "title": "A skill for a short architecture decision record",
-    "subtitle": "Choose a skill from a catalog, then check its output",
-    "topics": "skills skill.md adr architecture decision record reusable",
+    "subtitle": "Skill Library Evolution · Choose a skill from a catalog, then check its output",
+    "topics": "skills skill.md adr architecture decision record reusable skill library evolution",
     "idea": "A skill packages a procedure with a name and a description; an agent chooses from the descriptions and loads only the chosen instructions.",
     "flow": "catalog of descriptions → choose skill → load instructions + case → ADR → checker",
     "objectives": [
@@ -207,14 +214,15 @@ const labs = [
     "exercise": "Give an incident task, add a Risk line to an ADR, and write a fourth skill.",
     "checks": "The ADR skill is chosen. Both records have Context, Decision, and Consequence, with a policy-consistent decision.",
     "bridge": "Only the chosen skill's instructions enter the prompt, so the catalog can grow.",
-    "track": "self-study"
+    "track": "self-study",
+    "pattern": "Skill Library Evolution"
   },
   {
     "id": "11",
     "file": "11_a2a_protocol",
     "title": "Delegate an architecture review with A2A",
-    "subtitle": "Propose, review over A2A, and revise",
-    "topics": "a2a agent card discovery message review architecture",
+    "subtitle": "Generator–Critic Loop · Propose, review over A2A, and revise",
+    "topics": "a2a agent card discovery message review architecture generator–critic loop",
     "idea": "A2A lets one agent discover another through its Agent Card and exchange messages; the reviewer's feedback can drive a revision.",
     "flow": "propose → A2A review → FAIL? revise with feedback → review again",
     "objectives": [
@@ -226,14 +234,15 @@ const labs = [
     "exercise": "Add a second mistake, then make a revision wrong too.",
     "checks": "All four projects pass, with one revision for the Internal wiki.",
     "bridge": "The reviewer is deterministic and runs over real local A2A routes; practice mode needs no API key.",
-    "track": "self-study"
+    "track": "self-study",
+    "pattern": "Generator–Critic Loop"
   },
   {
     "id": "12",
     "file": "12_frameworks_langgraph",
     "title": "A framework for choosing and checking",
-    "subtitle": "A LangGraph loop with a conditional retry",
-    "topics": "framework langgraph state nodes edges evaluate architecture",
+    "subtitle": "Generator–Critic Loop · A LangGraph loop with a conditional retry",
+    "topics": "framework langgraph state nodes edges evaluate architecture generator–critic loop",
     "idea": "A framework makes the steps, the shared state, and the decision to retry explicit.",
     "flow": "START → choose → check → retry? → choose … → END",
     "objectives": [
@@ -245,7 +254,48 @@ const labs = [
     "exercise": "Use up the attempts, allow a third attempt, and add a fifth project.",
     "checks": "All four projects pass, the Internal wiki after two attempts, for five model calls in total.",
     "bridge": "Passing a policy check is useful evidence, but not architecture quality. Try Lab 05's council as a graph.",
-    "track": "self-study"
+    "track": "self-study",
+    "pattern": "Generator–Critic Loop"
+  },
+  {
+    "id": "13",
+    "file": "13_framing_contract",
+    "track": "self-study",
+    "title": "Frame the debate and agree on a message contract",
+    "subtitle": "Passive Goal Creator and a contract · Quality-attribute scenarios, a typed proposal, and swappable architects",
+    "topics": "framing quality attribute scenarios iso 25010 message contract schema confidence swappable agents chair passive goal creator and a contract",
+    "idea": "The chair frames a brief as measurable quality-attribute scenarios; every proposal must follow one contract, so any architect can be added or replaced.",
+    "flow": "brief → chair frames 3 ISO 25010 scenarios → gate → proposals → contract check → votes and confidence",
+    "objectives": [
+      "Write measurable quality-attribute scenarios.",
+      "Enforce a message contract with confidence and trade-offs.",
+      "Add an architect without changing the council's code."
+    ],
+    "example": "A Booking service with a Monday spike and an audit requirement; four architects answer, and one is rejected for breaking the contract.",
+    "exercise": "Fix the rejected reply, make votes and confidence disagree, add an architect, and break the frame.",
+    "checks": "Three scenarios pass the gate; the Auditor is rejected; votes 2 to 1 and confidence 1.3 to 0.9 agree.",
+    "bridge": "Self-reported confidence is information, not proof; Lab 14 learns whom to trust from outcomes.",
+    "pattern": "Passive Goal Creator and a contract"
+  },
+  {
+    "id": "14",
+    "file": "14_learning_curve_trust",
+    "track": "self-study",
+    "title": "Learn from feedback: a learning curve and per-model trust",
+    "subtitle": "Voting-Based Cooperation · A feedback/test split, trust-weighted votes, and a curve",
+    "topics": "evaluation experiment feedback test split held-out learning curve per-model trust weighted vote council voting-based cooperation",
+    "idea": "Learn from feedback cases only, weight each architect by how much better than chance it has been, and score the test cases after every round.",
+    "flow": "benchmark → split once → feedback round → update trust → weighted vote on test cases → learning curve",
+    "objectives": [
+      "Keep feedback and test cases apart.",
+      "Turn agreement with the human into vote weights.",
+      "Read a learning curve, including where it stalls."
+    ],
+    "example": "Ten small cases and three recorded architects; plain majority gets 2 of 4 test cases, the trusted council 4 of 4 after five rounds.",
+    "exercise": "Reorder the feedback, weight by raw trust, and remove the best architect's slip.",
+    "checks": "The learning curve is [2, 2, 2, 2, 2, 4, 4], with two escalated ties at round 4.",
+    "bridge": "A curve that falls as well as rises is still evidence; plan your project's experiment with it.",
+    "pattern": "Voting-Based Cooperation"
   }
 ];
 
@@ -271,8 +321,8 @@ const tracks = [
   {
     "id": "self-study",
     "label": "Self-study · at your own pace",
-    "title": "Connect and organize your council",
-    "note": "Protocols, skills, and a framework that the project may use. Each lab ends with a challenge for your council."
+    "title": "Build your council further",
+    "note": "Protocols, skills, a framework, framing, and a learning experiment: what the project needs beyond the lectures. Each lab ends with a challenge for your council."
   }
 ];
 

@@ -9,6 +9,10 @@
     },
     {
       "type": "markdown",
+      "source": "## Pattern · One-Step Tool Agent\n\n*Single-agent pattern from the [Architectural Patterns for Agentic AI](https://karthikv1392.github.io/agentic-patterns/) field guide. Related: Incremental Tool Agent, Registry & Adapter (Lab 09).*\n\n| | |\n| --- | --- |\n| **Context** | Many tasks need a deterministic capability, such as a lookup, before an answer can be trusted. |\n| **Problem** | Free-form model output is hard to execute, while a long reasoning chain is unnecessary for a straightforward tool call. |\n| **Solution** | Ask the model for its plan, a tool name, and parameters as JSON; execute the tool; then use the result. |\n| **Use when** | One tool is enough per step; latency matters; tool schemas are simple and stable. |\n| **Trade-off** | Fast and compact, but tool choice and parameters are made in one shot. The Incremental Tool Agent separates them, at a higher cost. |\n| **Flow** | Goal → Plan + choose → Tool → Synthesize |\n| **Quality attributes** | Benefits: Latency, Cost, Performance, Maintainability. Liabilities: Reliability, Accuracy, Security, Observability. |\n| **In this lab** | Each turn is one One-Step Tool Agent call: the model returns its next action as JSON. Repeating the call, with every observation in the history, makes a *ReAct* loop. The guards and the turn limit address the pattern's liabilities: reliability and security. |"
+    },
+    {
+      "type": "markdown",
       "source": "## Step 1 · The tools the agent may use\n\n`list_projects` returns the exact project names. `get_project` returns one project's facts, or an error message the model can read and recover from. `TOOLS` maps each action name to its function, so the loop can look up whatever the model asks for."
     },
     {

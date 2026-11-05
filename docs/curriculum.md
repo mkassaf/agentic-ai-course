@@ -1,8 +1,8 @@
 # Curriculum
 
-Thirteen beginner labs teach general agentic AI through one small software architecture question: **modular monolith or microservices?** Keep the case familiar while changing one mechanism at a time.
+Fifteen beginner labs teach general agentic AI through one small software architecture question: **modular monolith or microservices?** Keep the case familiar while changing one mechanism at a time.
 
-Each lab takes **15–20 minutes**, plus first-run installation. It has two to five numbered steps, each one code cell of at most **20 Python lines** (at most **75 example lines** per lab), a check, and small exercises. Students need basic Python. Nine core labs fit three 90-minute lectures, three labs each; four self-study labs follow.
+Each lab takes **15–20 minutes**, plus first-run installation. It has two to five numbered steps, each one code cell of at most **20 Python lines** (at most **75 example lines** per lab), a check, and small exercises. Students need basic Python. Nine core labs fit three 90-minute lectures, three labs each; six self-study labs follow.
 
 ## The shared case
 
@@ -12,7 +12,7 @@ This deliberately small policy makes comparisons easy. It is not a real-world ar
 
 ## Three lectures and self-study
 
-The core labs, 00–08, cover every pattern that the council project needs, so a student who attends the three lectures has seen all of them. The self-study labs, 09–12, cover the *implementation choices* that the project brief leaves open: MCP for tools, Agent Skills for reusable procedures, A2A for agents that talk across processes, and LangGraph for orchestration. Students take them at their own pace, and each ends with a challenge that applies it to their own council.
+The core labs, 00–08, cover every pattern that the council project needs, so a student who attends the three lectures has seen all of them. The self-study labs, 09–14, cover what the project needs beyond the lectures. Labs 09–12 are the *implementation choices* that the brief leaves open: MCP for tools, Agent Skills for reusable procedures, A2A for agents that talk across processes, and LangGraph for orchestration. Labs 13–14 are two project steps that need more time than a lecture allows: framing the debate with quality-attribute scenarios and a message contract, and measuring learning with a feedback/test split, a learning curve, and per-model trust. Students take them at their own pace, and each ends with a challenge that applies it to their own council.
 
 Each lab adds one mechanism to the previous one and says so at the top: **So far** recalls the last lab, **New** names the single addition. The same projects, the policy sentence, and names such as `projects`, `expected`, and `scripted` recur, so only the new idea needs attention. Each step adds one piece of logic and prints something to check.
 
@@ -40,7 +40,7 @@ Each lab adds one mechanism to the previous one and says so at the top: **So far
 | **07 · Route each case: rule or council** | A model router with worked examples, a dispatch table, a safe fallback, routing cost | Which mistake would you rather make: a wasted debate or a skipped one? |
 | **08 · Does the council beat a single model?** | Baseline comparison, an LLM judge, calibration against human ratings | On which measures does the council win, at what cost, and can you trust the judge? |
 
-**Self-study · Connect and organize your council**
+**Self-study · Build your council further**
 
 | Lab | New mechanism | Student comparison |
 | --- | --- | --- |
@@ -48,39 +48,72 @@ Each lab adds one mechanism to the previous one and says so at the top: **So far
 | **10 · A skill for a short architecture decision record** | Skill catalog, progressive disclosure, ADR checker | Which skill fits the task, and what does its output promise? |
 | **11 · Delegate an architecture review with A2A** | Propose, review over A2A, revise on feedback | What crosses the agent interface, and how does feedback change the proposal? |
 | **12 · A framework for choosing and checking** | Choose-and-check graph with a conditional retry | Which node proposes, which validates, and what ends the loop? |
+| **13 · Frame the debate and agree on a message contract** | ISO/IEC 25010 quality-attribute scenarios, a proposal contract with confidence, swappable architects | Which scenario has no number, and what does a contract make possible? |
+| **14 · Learn from feedback: a learning curve and per-model trust** | Feedback/test split, trust-weighted votes, a learning curve | When does the curve rise, why can it fall, and why does a coin toss get no vote? |
 
 ## Four core areas
 
 | Area | Labs |
 | --- | --- |
 | LLMs and Prompting · RAG Systems | 00–02 (Lecture 1) |
-| Foundations of AI Agents · Agentic Patterns | 03–08 (Lectures 2 and 3) |
+| Foundations of AI Agents · Agentic Patterns | 03–08 (Lectures 2 and 3); 13–14 (self-study) |
 | Tools and MCP · A2A Protocol | 04 (tools, Lecture 2); 09 and 11 (self-study) |
 | Skills · Frameworks | 10 and 12 (self-study) |
 
 ## Agentic patterns for the architecture council
 
-Labs 03–08 build the course project's council one pattern at a time, in the order *chaining → independent proposals → critique → chair-controlled consensus → human feedback → memory*, then decide when the council is worth its cost (*routing*) and whether it beats a single model (*evaluation*). Retrieval and tools come from the earlier labs. The central idea: **form independent opinions, debate with evidence, reach a proposal, then learn from human feedback.**
+Labs 03–08 build the course project's council one pattern at a time, in the order *chaining → independent proposals → critique → chair-controlled consensus → human feedback → memory*, then decide when the council is worth its cost (*routing*) and whether it beats a single model (*evaluation*). Retrieval and tools come from the earlier labs. The central idea: **form independent opinions, debate with evidence, reach a proposal, then learn from human feedback.** Pattern names, descriptions, and quality attributes follow the [Architectural Patterns for Agentic AI](https://karthikv1392.github.io/agentic-patterns/) field guide by Karthik Vaidhyanathan; each lab opens with a pattern card in the guide's format: context, problem, solution, use when, trade-off, flow, and quality attributes.
 
-| Pattern | Where students build it | Purpose in the project |
-| --- | --- | --- |
-| Prompt chaining | 03: requirements → options → trade-offs → decision record, with gates | Break the decision process into clear, checkable steps |
-| Independent parallel proposals | 05: three architects answer alone, in parallel | Preserve different perspectives before the debate |
-| Coordinator / chair | 05: a chair with fixed rules runs the rounds | Manage the process while the architects stay peers |
-| Critique and revision | 05: an opponent challenges an unsourced claim; its author revises (self-study 11 and 12 add reviewer and checker feedback) | Make disagreement useful and evidence-based |
-| Consensus and aggregation | 05: grounded votes, a two-thirds stopping rule, recorded dissent, escalation on deadlock | Produce a decision with a clear stopping rule and deadlock handling |
-| Human-in-the-loop | 06: the human rejects microservices for its operating cost; the council revises until the human accepts | Use feedback and keep the human's final authority |
-| Memory and feedback reuse | 06: the accepted decision and its reasons are stored and recalled for later cases | Improve future decisions, not only the current one |
-| Routing | 07: a model router with worked examples, a dispatch table, and a fallback to the council | Spend a debate only on contested cases, and count what routing costs |
-| Retrieval and grounding | 02: embeddings, a vector database, and citation checks; 05: claims must cite sources; 06: memory recall | Support arguments with traceable evidence |
-| Tool use / ReAct | 04 (self-study 09 serves tools over MCP) | Fetch evidence before deciding |
-| Structured messages and shared state | 01 (JSON replies), 05 (a transcript of `round`, `speaker`, `kind` messages), self-study 12 (graph state) | Identify the speaker, proposal, critique, evidence, and round |
-| Evaluation | 01 (labelled checks), 06 (held-out cases before and after memory), 08 (council against the best single model, with an LLM judge calibrated against human ratings) | Compare approaches, measure improvement on unseen cases, and trust a judge only as far as it agrees with people |
-| MCP, A2A, skills, frameworks | Self-study 09, 11, 10, 12 | Ways to connect and organize the implementation |
+| Pattern | Field-guide pattern | Where students build it | Purpose in the project |
+| --- | --- | --- | --- |
+| Prompt chaining | Single-Path Planning (with a fixed plan) | 03: requirements → options → trade-offs → decision record, with gates | Break the decision process into clear, checkable steps |
+| Independent parallel proposals | Parallel Fan-Out | 05: three architects answer alone, in parallel | Preserve different perspectives before the debate |
+| Coordinator / chair | Debate-Based Cooperation (the judge) | 05: a chair with fixed rules runs the rounds | Manage the process while the architects stay peers |
+| Critique and revision | Debate-Based Cooperation; Generator–Critic Loop | 05: an opponent challenges an unsourced claim; its author revises (self-study 11 and 12 add reviewer and checker feedback) | Make disagreement useful and evidence-based |
+| Consensus and aggregation | Voting-Based Cooperation | 05: grounded votes, a two-thirds stopping rule, recorded dissent, escalation on deadlock | Produce a decision with a clear stopping rule and deadlock handling |
+| Human-in-the-loop | Human in the Loop | 06: the human rejects microservices for its operating cost; the council revises until the human accepts | Use feedback and keep the human's final authority |
+| Memory and feedback reuse | Archival Memory | 06: the accepted decision and its reasons are stored and recalled for later cases | Improve future decisions, not only the current one |
+| Framing | Passive Goal Creator | 13: the chair turns the brief into measurable ISO/IEC 25010 quality-attribute scenarios | Give every architect the same scenarios to argue about |
+| Message contract and swappable agents | Registry & Adapter | 13: every proposal names an option, a trade-off per scenario, a confidence, and a claim | Make proposals comparable and agents replaceable |
+| Per-model trust | Voting-Based Cooperation (weighted scoring) | 14: votes weighted by each architect's record against the human | A learning lever that needs no prompt changes |
+| Routing | Not in the guide: Human in the Loop's risk classification plus a dispatch | 07: a model router with worked examples, a dispatch table, and a fallback to the council | Spend a debate only on contested cases, and count what routing costs |
+| Retrieval and grounding | Retrieval-Augmented Generation | 02: embeddings, a vector database, and citation checks; 05: claims must cite sources; 06: memory recall | Support arguments with traceable evidence |
+| Tool use / ReAct | One-Step Tool Agent (in a loop); Registry & Adapter | 04 (self-study 09 serves tools over MCP) | Fetch evidence before deciding |
+| Structured messages and shared state | Shared Memory | 01 (JSON replies), 05 (a transcript of `round`, `speaker`, `kind` messages), self-study 12 (graph state) | Identify the speaker, proposal, critique, evidence, and round |
+| Evaluation | Not a pattern: it measures the patterns' quality attributes | 01 (labelled checks), 06 (held-out cases before and after memory), 08 (council against the best single model, with an LLM judge calibrated against human ratings), 14 (a feedback/test split and a learning curve) | Compare approaches, measure improvement on unseen cases, and trust a judge only as far as it agrees with people |
+| MCP, A2A, skills, frameworks | Registry & Adapter; Generator–Critic Loop; Skill Library Evolution | Self-study 09, 11, 10, 12 | Ways to connect and organize the implementation |
 
 *Orchestrator–workers*, where a central model splits a task into subtasks for specialist workers, has no lab of its own: the brief gives every architect the full mandate, and Lab 05's chair already coordinates the peers. Students can add a chair agent that frames the case or writes the final decision record.
 
-The project requires **at least three model families**. Three personas on one model share one set of blind spots; in a live test with Qwen behind all three personas, the three architects agreed at once and cited the same sources.
+The project requires **at least three model families**. Three personas on one model share one set of blind spots; in a live test with Qwen behind all three personas, the three architects agreed at once and cited the same sources. With Qwen, DeepSeek, and Gemini behind them, they split 2 to 1, and the chair kept Qwen's dissent about the single operations engineer.
+
+## Project readiness: the brief, requirement by requirement
+
+The labs never solve the project: they use a different question (modular monolith or microservices), different cases, and their own stances. Every requirement of the project brief is still practised somewhere.
+
+| Brief requirement | Where students practise it |
+| --- | --- |
+| At least three architect agents, each on a different model family | 05 (Qwen, DeepSeek, and Gemini); 05's exercise compares one family with three |
+| Same question and knowledge base for every architect | 02 (retrieval with citations), 05 (shared sources) |
+| Same output contract: options, trade-offs, confidence | 03 (trade-off table), 13 (contract with confidence) |
+| Distinct stances | 05 (example stances), 13 (add your own architect) |
+| Frame: the chair sets the context and quality-attribute scenarios | 13 |
+| Propose alone, then debate | 05 |
+| Critique and revise, change one's mind only for an argument | 05 (sourced challenges); 11 and 12 (reviewer and checker feedback) |
+| Converge by vote, score, or consensus | 05 (grounded votes), 13 (confidence), 14 (trust-weighted votes) |
+| Decide: a decision record with the dissent | 03 and 10 (decision records), 05 (recorded dissent); Lab 10's challenge adds the dissent to the record |
+| Bounded rounds; deadlock goes to the chair or the human | 05, 06, 14 (ties escalate) |
+| Structured, observable, traceable, and swappable communication | 05 (transcript), 13 (contract and a fourth architect), 11 (A2A messages) |
+| Free choice of patterns and protocols | 03–07; 09 (MCP), 11 (A2A), 12 (LangGraph) |
+| Knowledge with provenance: catalogs, ISO/IEC 25010, past decisions | 02 (vector store and citations), 06 (past decisions in memory), 13 (ISO/IEC 25010) |
+| Short loop: human feedback in the next round | 06 |
+| Long loop: memory, principles, per-model trust | 06 (memory of lessons), 14 (per-model trust) |
+| Experiment A: council against each single model; accuracy, trade-off coverage, citations, cost, latency | 08 |
+| Experiment B: feedback and test split, scores before and after, a learning curve, never test on feedback | 06 and 14 |
+| LLM-as-judge only if calibrated against human ratings | 08 |
+| ADRs that justify design choices | 03 and 10 |
+
+Three design questions from the brief are left for class discussion rather than a lab: a knowledge graph next to the vector store, keeping knowledge fresh, and a live demo interface for the debate.
 
 ## Keep reasoning and evaluation observable
 

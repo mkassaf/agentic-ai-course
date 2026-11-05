@@ -1,11 +1,15 @@
 {
   "slug": "10_agent_skills",
   "title": "A skill for a short architecture decision record",
-  "section": "Self-study: Connect and organize your council",
+  "section": "Self-study: Build your council further",
   "cells": [
     {
       "type": "markdown",
       "source": "## Package a procedure as a reusable skill\n\n**So far:** each lab wrote its instructions directly into the prompt.\n\n**New:** *skills*. A skill is a `SKILL.md` file: a short header with a `name` and a `description`, then the instructions. An agent first sees only the names and descriptions of all its skills. It picks one, and only then loads that skill's full instructions. This is called *progressive disclosure*, and it keeps the prompt small even when there are many skills.\n\nOur main skill writes a short *architecture decision record* (ADR) with three lines: Context, Decision, and Consequence."
+    },
+    {
+      "type": "markdown",
+      "source": "## Pattern · Skill Library Evolution\n\n*Multi-agent pattern from the [Architectural Patterns for Agentic AI](https://karthikv1392.github.io/agentic-patterns/) field guide.*\n\n| | |\n| --- | --- |\n| **Context** | Stateless agents solve the same kinds of problems from scratch, again and again. |\n| **Problem** | Conversation memory alone does not create a curated, searchable capability that carries across sessions. |\n| **Solution** | Search a store of skills before solving, adapt the relevant one, and save new reusable solutions with metadata. |\n| **Use when** | Tasks recur across sessions; solutions can be generalized; a growing capability base is useful. |\n| **Trade-off** | Useful knowledge compounds, but stale or low-quality skills compound errors without curation. |\n| **Flow** | Search skills → Adapt → Solve → Save skill |\n| **Quality attributes** | Benefits: Performance, Cost, Reliability, Adaptability, Modifiability. Liabilities: Maintainability, Reliability, Security, Latency, Accuracy. |\n| **In this lab** | The catalog of skill names and descriptions is searched first, and only the chosen skill's instructions are loaded. The lab covers the search and the use of a skill; the *Use it in your council* challenge adds the last step of the flow: saving a new skill. |"
     },
     {
       "type": "markdown",

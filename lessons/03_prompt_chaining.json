@@ -9,6 +9,10 @@
     },
     {
       "type": "markdown",
+      "source": "## Pattern · Single-Path Planning\n\n*Single-agent pattern from the [Architectural Patterns for Agentic AI](https://karthikv1392.github.io/agentic-patterns/) field guide. Related: Passive Goal Creator.*\n\n| | |\n| --- | --- |\n| **Context** | Complex goals need several dependent steps, where each result informs the next. |\n| **Problem** | One monolithic response cannot reliably manage dependencies and accumulated intermediate results. |\n| **Solution** | Make one ordered plan of a few steps, execute each step with the accumulated context, then synthesize the outputs. |\n| **Use when** | The work is naturally sequential; steps depend on earlier outputs; one reasonable path is enough. |\n| **Trade-off** | Easy to follow, but an early planning mistake propagates through the whole run. |\n| **Flow** | Plan → Step 1 → Step N → Synthesize |\n| **Quality attributes** | Benefits: Predictability, Performance, Observability, Maintainability. Liabilities: Reliability, Latency, Usability, Adaptability. |\n| **In this lab** | Our code fixes the four-step plan (requirements → options → trade-offs → decision record); a fixed plan like this is often called *prompt chaining*. In the guide's version, the model writes the plan. The gates address the pattern's main liability: they stop an early mistake before it propagates. |"
+    },
+    {
+      "type": "markdown",
       "source": "## Step 1 · The brief, the question, and a link\n\n`run_step` is one link of the chain. It asks the model, prints the reply, and hands it to a *gate*. A gate returns `None` when the reply is fine, or a message that says what is wrong. A failing gate raises an error, so no later step sees the bad reply. A reply that is not JSON makes `json.loads` raise an error inside the gate, which stops the chain too.\n\n`three_items` is the first gate. The last line tries it on a list of two items, without calling the model."
     },
     {

@@ -15,6 +15,8 @@
     "09_tools_mcp",
     "10_agent_skills",
     "11_a2a_protocol",
-    "12_frameworks_langgraph"
+    "12_frameworks_langgraph",
+    "13_framing_contract",
+    "14_learning_curve_trust"
   ]
 }

@@ -16,7 +16,7 @@ EXTRAS = {
     "11_a2a_protocol": ("a2a", "a2a"),
     "12_frameworks_langgraph": ("framework", "langgraph"),
 }
-NO_MODEL_LABS = {"09_tools_mcp"}  # these labs never call ask()
+NO_MODEL_LABS = {"09_tools_mcp", "14_learning_curve_trust"}  # these labs never call ask()
 
 
 def source_cell(kind, source):
@@ -34,7 +34,9 @@ def setup_for(slug, revision):
               f"if not all(find_spec(name) for name in {modules!r}):\n"
               f'    %pip install -q "{package} @ {url}"')
     if slug not in NO_MODEL_LABS:
-        source += '\nfrom coursekit import make_ask\nMODE = "practice"\nask = make_ask(mode=MODE)'
+        source += ('\nfrom coursekit import make_ask\nMODE = "practice"\n'
+                   'PROVIDER = "freeinference"  # or "gemini" or "deepseek"\n'
+                   'ask = make_ask(mode=MODE, provider=PROVIDER)')
     return source
 
 
@@ -45,16 +47,20 @@ def build(lesson, revision):
              f'**Prepared by Mustafa Assaf** · {lesson["section"]} · 15–20 minute lab')
     setup_note = '## Setup\nRun this cell once to load the course helpers, then run the steps below in order.'
     if slug not in NO_MODEL_LABS:
-        setup_note += (' Practice answers are scripted. For a live model, save '
-                       '`FREEINFERENCE_API_KEY` in Colab Secrets and change `MODE` to `"live"`. '
-                       '`ask` stops after 12 calls; run this cell again to reset the count.')
+        setup_note += (' Practice answers are scripted. For a live model, choose `PROVIDER` '
+                       '(`"freeinference"`, `"gemini"`, or `"deepseek"`), save its key in Colab Secrets '
+                       '(`FREEINFERENCE_API_KEY`, `GEMINI_API_KEY`, or `DEEPSEEK_API_KEY`), and change `MODE` to '
+                       '`"live"`. `ask` stops after 12 calls; run this cell again to reset the count.')
     else:
         setup_note += ' This lab needs no model key.'
     # The lesson's first cell states the idea, so learners read it before the setup boilerplate.
     overview, *steps = lesson["cells"]
     if overview["type"] != "markdown":
         raise ValueError(f"{slug}: the first lesson cell must be a markdown overview")
-    cells = [source_cell("markdown", intro), source_cell("markdown", overview["source"]),
+    patterns = []  # field-guide pattern cards follow the overview, before the setup
+    while steps and steps[0]["type"] == "markdown" and steps[0]["source"].startswith("## Pattern · "):
+        patterns.append(source_cell("markdown", steps.pop(0)["source"]))
+    cells = [source_cell("markdown", intro), source_cell("markdown", overview["source"]), *patterns,
              source_cell("markdown", setup_note), source_cell("code", setup_for(slug, revision))]
     cells[-1].metadata["tags"] = ["setup"]
     for cell in steps:

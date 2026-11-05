@@ -1,7 +1,7 @@
 {
   "slug": "11_a2a_protocol",
   "title": "Delegate an architecture review with A2A",
-  "section": "Self-study: Connect and organize your council",
+  "section": "Self-study: Build your council further",
   "packages": [
     "a2a-sdk[http-server]==1.3.0"
   ],
@@ -9,6 +9,10 @@
     {
       "type": "markdown",
       "source": "## Ask another agent to review the proposal\n\n**So far:** one program did all the work, calling a model and its own tools.\n\n**New:** *delegation*. Our model proposes a decision, and a separate reviewer agent checks it over the **Agent2Agent (A2A)** protocol. When the reviewer rejects a proposal, our model revises it using the reviewer's feedback.\n\nThe course helper `review_over_a2a` performs three real A2A steps with the official SDK, all inside this notebook:\n\n1. **Start** a reviewer agent that publishes an *Agent Card* with its name, description, and skills.\n2. **Discover** the reviewer by fetching that card, just as a client does for an agent it has not used before.\n3. **Send** the case and the proposal as an A2A message, and read the reply: `PASS` or `FAIL` with a reason.\n\nThe reviewer applies the course policy with plain code. You can read the helper in [`coursekit/protocol_examples.py`](https://github.com/mkassaf/agentic-ai-course/blob/main/coursekit/protocol_examples.py)."
+    },
+    {
+      "type": "markdown",
+      "source": "## Pattern · Generator–Critic Loop\n\n*Multi-agent pattern from the [Architectural Patterns for Agentic AI](https://karthikv1392.github.io/agentic-patterns/) field guide.*\n\n| | |\n| --- | --- |\n| **Context** | Plans, code, and writing improve through review against explicit criteria rather than one-shot generation. |\n| **Problem** | A generator cannot reliably notice its own omissions, and a critique without revision improves nothing. |\n| **Solution** | Give generation and review to separate agents, and feed the critic's must-fix feedback into the next draft until a pass condition or an iteration cap. |\n| **Use when** | Quality can be checked; revision is cheaper than failure; clear stopping criteria exist. |\n| **Trade-off** | Produces stronger results, but a critic can cause endless churn without a strict budget and pass condition. |\n| **Flow** | Generate → Critique → Revise → Pass gate |\n| **Quality attributes** | Benefits: Accuracy, Reliability, Observability, Modifiability. Liabilities: Latency, Cost, Maintainability, Accuracy, Predictability. |\n| **In this lab** | Our model generates a proposal, and a separate reviewer agent, reached over A2A, is the critic. Its feedback drives one revision; one revision is the iteration cap. |"
     },
     {
       "type": "markdown",

@@ -9,6 +9,10 @@
     },
     {
       "type": "markdown",
+      "source": "## Pattern · Routing\n\nRouting is not a separate entry in the [Architectural Patterns for Agentic AI](https://karthikv1392.github.io/agentic-patterns/) field guide. It combines two of the guide's ideas: the risk classification of *Human in the Loop* (classify, then send only high-risk cases to the expensive path) and the dispatch of *Registry & Adapter* (look up a handler and call it through one interface).\n\n| | |\n| --- | --- |\n| **Context** | Cases differ in how much deliberation they need, and the most careful path is also the most expensive. |\n| **Problem** | Sending every case to the council wastes calls; sending every case to a rule skips debates that were needed. |\n| **Solution** | Classify each case, dispatch it to the handler that fits, and fall back to the careful path when the classification is unusable. |\n| **Use when** | Cases fall into recognizable classes; handlers differ greatly in cost; one kind of wrong route is cheaper than the other. |\n| **Trade-off** | Saves calls on routine cases, but the router adds its own calls, and its mistakes stay silent unless they are measured. |\n| **Flow** | Case → Classify → Dispatch → Handler |"
+    },
+    {
+      "type": "markdown",
       "source": "## Step 1 · Cases, and the routes a human chose\n\nEach case has the two facts that the policy reads, and a note that only a person or a model can weigh. `human_routes` holds the route a human architect chose for each case; the router never sees it. In practice mode, `scripted` holds the router's replies. It sends the Internal wiki to the council, which is a mistake."
     },
     {

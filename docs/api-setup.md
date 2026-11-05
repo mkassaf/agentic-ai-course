@@ -13,10 +13,11 @@ The initial configuration uses **FreeInference**, but the teaching adapter is pr
 
 ```python
 MODE = "live"
-ask = make_ask(mode=MODE)
+PROVIDER = "freeinference"  # or "gemini" or "deepseek"
+ask = make_ask(mode=MODE, provider=PROVIDER)
 ```
 
-The defaults are `https://freeinference.org/v1`, model `qwen3.6-35b`, and secret name `FREEINFERENCE_API_KEY`. If no Colab secret is available, the helper uses a hidden input prompt. Check current access and quotas in the [FreeInference documentation](https://doc.freeinference.org/).
+The defaults are FreeInference (`https://freeinference.org/v1`), model `qwen3.6-35b`, and secret name `FREEINFERENCE_API_KEY`; see *Providers and the council* below for Gemini and DeepSeek. If no Colab secret is available, the helper uses a hidden input prompt. Check current access and quotas in the [FreeInference documentation](https://doc.freeinference.org/).
 
 ## Use another compatible service
 
@@ -33,17 +34,24 @@ The helper uses the [Chat Completions request format](https://developers.openai.
 
 Services with deployment-specific URLs, native Gemini/Messages APIs, SSO-only authentication, or custom headers may require a transport change. Practice examples remain available while that change is made. Use the endpoint and approved models supplied by your institution when required.
 
-## Three model families for the council
+## Providers and the council
 
-Lab 05's council needs at least three model families in live mode. FreeInference serves the Qwen family. Point the other two architects at a second compatible service by replacing the placeholders in the lab's `live` settings:
+`make_ask` knows three providers. Each one fills in its base URL, default model, and Colab Secret name:
+
+| Provider | Default model (family) | Colab Secret | Notes |
+| --- | --- | --- | --- |
+| `freeinference` | `qwen3.6-35b` (Qwen) | `FREEINFERENCE_API_KEY` | The default. The free tier takes one request at a time. |
+| `gemini` | `gemini-3.5-flash` (Gemini) | `GEMINI_API_KEY` | Uses Google's OpenAI-compatible endpoint, with `reasoning_effort: "minimal"`. |
+| `deepseek` | `deepseek-flash` (DeepSeek) | `DEEPSEEK_API_KEY` | Sends `thinking: disabled`. |
 
 ```python
-GATEWAY = dict(base_url="https://your-gateway.example/v1", secret_name="GATEWAY_API_KEY")
-live = {"Pragmatist": dict(model="qwen3.6-35b"),
-        "Guardian": dict(GATEWAY, model="your-llama-model"), "Innovator": dict(GATEWAY, model="your-mistral-model")}
+ask = make_ask(mode="live", provider="gemini")
+ask = make_ask(mode="live", provider="deepseek", model="deepseek-v4-pro")  # another model from the same provider
 ```
 
-Save the second key in Colab Secrets under the chosen secret name. The lab refuses to run live while the placeholders remain.
+Gemini and DeepSeek models reason before they answer by default, and the hidden reasoning counts against the 256-token output budget, so a long reply comes back truncated. The presets turn reasoning off. Model ids and these switches change over time: in our tests, `gemini-3.8-flash` kept reasoning even at `"low"`, and `gemini-2.5-flash` had been retired. Check each provider's model list before teaching, and if you choose another model, pass its own setting, for example `make_ask(mode="live", provider="gemini", model="gemini-3.5-flash-lite", extra_body={})`.
+
+Lab 05's council needs at least three model families in live mode, so its architects use all three providers: Qwen on FreeInference, DeepSeek, and Gemini. Save all three keys in Colab Secrets.
 
 ## Calls, errors, and limits
 

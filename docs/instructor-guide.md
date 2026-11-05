@@ -10,7 +10,7 @@ The labs share four fictional projects, one for each combination of the two fact
 
 Test one small live call with student-equivalent access. Defaults: FreeInference, `qwen3.6-35b`, and Colab Secret `FREEINFERENCE_API_KEY`. Service, model, and secret name are configurable. Verify current access and quotas; keep keys out of code and outputs.
 
-The council lab (05) needs three model families in live mode. FreeInference currently serves the Qwen family, and its free tier takes one request at a time (the course client queues the rest). Before class, choose a second OpenAI-compatible service for the other two architects, such as a university gateway, and give students its base URL, model ids, and secret name.
+Gemini (`GEMINI_API_KEY`) and DeepSeek (`DEEPSEEK_API_KEY`) are built in as well: students set `PROVIDER` in the setup cell. The council lab (05) needs three model families in live mode, so it uses FreeInference (Qwen), DeepSeek, and Gemini together, and students need all three keys. FreeInference's free tier takes one request at a time (the course client queues the rest). Check each provider's pricing and quotas before class.
 
 ## A short teaching rhythm
 
@@ -42,7 +42,7 @@ A plan for each lecture:
 | 50–75 | Third lab, the longest of the three (02, 05, and 08 each have five steps). |
 | 75–90 | Discussion of the lecture's question, one live-mode run if time allows, and the self-study pointer. |
 
-Keep the *Try it* exercises that need live mode, and the last one or two exercises of each lab, as homework. After Lecture 2, point students to self-study Labs 09 (MCP) and 11 (A2A); after Lecture 3, to Labs 10 (skills) and 12 (LangGraph). Each self-study lab ends with a challenge that applies it to the student's own council, which is a natural first project milestone.
+Keep the *Try it* exercises that need live mode, and the last one or two exercises of each lab, as homework. After Lecture 2, point students to self-study Labs 09 (MCP) and 11 (A2A); after Lecture 3, to Labs 10 (skills) and 12 (LangGraph), and to Labs 13 (framing and the message contract) and 14 (the learning curve) before the project starts. The curriculum's *Project readiness* table maps every requirement of the brief to a lab. Each self-study lab ends with a challenge that applies it to the student's own council, which is a natural first project milestone.
 
 ## One question per lab
 
@@ -61,6 +61,8 @@ Keep the *Try it* exercises that need live mode, and the last one or two exercis
 | 10 | What did the model see when it chose a skill, and what did it see only afterwards? |
 | 11 | What did the reviewer receive, and how did its feedback change the proposal? |
 | 12 | What is stored in graph state, what decides between retrying and finishing, and what does the check leave unassessed? |
+| 13 | Which scenario has a number you can check, and what does the contract let you change without touching the council's code? |
+| 14 | Why must feedback and test cases stay apart, when does the curve rise, and why does a coin toss get no vote? |
 
 ## Evaluate useful behavior
 

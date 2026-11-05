@@ -9,6 +9,10 @@
     },
     {
       "type": "markdown",
+      "source": "## Pattern · Retrieval-Augmented Generation\n\n*Single-agent pattern from the [Architectural Patterns for Agentic AI](https://karthikv1392.github.io/agentic-patterns/) field guide.*\n\n| | |\n| --- | --- |\n| **Context** | Useful answers often depend on private, recent, or domain-specific material that the model's weights do not reliably hold. |\n| **Problem** | Without evidence, a model may hallucinate, miss local facts, or answer from outdated knowledge. |\n| **Solution** | Search a knowledge base for relevant pieces, place them beside the question, and instruct the model to ground its answer in them. |\n| **Use when** | Answers depend on a document collection; citations or provenance matter; knowledge changes independently of the model. |\n| **Trade-off** | Answer quality now depends on retrieval quality, chunking, and the context budget. |\n| **Flow** | Question → Retrieve → Augment → Grounded answer |\n| **Quality attributes** | Benefits: Reliability, Data freshness, Modifiability, Cost, Privacy. Liabilities: Latency, Maintainability, Reliability, Data freshness. |\n| **In this lab** | Embeddings and a Chroma vector database retrieve the policies, a distance threshold makes the system abstain when nothing is close, and a citation check verifies that the answer is grounded. |"
+    },
+    {
+      "type": "markdown",
       "source": "## Step 1 · Store a few policies, and see where word matching fails\n\nOnly R1 is about our architecture question. The other policies are there so that retrieval has something to reject.\n\nThe question below is clearly about R1, but it is worded differently. `words` turns a text into a *set* of lower-case words, and `&` keeps the words that two sets share. Word matching sees only \"services\" and \"the\", and every policy contains \"the\"."
     },
     {
