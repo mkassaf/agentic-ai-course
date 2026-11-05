@@ -1,6 +1,15 @@
 import unittest
 
-from coursekit.protocol_examples import review_over_a2a
+from coursekit.protocol_examples import review_over_a2a, talk_over_a2a
+
+
+class TalkOverA2ATests(unittest.IsolatedAsyncioTestCase):
+    async def test_any_function_becomes_a_discoverable_agent(self):
+        card, reply = await talk_over_a2a(lambda text: text.upper(), "lisbon", name="Shouter",
+                                          description="Repeats a message in capitals.")
+        self.assertEqual(reply, "LISBON")
+        self.assertEqual(card["name"], "Shouter")
+        self.assertEqual(card["skills"][0]["description"], "Repeats a message in capitals.")
 
 
 class ArchitectureReviewTests(unittest.IsolatedAsyncioTestCase):
