@@ -74,13 +74,33 @@ const labs = [
     "example": "Chain four prompts for the Payments platform, whose squads want independent releases while one engineer runs operations.",
     "exercise": "Break the requirements list, drop a trade-off mark, and make the decision name an option that was never proposed.",
     "checks": "Every gate passes, and the record chooses microservices while naming the cost for the one operations engineer.",
-    "bridge": "Gates check the shape of each step, not whether the decision is wise; Lab 05 adds architects who disagree.",
+    "bridge": "Gates check the shape of each step, not whether the decision is wise; Lab 06 adds architects who disagree.",
     "track": "lecture-2",
     "pattern": "Single-Path Planning"
   },
   {
     "id": "04",
-    "file": "04_react_tools",
+    "file": "04_why_tools",
+    "track": "lecture-2",
+    "pattern": "One-Step Tool Agent",
+    "title": "Tools: let the model read and change live data",
+    "subtitle": "One-Step Tool Agent · A hotel search tool and a booking tool, step by step",
+    "topics": "tools tool calling function calling hotel search booking read write confirmation live data one-step tool agent",
+    "idea": "A model knows only its training and its prompt; tools let it read live data and change it, while our code checks every request.",
+    "flow": "question → model guesses → search tool → tool descriptions → model picks a tool → checked call → answer from the result → write tool after confirmation",
+    "objectives": [
+      "Explain why a model needs tools for live data.",
+      "Describe tools and check every tool request.",
+      "Separate read tools from write tools that need confirmation."
+    ],
+    "example": "A hotel booking system: the model guesses whether Harbor View has a room, then searches the live data and books the Alfama Inn after the user confirms.",
+    "exercise": "Close a hotel, request an unknown tool, send a wrong argument type, and add a cancel tool.",
+    "checks": "The guess is wrong; the search finds the Alfama Inn; the booking waits for confirmation, then leaves 2 rooms.",
+    "bridge": "Lab 05 lets the model call tools again and again, choosing each next step from what it has seen."
+  },
+  {
+    "id": "05",
+    "file": "05_react_agent",
     "title": "ReAct: choose a tool, then decide",
     "subtitle": "One-Step Tool Agent in a ReAct loop · A guarded ReAct loop with a history",
     "topics": "agent foundations patterns react action observation loop chaining routing one-step tool agent in a react loop",
@@ -94,13 +114,13 @@ const labs = [
     "example": "The goal names “our wiki project”, so the agent must list the projects, read the right one, and then decide.",
     "exercise": "Make the agent finish too early, recover from a wrong project name, and change the goal.",
     "checks": "Three turns: list_projects, get_project, finish. The decision matches the policy after two tool calls.",
-    "bridge": "The model chooses the steps, but code owns the tools, the guards, and the turn limit. Self-study Lab 09 serves tools through MCP.",
+    "bridge": "The model chooses the steps, but code owns the tools, the guards, and the turn limit. Self-study Lab 10 serves tools through MCP.",
     "track": "lecture-2",
     "pattern": "One-Step Tool Agent in a ReAct loop"
   },
   {
-    "id": "05",
-    "file": "05_architecture_council",
+    "id": "06",
+    "file": "06_architecture_council",
     "title": "A council of architects: propose, challenge, agree",
     "subtitle": "Debate-Based Cooperation · Independent proposals on three model families, challenges, and a chair",
     "topics": "multi-agent council debate parallel proposals critique revision consensus voting dissent chair coordinator grounding model families patterns debate-based cooperation",
@@ -115,15 +135,15 @@ const labs = [
     "exercise": "Cause a deadlock, cite a made-up source, and compare one model family with three in live mode.",
     "checks": "Six messages over three rounds; microservices wins 2 to 1, and the Safeguard's dissent citing F3 is kept.",
     "bridge": "Live mode uses three model families, each with its own key: Qwen on FreeInference, DeepSeek, and Gemini.",
-    "track": "lecture-2",
+    "track": "lecture-3",
     "pattern": "Debate-Based Cooperation"
   },
   {
-    "id": "06",
-    "file": "06_human_feedback_memory",
+    "id": "07",
+    "file": "07_human_feedback_memory",
     "title": "The human decides, the council learns",
-    "subtitle": "Human in the Loop and Archival Memory · Human review, revision, memory, and a held-out evaluation",
-    "topics": "human in the loop feedback memory vector database chroma lessons evaluation held-out learning patterns council human in the loop and archival memory",
+    "subtitle": "Human in the Loop, Scratchpad and Archival Memory · Human review, short- and long-term memory, and a held-out evaluation",
+    "topics": "human in the loop feedback memory vector database chroma lessons evaluation held-out learning patterns council human in the loop and archival memory short-term memory long-term memory scratchpad",
     "idea": "The human architect reviews each proposal and keeps the final say; the accepted decision and its reasons become a memory that later cases recall.",
     "flow": "proposal → human review → revise with feedback → accept → store lesson → recall for new cases → score before / after",
     "objectives": [
@@ -137,26 +157,6 @@ const labs = [
     "bridge": "Similar text does not mean a lesson applies; the project needs 20 or more held-out scenarios and repeated live runs.",
     "track": "lecture-3",
     "pattern": "Human in the Loop and Archival Memory"
-  },
-  {
-    "id": "07",
-    "file": "07_routing",
-    "title": "Route each case: rule or council",
-    "subtitle": "Routing · A model router, a dispatch table, a safe fallback, and the cost of each mistake",
-    "topics": "routing router classifier dispatch handlers fallback cost few shot council patterns",
-    "idea": "A router reads each case and picks a handler: plain code for routine cases, the council for contested ones. Code owns the routes and falls back to the council when a reply is unusable.",
-    "flow": "case → router (model) → valid route? → HANDLERS[route] → rule (0 calls) | council (5 calls) → compare with human routes",
-    "objectives": [
-      "Route inputs with a model and a dispatch table.",
-      "Fall back safely on an unusable reply.",
-      "Count routing cost and weigh the two kinds of mistake."
-    ],
-    "example": "Six cases with a note the rule cannot read; the router sends the two cases with one operations engineer to the council.",
-    "exercise": "Skip a needed debate, send an unusable route, change a note, and compare a router with and without worked examples.",
-    "checks": "The router agrees with the human on 5 of 6 cases, skips no needed debate, and costs 21 calls against 30.",
-    "bridge": "Live, worked examples kept the router from skipping debates; a router that wastes too many debates costs more than none.",
-    "track": "lecture-3",
-    "pattern": "Routing"
   },
   {
     "id": "08",
@@ -179,7 +179,27 @@ const labs = [
   },
   {
     "id": "09",
-    "file": "09_tools_mcp",
+    "file": "09_routing",
+    "title": "Route each case: rule or council",
+    "subtitle": "Routing · A model router, a dispatch table, a safe fallback, and the cost of each mistake",
+    "topics": "routing router classifier dispatch handlers fallback cost few shot council patterns",
+    "idea": "A router reads each case and picks a handler: plain code for routine cases, the council for contested ones. Code owns the routes and falls back to the council when a reply is unusable.",
+    "flow": "case → router (model) → valid route? → HANDLERS[route] → rule (0 calls) | council (5 calls) → compare with human routes",
+    "objectives": [
+      "Route inputs with a model and a dispatch table.",
+      "Fall back safely on an unusable reply.",
+      "Count routing cost and weigh the two kinds of mistake."
+    ],
+    "example": "Six cases with a note the rule cannot read; the router sends the two cases with one operations engineer to the council.",
+    "exercise": "Skip a needed debate, send an unusable route, change a note, and compare a router with and without worked examples.",
+    "checks": "The router agrees with the human on 5 of 6 cases, skips no needed debate, and costs 21 calls against 30.",
+    "bridge": "Live, worked examples kept the router from skipping debates; a router that wastes too many debates costs more than none.",
+    "track": "self-study",
+    "pattern": "Routing"
+  },
+  {
+    "id": "10",
+    "file": "10_tools_mcp",
     "title": "Architecture tools and our own MCP server",
     "subtitle": "Registry & Adapter · Read and write tools with validation and errors",
     "topics": "tools mcp server client extract action agent foundations registry & adapter",
@@ -198,8 +218,8 @@ const labs = [
     "pattern": "Registry & Adapter"
   },
   {
-    "id": "10",
-    "file": "10_agent_skills",
+    "id": "11",
+    "file": "11_agent_skills",
     "title": "A skill for a short architecture decision record",
     "subtitle": "Skill Library Evolution · Choose a skill from a catalog, then check its output",
     "topics": "skills skill.md adr architecture decision record reusable skill library evolution",
@@ -218,11 +238,11 @@ const labs = [
     "pattern": "Skill Library Evolution"
   },
   {
-    "id": "11",
-    "file": "11_a2a_protocol",
+    "id": "12",
+    "file": "12_a2a_protocol",
     "title": "Delegate an architecture review with A2A",
-    "subtitle": "Generator–Critic Loop · Propose, review over A2A, and revise",
-    "topics": "a2a agent card discovery message review architecture generator–critic loop",
+    "subtitle": "Generator–Critic Loop · A tiny hotel-desk agent over A2A, then review and revision",
+    "topics": "a2a agent card discovery message review architecture generator–critic loop agent card hotel desk",
     "idea": "A2A lets one agent discover another through its Agent Card and exchange messages; the reviewer's feedback can drive a revision.",
     "flow": "propose → A2A review → FAIL? revise with feedback → review again",
     "objectives": [
@@ -238,8 +258,8 @@ const labs = [
     "pattern": "Generator–Critic Loop"
   },
   {
-    "id": "12",
-    "file": "12_frameworks_langgraph",
+    "id": "13",
+    "file": "13_frameworks_langgraph",
     "title": "A framework for choosing and checking",
     "subtitle": "Generator–Critic Loop · A LangGraph loop with a conditional retry",
     "topics": "framework langgraph state nodes edges evaluate architecture generator–critic loop",
@@ -253,13 +273,13 @@ const labs = [
     "example": "Run a choose-and-check graph on four projects. One project fails, gets feedback, and passes on its second attempt.",
     "exercise": "Use up the attempts, allow a third attempt, and add a fifth project.",
     "checks": "All four projects pass, the Internal wiki after two attempts, for five model calls in total.",
-    "bridge": "Passing a policy check is useful evidence, but not architecture quality. Try Lab 05's council as a graph.",
+    "bridge": "Passing a policy check is useful evidence, but not architecture quality. Try Lab 06's council as a graph.",
     "track": "self-study",
     "pattern": "Generator–Critic Loop"
   },
   {
-    "id": "13",
-    "file": "13_framing_contract",
+    "id": "14",
+    "file": "14_framing_contract",
     "track": "self-study",
     "title": "Frame the debate and agree on a message contract",
     "subtitle": "Passive Goal Creator and a contract · Quality-attribute scenarios, a typed proposal, and swappable architects",
@@ -274,12 +294,12 @@ const labs = [
     "example": "A Booking service with a Monday spike and an audit requirement; four architects answer, and one is rejected for breaking the contract.",
     "exercise": "Fix the rejected reply, make votes and confidence disagree, add an architect, and break the frame.",
     "checks": "Three scenarios pass the gate; the Auditor is rejected; votes 2 to 1 and confidence 1.3 to 0.9 agree.",
-    "bridge": "Self-reported confidence is information, not proof; Lab 14 learns whom to trust from outcomes.",
+    "bridge": "Self-reported confidence is information, not proof; Lab 15 learns whom to trust from outcomes.",
     "pattern": "Passive Goal Creator and a contract"
   },
   {
-    "id": "14",
-    "file": "14_learning_curve_trust",
+    "id": "15",
+    "file": "15_learning_curve_trust",
     "track": "self-study",
     "title": "Learn from feedback: a learning curve and per-model trust",
     "subtitle": "Voting-Based Cooperation · A feedback/test split, trust-weighted votes, and a curve",
@@ -309,20 +329,20 @@ const tracks = [
   {
     "id": "lecture-2",
     "label": "Lecture 2 · 90 minutes",
-    "title": "Chain, act, debate",
-    "note": "From a fixed chain of prompts, to an agent that chooses its own steps, to a council of architects."
+    "title": "Chain, call tools, act",
+    "note": "From a fixed chain of prompts, to tools that read and change live data, to an agent that chooses its own steps."
   },
   {
     "id": "lecture-3",
     "label": "Lecture 3 · 90 minutes",
-    "title": "Decide, learn, measure",
-    "note": "A human decides, the council remembers, a router saves debates, and an experiment tests the council."
+    "title": "Debate, decide, measure",
+    "note": "A council of architects debates, a human decides, short- and long-term memory keep the lessons, and an experiment tests the council."
   },
   {
     "id": "self-study",
     "label": "Self-study · at your own pace",
     "title": "Build your council further",
-    "note": "Protocols, skills, a framework, framing, and a learning experiment: what the project needs beyond the lectures. Each lab ends with a challenge for your council."
+    "note": "Routing, protocols, skills, a framework, framing, and a learning experiment: what the project needs beyond the lectures. Each lab ends with a challenge for your council."
   }
 ];
 

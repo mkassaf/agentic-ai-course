@@ -1,0 +1,59 @@
+{
+  "slug": "04_why_tools",
+  "title": "Tools: let the model read and change live data",
+  "section": "Lecture 2: Chain, call tools, act",
+  "cells": [
+    {
+      "type": "markdown",
+      "source": "## Give the model hands and eyes\n\n**So far:** every fact the model used came from its training or from text we put into the prompt: the policy in Lab 01, the retrieved policies in Lab 02, the earlier replies in Lab 03.\n\n**New:** *tools*. A tool is a function that the model may ask our code to run. A *read* tool looks up live data, such as which hotels have free rooms tonight. A *write* tool changes data, such as booking a room. The model only *asks* for a tool; our code checks the request, runs the function, and returns the result.\n\nWe build this up in small steps, on a new example: a hotel booking system.\n\n1. Ask the model about tonight's rooms without a tool: it can only guess, or say that it cannot know.\n2. Write a search tool and call it ourselves.\n3. Describe the tools to the model, and check every request it makes.\n4. Let the model pick the tool, then answer from the tool's result.\n5. Add a tool that books a room, so the data changes, and make it wait for the user's confirmation."
+    },
+    {
+      "type": "markdown",
+      "source": "## Pattern · One-Step Tool Agent\n\n*Single-agent pattern from the [Architectural Patterns for Agentic AI](https://karthikv1392.github.io/agentic-patterns/) field guide. Related: Incremental Tool Agent, Registry & Adapter.*\n\n| | |\n| --- | --- |\n| **Context** | Many tasks need a deterministic capability, such as a lookup, before an answer can be trusted. |\n| **Problem** | Free-form model output is hard to execute, while a long reasoning chain is unnecessary for a straightforward tool call. |\n| **Solution** | Ask the model for its plan, a tool name, and parameters as JSON; execute the tool; then use the result. |\n| **Use when** | One tool is enough per step; latency matters; tool schemas are simple and stable. |\n| **Trade-off** | Fast and compact, but tool choice and parameters are made in one shot. The Incremental Tool Agent separates them, at a higher cost. |\n| **Flow** | Goal → Plan + choose → Tool → Synthesize |\n| **Quality attributes** | Benefits: Latency, Cost, Performance, Maintainability. Liabilities: Reliability, Accuracy, Security, Observability. |\n| **In this lab** | The model picks `search_hotels` or `book_room` and its arguments as JSON; our code checks the name and the argument types, runs the tool, and the model answers from the result. A write tool waits for the user's confirmation, which addresses the pattern's security liability. |"
+    },
+    {
+      "type": "markdown",
+      "source": "## Step 1 · Without a tool, the model cannot know\n\n`hotels` is the booking system's live data. It changes every minute, and no model was trained on it. We ask the model whether Harbor View has a room tonight, then look at the data ourselves. In practice mode, the scripted reply is a confident guess. In our live tests, Qwen and Gemini instead said that they cannot see live availability: more honest, but just as unable to answer."
+    },
+    {
+      "type": "code",
+      "source": "import json\n\nhotels = {  # the booking system's live data: rooms change every minute\n    \"Harbor View\": {\"city\": \"Lisbon\", \"price\": 140, \"rooms_left\": 0, \"status\": \"open\"},\n    \"Alfama Inn\": {\"city\": \"Lisbon\", \"price\": 95, \"rooms_left\": 3, \"status\": \"open\"},\n    \"Tagus Lodge\": {\"city\": \"Lisbon\", \"price\": 80, \"rooms_left\": 5, \"status\": \"closed for renovation\"},\n    \"Canal House\": {\"city\": \"Amsterdam\", \"price\": 160, \"rooms_left\": 2, \"status\": \"open\"},\n}\nquestion = \"Does the Harbor View hotel in Lisbon have a free room tonight, and what does it cost?\"\nguess = ask(question, example=\"Yes, Harbor View usually has rooms; a double costs about 120 euros a night.\")\nprint(\"Model alone:   \", guess)\nprint(\"Booking system:\", hotels[\"Harbor View\"])"
+    },
+    {
+      "type": "markdown",
+      "source": "## Step 2 · A search tool\n\n`search_hotels` is a plain Python function: it returns the open hotels in a city that have a free room, cheapest first, within a price limit. We call it ourselves first, before any model is involved. Its answer is always as fresh as the data."
+    },
+    {
+      "type": "code",
+      "source": "def search_hotels(city: str, max_price: int = 1000) -> list:\n    \"\"\"Open hotels in a city with at least one free room, cheapest first.\"\"\"\n    found = [{\"hotel\": name, \"price\": h[\"price\"], \"rooms_left\": h[\"rooms_left\"]}\n             for name, h in hotels.items()\n             if h[\"city\"].lower() == city.lower() and h[\"status\"] == \"open\"\n             and h[\"rooms_left\"] > 0 and h[\"price\"] <= max_price]\n    return sorted(found, key=lambda hotel: hotel[\"price\"])\n\nprint(search_hotels(\"Lisbon\"))\nprint(search_hotels(\"Lisbon\", max_price=90))"
+    },
+    {
+      "type": "markdown",
+      "source": "## Step 3 · Describe the tools, and check every request\n\nThe model never sees our code. It sees each tool's name, description, and argument types, which `describe` writes out. `call_tool` is the boundary between the model and our system: it runs a tool only if the name is known and every argument has the right type, and it returns an error as data that the model can read. A tool marked `writes` also needs the user's confirmation; Step 5 uses it."
+    },
+    {
+      "type": "code",
+      "source": "TOOLS = {\"search_hotels\": {\"run\": search_hotels, \"args\": {\"city\": str, \"max_price\": int}, \"writes\": False,\n                           \"description\": \"Find open hotels with a free room in a city, under a price.\"}}\n\ndef describe():\n    return \"\\n\".join(f\"- {name}({', '.join(f'{a}: {t.__name__}' for a, t in spec['args'].items())}): \"\n                     f\"{spec['description']}\" for name, spec in TOOLS.items())\n\ndef call_tool(reply, confirmed=False):\n    \"\"\"Run the tool the model asked for, after checking its name, its arguments, and the user's consent.\"\"\"\n    request = json.loads(reply)\n    spec = TOOLS.get(request.get(\"tool\"))\n    if spec is None:\n        return {\"error\": f\"unknown tool {request.get('tool')!r}\"}\n    args = request.get(\"args\", {})\n    if any(a not in spec[\"args\"] or not isinstance(v, spec[\"args\"][a]) for a, v in args.items()):\n        return {\"error\": f\"bad arguments {args}\"}\n    if spec[\"writes\"] and not confirmed:\n        return {\"error\": \"this tool changes data and needs the user's confirmation\"}\n    return spec[\"run\"](**args)"
+    },
+    {
+      "type": "markdown",
+      "source": "## Step 4 · The model picks the tool, then answers from its result\n\nTwo model calls. The first gets the tool descriptions and the request, and replies with JSON naming a tool and its arguments. Our code runs it with `call_tool`. The second call gets the tool's result and answers in one sentence, using only that result."
+    },
+    {
+      "type": "code",
+      "source": "FORMAT = 'Reply with JSON only, no code fences: {\"tool\": \"<name>\", \"args\": {...}}'\nrequest = \"Find me a hotel in Lisbon for under 120 euros a night.\"\nchoice = ask(f\"Tools:\\n{describe()}\\nRequest: {request}\\n{FORMAT}\",\n             example='{\"tool\": \"search_hotels\", \"args\": {\"city\": \"Lisbon\", \"max_price\": 120}}')\nresult = call_tool(choice)\nanswer = ask(f\"Request: {request}\\nTool result: {json.dumps(result)}\\nAnswer in one sentence, using only the result.\",\n             example=\"Alfama Inn has 3 rooms left at 95 euros a night.\")\nprint(\"Model asked for:\", choice, \"\\nTool returned:  \", result, \"\\nModel answered: \", answer)"
+    },
+    {
+      "type": "markdown",
+      "source": "## Step 5 · A tool that changes the data\n\n`book_room` is a *write* tool: it books one room and lowers `rooms_left`. It refuses anything it cannot do, and then nothing changes. The model asks for a booking, but `call_tool` runs it only after the user confirms. Searching again shows the new state: tools always see live data."
+    },
+    {
+      "type": "code",
+      "source": "bookings = []\n\ndef book_room(hotel: str, guest: str) -> dict:\n    \"\"\"Book one room. It changes the data, so it refuses anything it cannot do.\"\"\"\n    h = hotels.get(hotel)\n    if h is None or h[\"status\"] != \"open\" or h[\"rooms_left\"] < 1:\n        return {\"error\": f\"{hotel!r} cannot be booked now\"}\n    h[\"rooms_left\"] -= 1\n    bookings.append({\"hotel\": hotel, \"guest\": guest})\n    return {\"booked\": hotel, \"rooms_left\": h[\"rooms_left\"]}\n\nTOOLS[\"book_room\"] = {\"run\": book_room, \"args\": {\"hotel\": str, \"guest\": str}, \"writes\": True,\n                      \"description\": \"Book one room in a hotel for a guest. Changes the data.\"}\nchoice = ask(f\"Tools:\\n{describe()}\\nRequest: Book the Alfama Inn for Dana.\\n{FORMAT}\",\n             example='{\"tool\": \"book_room\", \"args\": {\"hotel\": \"Alfama Inn\", \"guest\": \"Dana\"}}')\nprint(\"Before confirmation:\", call_tool(choice))\nprint(\"After confirmation: \", call_tool(choice, confirmed=True))\nfull = '{\"tool\": \"book_room\", \"args\": {\"hotel\": \"Harbor View\", \"guest\": \"Dana\"}}'\nprint(\"A full hotel:       \", call_tool(full, confirmed=True))\nprint(\"Search again:       \", search_hotels(\"Lisbon\"), \"| bookings:\", bookings)"
+    },
+    {
+      "type": "markdown",
+      "source": "## What you should see\n\nStep 1 shows the model's reply, a guess or a refusal, next to the real data: Harbor View has no free room and costs 140 euros. Step 2 finds the Alfama Inn in Lisbon; Tagus Lodge is cheaper but closed, so the 90-euro search returns nothing. In Step 4, the model asks for `search_hotels` with Lisbon and 120, and answers from the result. In Step 5, the booking is refused until the user confirms, then Alfama Inn drops to 2 rooms; Harbor View is refused because it is full, and nothing changes.\n\n## Try it\n\n1. Mark the Alfama Inn as `\"closed for renovation\"` and run Steps 2 and 4 again. The tool now returns `[]`, and no model was retrained. (The practice answer is scripted; in live mode, the answer changes too.)\n2. Make the model ask for a tool that does not exist, for example `\"delete_hotel\"`, in Step 4's scripted reply. What does `call_tool` return?\n3. Send `\"max_price\": \"120\"` (a string) instead of `120`. Which check catches it?\n4. Add a `cancel_booking(hotel, guest)` write tool. It should give the room back, and refuse a booking that does not exist.\n5. In live mode, does the model pick the right tool for \"Is anything free in Amsterdam?\" and for \"Book Canal House for Sam\"?\n\n## Takeaway\n\nA model knows only what it was trained on and what we put into the prompt. Tools give it live data and let it act, but our code stays in charge: it publishes what each tool does, checks every request, returns errors as data, and asks the user before anything changes. Lab 05 lets the model call tools again and again, choosing each next step from what it has seen.\n\n## Read further\n\n- [Building effective agents: the augmented LLM](https://www.anthropic.com/research/building-effective-agents)\n- [Function calling with the Chat Completions API](https://developers.openai.com/api/docs/guides/function-calling)"
+    }
+  ]
+}

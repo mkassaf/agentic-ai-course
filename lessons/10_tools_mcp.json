@@ -1,5 +1,5 @@
 {
-  "slug": "09_tools_mcp",
+  "slug": "10_tools_mcp",
   "title": "Architecture tools and our own MCP server",
   "section": "Self-study: Build your council further",
   "packages": [
@@ -8,7 +8,7 @@
   "cells": [
     {
       "type": "markdown",
-      "source": "## Give the program tools through MCP\n\n**So far:** in Lab 04, the agent called tools that were plain Python functions inside the notebook. This self-study lab publishes tools through a real protocol, so that any client can find and call them.\n\n**New:** *tools*, which are functions that read data or take an action. The **Model Context Protocol (MCP)** publishes tools so that any MCP client can discover and call them, with typed arguments and clear errors.\n\nWe build an MCP server with two tools. `get_project` *reads* the facts of one project. `save_decision` *changes state* by recording a decision, and it refuses bad input. The official MCP SDK connects the client and server inside this notebook, so no port, external service, or model key is needed."
+      "source": "## Give the program tools through MCP\n\n**So far:** in Lab 05, the agent called tools that were plain Python functions inside the notebook. This self-study lab publishes tools through a real protocol, so that any client can find and call them.\n\n**New:** *tools*, which are functions that read data or take an action. The **Model Context Protocol (MCP)** publishes tools so that any MCP client can discover and call them, with typed arguments and clear errors.\n\nWe build an MCP server with two tools. `get_project` *reads* the facts of one project. `save_decision` *changes state* by recording a decision, and it refuses bad input. The official MCP SDK connects the client and server inside this notebook, so no port, external service, or model key is needed."
     },
     {
       "type": "markdown",
@@ -32,7 +32,7 @@
     },
     {
       "type": "markdown",
-      "source": "## Step 3 · Discover the tools as a client\n\nThe client does not read our Python code. It asks the server for its tools and gets back each tool's name, description, and input schema. Lab 04's model needed exactly this information to choose a tool. `await` is needed because MCP messages are asynchronous, and Colab notebooks accept `await` directly."
+      "source": "## Step 3 · Discover the tools as a client\n\nThe client does not read our Python code. It asks the server for its tools and gets back each tool's name, description, and input schema. Lab 05's model needed exactly this information to choose a tool. `await` is needed because MCP messages are asynchronous, and Colab notebooks accept `await` directly."
     },
     {
       "type": "code",
@@ -40,7 +40,7 @@
     },
     {
       "type": "markdown",
-      "source": "## Step 4 · Call the tools in a fixed workflow\n\nFor each project, our code reads the facts, applies the policy in Python, and saves the result. A dictionary result comes back as JSON text, so `json.loads` turns it into a dictionary again. The order of the calls is fixed by our code. In Lab 04, the model chose the order."
+      "source": "## Step 4 · Call the tools in a fixed workflow\n\nFor each project, our code reads the facts, applies the policy in Python, and saves the result. A dictionary result comes back as JSON text, so `json.loads` turns it into a dictionary again. The order of the calls is fixed by our code. In Lab 05, the model chose the order."
     },
     {
       "type": "code",
@@ -56,7 +56,7 @@
     },
     {
       "type": "markdown",
-      "source": "## What you should see\n\nStep 1 prints the Course portal's facts. Step 3 lists `get_project(name: string)` and `save_decision(project: string, choice: string)` with their descriptions. Step 4 prints two `Saved ...` lines and the server state with both decisions. Step 5 prints three lines that start with `is_error=True`. The server may also log each failure on a separate line. That log is the server's view of the same errors.\n\n## Try it\n\n1. Add `\"Internal wiki\": {\"team_size\": 9, \"independent_deploys\": False}` to `PROJECTS`. Run Steps 1 to 4 again, and update the final `assert` to include it.\n2. Add a third tool, `list_projects() -> list`, that returns `sorted(PROJECTS)`. Run Step 3 and find it in the listing.\n3. In Step 5, change `\"Billing\"` to the number `42`. Read how the SDK reports an argument of the wrong type.\n4. **Use it in your council.** Add a `get_sources` tool that returns the shared sources of Lab 05, so that every architect reads the same evidence through one MCP server.\n\n## Takeaway\n\nMCP separates *what a tool offers* (a name, a description, and a schema) from *who calls it*. Tools validate their own input, and errors come back as data that a client, or a model, can read and act on. In a council, one MCP server can give every architect the same tools and the same sources.\n\n## Read further\n\n- [Official SDK client guide](https://py.sdk.modelcontextprotocol.io/client/)\n- [MCP architecture](https://modelcontextprotocol.io/docs/learn/architecture)"
+      "source": "## What you should see\n\nStep 1 prints the Course portal's facts. Step 3 lists `get_project(name: string)` and `save_decision(project: string, choice: string)` with their descriptions. Step 4 prints two `Saved ...` lines and the server state with both decisions. Step 5 prints three lines that start with `is_error=True`. The server may also log each failure on a separate line. That log is the server's view of the same errors.\n\n## Try it\n\n1. Add `\"Internal wiki\": {\"team_size\": 9, \"independent_deploys\": False}` to `PROJECTS`. Run Steps 1 to 4 again, and update the final `assert` to include it.\n2. Add a third tool, `list_projects() -> list`, that returns `sorted(PROJECTS)`. Run Step 3 and find it in the listing.\n3. In Step 5, change `\"Billing\"` to the number `42`. Read how the SDK reports an argument of the wrong type.\n4. **Use it in your council.** Add a `get_sources` tool that returns the shared sources of Lab 06, so that every architect reads the same evidence through one MCP server.\n\n## Takeaway\n\nMCP separates *what a tool offers* (a name, a description, and a schema) from *who calls it*. Tools validate their own input, and errors come back as data that a client, or a model, can read and act on. In a council, one MCP server can give every architect the same tools and the same sources.\n\n## Read further\n\n- [Official SDK client guide](https://py.sdk.modelcontextprotocol.io/client/)\n- [MCP architecture](https://modelcontextprotocol.io/docs/learn/architecture)"
     }
   ]
 }

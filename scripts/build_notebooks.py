@@ -11,12 +11,12 @@ import nbformat
 ROOT = Path(__file__).resolve().parents[1]
 EXTRAS = {
     "02_rag_systems": ("rag", "chromadb"),
-    "06_human_feedback_memory": ("rag", "chromadb"),
-    "09_tools_mcp": ("mcp", "mcp"),
-    "11_a2a_protocol": ("a2a", "a2a"),
-    "12_frameworks_langgraph": ("framework", "langgraph"),
+    "07_human_feedback_memory": ("rag", "chromadb"),
+    "10_tools_mcp": ("mcp", "mcp"),
+    "12_a2a_protocol": ("a2a", "a2a"),
+    "13_frameworks_langgraph": ("framework", "langgraph"),
 }
-NO_MODEL_LABS = {"09_tools_mcp", "14_learning_curve_trust"}  # these labs never call ask()
+NO_MODEL_LABS = {"10_tools_mcp", "15_learning_curve_trust"}  # these labs never call ask()
 
 
 def source_cell(kind, source):

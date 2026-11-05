@@ -1,11 +1,11 @@
 {
-  "slug": "13_framing_contract",
+  "slug": "14_framing_contract",
   "title": "Frame the debate and agree on a message contract",
   "section": "Self-study: Build your council further",
   "cells": [
     {
       "type": "markdown",
-      "source": "## Before the debate: a frame and a contract\n\n**So far:** in Lab 05, the architects answered a fixed question with free-form claims, and the chair checked only their sources.\n\n**New:** two things a council needs before it debates.\n\n- **A frame.** The chair turns the brief into *quality-attribute scenarios*. Each names a quality characteristic from the ISO/IEC 25010 quality model, a *stimulus* (what happens), a *response* (what the system must do), and a *measure* (a number that shows whether it did). Every architect then argues about the same scenarios.\n- **A message contract.** Every proposal must name an option, mark a trade-off for each scenario, give a confidence from 0 to 1, and state a claim. The chair rejects anything else. Because the code depends only on the contract, adding an architect takes one line.\n\nThe case is new: a Booking service, not the Payments platform."
+      "source": "## Before the debate: a frame and a contract\n\n**So far:** in Lab 06, the architects answered a fixed question with free-form claims, and the chair checked only their sources.\n\n**New:** two things a council needs before it debates.\n\n- **A frame.** The chair turns the brief into *quality-attribute scenarios*. Each names a quality characteristic from the ISO/IEC 25010 quality model, a *stimulus* (what happens), a *response* (what the system must do), and a *measure* (a number that shows whether it did). Every architect then argues about the same scenarios.\n- **A message contract.** Every proposal must name an option, mark a trade-off for each scenario, give a confidence from 0 to 1, and state a claim. The chair rejects anything else. Because the code depends only on the contract, adding an architect takes one line.\n\nThe case is new: a Booking service, not the Payments platform."
     },
     {
       "type": "markdown",
@@ -45,7 +45,7 @@
     },
     {
       "type": "markdown",
-      "source": "## Step 5 · Votes and confidence\n\nTwo ways to aggregate the accepted proposals: one vote each, or the sum of their confidence. Here they agree. But a confidence is the model's own claim about itself, and models are often overconfident. Record it, and do not let it outweigh the votes until you have checked it against outcomes, as Lab 14 does with each architect's record."
+      "source": "## Step 5 · Votes and confidence\n\nTwo ways to aggregate the accepted proposals: one vote each, or the sum of their confidence. Here they agree. But a confidence is the model's own claim about itself, and models are often overconfident. Record it, and do not let it outweigh the votes until you have checked it against outcomes, as Lab 15 does with each architect's record."
     },
     {
       "type": "code",

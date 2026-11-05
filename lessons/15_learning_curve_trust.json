@@ -1,11 +1,11 @@
 {
-  "slug": "14_learning_curve_trust",
+  "slug": "15_learning_curve_trust",
   "title": "Learn from feedback: a learning curve and per-model trust",
   "section": "Self-study: Build your council further",
   "cells": [
     {
       "type": "markdown",
-      "source": "## Show that the council improves with feedback\n\n**So far:** Lab 06 stored a lesson and compared two held-out cases before and after. Lab 08 compared the council with single models.\n\n**New:** the course project's second experiment, done properly, with a second learning lever:\n\n1. **Split** a benchmark into *feedback* cases and *test* cases. The human's feedback comes only from the first; scores come only from the second.\n2. **Per-model trust.** After each feedback case, record how often each architect agreed with the human. Weight each vote by how much better than chance that architect has been.\n3. **A learning curve.** Score the test cases after every feedback round, not only before and after.\n\nThis lab needs no model calls: the architects' answers were recorded earlier, and simple rules stand in for them so the lab stays short. The cases are new; only the question is the same."
+      "source": "## Show that the council improves with feedback\n\n**So far:** Lab 07 stored a lesson and compared two held-out cases before and after. Lab 08 compared the council with single models.\n\n**New:** the course project's second experiment, done properly, with a second learning lever:\n\n1. **Split** a benchmark into *feedback* cases and *test* cases. The human's feedback comes only from the first; scores come only from the second.\n2. **Per-model trust.** After each feedback case, record how often each architect agreed with the human. Weight each vote by how much better than chance that architect has been.\n3. **A learning curve.** Score the test cases after every feedback round, not only before and after.\n\nThis lab needs no model calls: the architects' answers were recorded earlier, and simple rules stand in for them so the lab stays short. The cases are new; only the question is the same."
     },
     {
       "type": "markdown",
@@ -29,7 +29,7 @@
     },
     {
       "type": "markdown",
-      "source": "## Step 3 · Trust and a weighted vote\n\n`trust` is each architect's agreement with the human on the feedback cases seen so far. Adding 1 to the agreements and 2 to the cases keeps an architect with no record at 0.5, a coin toss. `weight` turns trust into a vote: 0 at 0.5, 1 at always right. `council` adds up the weights for each option, and a tie escalates to the human, as in Lab 05."
+      "source": "## Step 3 · Trust and a weighted vote\n\n`trust` is each architect's agreement with the human on the feedback cases seen so far. Adding 1 to the agreements and 2 to the cases keeps an architect with no record at 0.5, a coin toss. `weight` turns trust into a vote: 0 at 0.5, 1 at always right. `council` adds up the weights for each option, and a tie escalates to the human, as in Lab 06."
     },
     {
       "type": "code",

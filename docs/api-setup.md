@@ -51,7 +51,7 @@ ask = make_ask(mode="live", provider="deepseek", model="deepseek-v4-pro")  # ano
 
 Gemini and DeepSeek models reason before they answer by default, and the hidden reasoning counts against the 256-token output budget, so a long reply comes back truncated. The presets turn reasoning off. Model ids and these switches change over time: in our tests, `gemini-3.8-flash` kept reasoning even at `"low"`, and `gemini-2.5-flash` had been retired. Check each provider's model list before teaching, and if you choose another model, pass its own setting, for example `make_ask(mode="live", provider="gemini", model="gemini-3.5-flash-lite", extra_body={})`.
 
-Lab 05's council needs at least three model families in live mode, so its architects use all three providers: Qwen on FreeInference, DeepSeek, and Gemini. Save all three keys in Colab Secrets.
+Lab 06's council needs at least three model families in live mode, so its architects use all three providers: Qwen on FreeInference, DeepSeek, and Gemini. Save all three keys in Colab Secrets.
 
 ## Calls, errors, and limits
 

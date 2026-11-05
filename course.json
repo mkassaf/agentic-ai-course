@@ -7,16 +7,17 @@
     "01_prompting_evaluation",
     "02_rag_systems",
     "03_prompt_chaining",
-    "04_react_tools",
-    "05_architecture_council",
-    "06_human_feedback_memory",
-    "07_routing",
+    "04_why_tools",
+    "05_react_agent",
+    "06_architecture_council",
+    "07_human_feedback_memory",
     "08_council_evaluation",
-    "09_tools_mcp",
-    "10_agent_skills",
-    "11_a2a_protocol",
-    "12_frameworks_langgraph",
-    "13_framing_contract",
-    "14_learning_curve_trust"
+    "09_routing",
+    "10_tools_mcp",
+    "11_agent_skills",
+    "12_a2a_protocol",
+    "13_frameworks_langgraph",
+    "14_framing_contract",
+    "15_learning_curve_trust"
   ]
 }

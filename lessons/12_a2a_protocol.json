@@ -1,5 +1,5 @@
 {
-  "slug": "11_a2a_protocol",
+  "slug": "12_a2a_protocol",
   "title": "Delegate an architecture review with A2A",
   "section": "Self-study: Build your council further",
   "packages": [
@@ -8,23 +8,31 @@
   "cells": [
     {
       "type": "markdown",
-      "source": "## Ask another agent to review the proposal\n\n**So far:** one program did all the work, calling a model and its own tools.\n\n**New:** *delegation*. Our model proposes a decision, and a separate reviewer agent checks it over the **Agent2Agent (A2A)** protocol. When the reviewer rejects a proposal, our model revises it using the reviewer's feedback.\n\nThe course helper `review_over_a2a` performs three real A2A steps with the official SDK, all inside this notebook:\n\n1. **Start** a reviewer agent that publishes an *Agent Card* with its name, description, and skills.\n2. **Discover** the reviewer by fetching that card, just as a client does for an agent it has not used before.\n3. **Send** the case and the proposal as an A2A message, and read the reply: `PASS` or `FAIL` with a reason.\n\nThe reviewer applies the course policy with plain code. You can read the helper in [`coursekit/protocol_examples.py`](https://github.com/mkassaf/agentic-ai-course/blob/main/coursekit/protocol_examples.py)."
+      "source": "## Talk to another agent with A2A\n\n**So far:** in Lab 04, the model called *tools*: functions inside our own program.\n\n**New:** *agents in other programs*. An agent can be written by another team, in another language, on another machine. The **Agent2Agent (A2A)** protocol lets our code find such an agent and talk to it, without importing its code:\n\n1. The agent publishes an *Agent Card*: its name, description, and skills.\n2. A client *discovers* the agent by fetching that card.\n3. The client sends a *message*, and the agent replies with a message.\n\nWe start with a tiny hotel-desk agent, then let a reviewer agent check our model's architecture proposals. The course helper `talk_over_a2a` serves any Python function as an A2A agent and performs all three steps with the official SDK, inside this notebook; `review_over_a2a` uses it for the reviewer. You can read both in [`coursekit/protocol_examples.py`](https://github.com/mkassaf/agentic-ai-course/blob/main/coursekit/protocol_examples.py)."
     },
     {
       "type": "markdown",
-      "source": "## Pattern · Generator–Critic Loop\n\n*Multi-agent pattern from the [Architectural Patterns for Agentic AI](https://karthikv1392.github.io/agentic-patterns/) field guide.*\n\n| | |\n| --- | --- |\n| **Context** | Plans, code, and writing improve through review against explicit criteria rather than one-shot generation. |\n| **Problem** | A generator cannot reliably notice its own omissions, and a critique without revision improves nothing. |\n| **Solution** | Give generation and review to separate agents, and feed the critic's must-fix feedback into the next draft until a pass condition or an iteration cap. |\n| **Use when** | Quality can be checked; revision is cheaper than failure; clear stopping criteria exist. |\n| **Trade-off** | Produces stronger results, but a critic can cause endless churn without a strict budget and pass condition. |\n| **Flow** | Generate → Critique → Revise → Pass gate |\n| **Quality attributes** | Benefits: Accuracy, Reliability, Observability, Modifiability. Liabilities: Latency, Cost, Maintainability, Accuracy, Predictability. |\n| **In this lab** | Our model generates a proposal, and a separate reviewer agent, reached over A2A, is the critic. Its feedback drives one revision; one revision is the iteration cap. |"
+      "source": "## Pattern · Generator–Critic Loop\n\n*Multi-agent pattern from the [Architectural Patterns for Agentic AI](https://karthikv1392.github.io/agentic-patterns/) field guide.*\n\n| | |\n| --- | --- |\n| **Context** | Plans, code, and writing improve through review against explicit criteria rather than one-shot generation. |\n| **Problem** | A generator cannot reliably notice its own omissions, and a critique without revision improves nothing. |\n| **Solution** | Give generation and review to separate agents, and feed the critic's must-fix feedback into the next draft until a pass condition or an iteration cap. |\n| **Use when** | Quality can be checked; revision is cheaper than failure; clear stopping criteria exist. |\n| **Trade-off** | Produces stronger results, but a critic can cause endless churn without a strict budget and pass condition. |\n| **Flow** | Generate → Critique → Revise → Pass gate |\n| **Quality attributes** | Benefits: Accuracy, Reliability, Observability, Modifiability. Liabilities: Latency, Cost, Maintainability, Accuracy, Predictability. |\n| **In this lab** | After the tiny hotel-desk agent of Steps 1 and 2, our model generates proposals, and a separate reviewer agent, reached over A2A, is the critic. Its feedback drives one revision; one revision is the iteration cap. |"
     },
     {
       "type": "markdown",
-      "source": "## Step 1 · Call the reviewer once\n\nWe send a proposal that breaks the policy, to see a rejection. `report.partition(\": \")` splits the report at the first `\": \"` into the status and the feedback."
+      "source": "## Step 1 · A tiny agent\n\nBefore any protocol, an agent here is just a function: text in, text out. The hotel desk reads a city name and answers with the hotels that have free rooms there."
     },
     {
       "type": "code",
-      "source": "from coursekit.protocol_examples import review_over_a2a\n\ncase = {\"team_size\": 9, \"independent_deploys\": False}\nagent, report = await review_over_a2a(case, \"microservices\")\nstatus, _, feedback = report.partition(\": \")\nprint(\"Discovered agent:\", agent)\nprint(\"Status:\", status)\nprint(\"Feedback:\", feedback)"
+      "source": "import json\n\nrooms = {\"Lisbon\": {\"Alfama Inn\": 3, \"Harbor View\": 0}, \"Amsterdam\": {\"Canal House\": 2}}\n\ndef hotel_desk(text):\n    \"\"\"A tiny agent: it reads a city and answers with the hotels that have free rooms.\"\"\"\n    city = text.strip()\n    free = {hotel: n for hotel, n in rooms.get(city, {}).items() if n > 0}\n    return f\"Free rooms in {city}: {free}\" if free else f\"No free rooms in {city}.\"\n\nprint(hotel_desk(\"Lisbon\"))"
     },
     {
       "type": "markdown",
-      "source": "## Step 2 · A proposer that can revise\n\n`propose` asks our model for a decision. On a retry, it adds the reviewer's feedback to the prompt. The prompt does not contain the policy, so the model can make the same mistakes as in Lab 00. Here the reviewer catches them.\n\nIn practice mode, `scripted` holds the replies for each project: the first attempt, then the revision if there is one."
+      "source": "## Step 2 · The same agent, over A2A\n\n`talk_over_a2a` serves `hotel_desk` as an A2A agent, fetches its Agent Card as a client would, and sends one message. The client never imports `hotel_desk`: it learns what the agent offers from the card, and talks to it only through messages."
+    },
+    {
+      "type": "code",
+      "source": "from coursekit.protocol_examples import review_over_a2a, talk_over_a2a\n\nDESK = dict(name=\"Hotel desk\", description=\"Answers which hotels in a city have free rooms.\",\n            skill=\"Availability\")\ncard, reply = await talk_over_a2a(hotel_desk, \"Lisbon\", **DESK)\nprint(\"Discovered card:\", json.dumps(card, indent=2))\nprint(\"Reply:\", reply)\n_, reply = await talk_over_a2a(hotel_desk, \"Paris\", **DESK)\nprint(\"Reply:\", reply)"
+    },
+    {
+      "type": "markdown",
+      "source": "## Step 3 · A proposer that can revise\n\n`propose` asks our model for a decision. On a retry, it adds the reviewer's feedback to the prompt. The prompt does not contain the policy, so the model can make the same mistakes as in Lab 00. Here the reviewer catches them.\n\nIn practice mode, `scripted` holds the replies for each project: the first attempt, then the revision if there is one."
     },
     {
       "type": "code",
@@ -32,23 +40,15 @@
     },
     {
       "type": "markdown",
-      "source": "## Step 3 · Propose, review, and revise\n\nFor each project, our model proposes and the reviewer checks. A rejected proposal gets exactly one revision, so the exchange always ends. `passed` records the final verdict for each project, and `revisions` counts the corrections."
+      "source": "## Step 4 · Propose, review, and revise\n\nNow a reviewer agent checks architecture proposals: `review_over_a2a` sends the project and the proposal as an A2A message, and the reviewer replies `PASS` or `FAIL` with a reason. For each project, our model proposes and the reviewer checks. A rejected proposal gets exactly one revision, so the exchange always ends. Every project should pass, and `revisions` counts the corrections."
     },
     {
       "type": "code",
-      "source": "passed, revisions = {}, 0\nfor project in projects:\n    proposal = propose(project)\n    _, report = await review_over_a2a(project, proposal)\n    print(f\"{project['name']:<18} proposed {proposal!r:<19} -> {report}\")\n    if report.startswith(\"FAIL\"):\n        revisions += 1\n        proposal = propose(project, feedback=report)\n        _, report = await review_over_a2a(project, proposal)\n        print(f\"{'':<18} revised  {proposal!r:<19} -> {report}\")\n    passed[project[\"name\"]] = report.startswith(\"PASS\")"
+      "source": "passed, revisions = {}, 0\nfor project in projects:\n    proposal = propose(project)\n    _, report = await review_over_a2a(project, proposal)\n    print(f\"{project['name']:<18} proposed {proposal!r:<19} -> {report}\")\n    if report.startswith(\"FAIL\"):\n        revisions += 1\n        proposal = propose(project, feedback=report)\n        _, report = await review_over_a2a(project, proposal)\n        print(f\"{'':<18} revised  {proposal!r:<19} -> {report}\")\n    passed[project[\"name\"]] = report.startswith(\"PASS\")\nprint(passed, \"| revisions needed:\", revisions)\nassert all(passed.values()), \"A proposal still fails after one revision.\""
     },
     {
       "type": "markdown",
-      "source": "## Step 4 · Check the outcome\n\nEvery project should pass after at most one revision. The revision count shows how often the reviewer had to correct our model."
-    },
-    {
-      "type": "code",
-      "source": "print(passed)\nprint(\"Revisions needed:\", revisions)\nassert all(passed.values()), \"A proposal still fails after one revision.\""
-    },
-    {
-      "type": "markdown",
-      "source": "## What you should see\n\nStep 1 prints `Discovered agent: Architecture reviewer`, `Status: FAIL`, and `Feedback: course policy expects modular monolith.` In Step 3, three projects pass at once. The Internal wiki is first proposed as `'microservices'` and fails, then the revision `'modular monolith'` passes. Step 4 shows every project as `True` and `Revisions needed: 1`.\n\n## Try it\n\n1. Make the Mobile backend's first scripted reply `\"microservices\"`, and add `\"modular monolith\"` as its revision. Run Steps 2 to 4. Now two projects need a revision.\n2. Make a revision wrong too, for example `[\"microservices\", \"microservices\"]`. The final check stops the run.\n3. In live mode, the model's revisions are real. Does a real model take the reviewer's feedback?\n4. **Use it in your council.** Run one architect from Lab 05 as an A2A agent with its own Agent Card. What must each message carry so that the chair's transcript stays traceable?\n\n## Takeaway\n\nA2A lets one agent find another agent through its Agent Card and exchange messages with it, without sharing code. A separate reviewer gives a second, independent check, and its feedback can drive a revision. Lab 12 builds the same choose, check, and retry loop with a framework.\n\n## Read further\n\n- [Official A2A SDK](https://github.com/a2aproject/a2a-python)\n- [Agent discovery](https://a2a-protocol.org/latest/topics/agent-discovery/)"
+      "source": "## What you should see\n\nStep 1 prints `Free rooms in Lisbon: {'Alfama Inn': 3}`. Step 2 prints the discovered Agent Card, with its name, description, skill, and address, then the same answer, now received over A2A, and `No free rooms in Paris.` In Step 4, three projects pass at once. The Internal wiki is first proposed as `'microservices'` and fails, then the revision `'modular monolith'` passes. The last line shows every project as `True` and `revisions needed: 1`.\n\n## Try it\n\n1. Ask the hotel desk about Amsterdam. Then change its card's `description`. What does a client learn from the card, and what can it not learn?\n2. Write a second tiny agent, for example a currency desk that converts euros to dollars at a fixed rate, and call it with `talk_over_a2a`.\n3. Make the Mobile backend's first scripted reply `\"microservices\"`, and add `\"modular monolith\"` as its revision. Run Steps 3 and 4. Now two projects need a revision.\n4. Make a revision wrong too, for example `[\"microservices\", \"microservices\"]`. The final check stops the run.\n5. In live mode, the model's revisions are real. Does a real model take the reviewer's feedback?\n6. **Use it in your council.** Run one architect from Lab 06 as an A2A agent with its own Agent Card. What must each message carry so that the chair's transcript stays traceable?\n\n## Takeaway\n\nA tool is a function inside our program; an A2A agent is a program of its own. A2A lets one agent find another through its Agent Card and exchange messages with it, without sharing code. A separate reviewer gives a second, independent check, and its feedback can drive a revision. Lab 13 builds the same choose, check, and retry loop with a framework.\n\n## Read further\n\n- [Official A2A SDK](https://github.com/a2aproject/a2a-python)\n- [Agent discovery](https://a2a-protocol.org/latest/topics/agent-discovery/)"
     }
   ]
 }
