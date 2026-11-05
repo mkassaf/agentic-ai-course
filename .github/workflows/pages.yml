@@ -23,8 +23,9 @@ jobs:
           cache: pip
           cache-dependency-path: requirements-dev.txt
       - run: python -m pip install -r requirements-dev.txt
+      - run: node scripts/export_diagrams.js
       - run: python scripts/build_notebooks.py
-      - run: git diff --exit-code -- notebooks
+      - run: git diff --exit-code -- notebooks assets/diagrams
       - name: Configure published notebook links
         env:
           COURSE_REPOSITORY: ${{ github.repository }}

@@ -17,6 +17,8 @@ EXTRAS = {
     "13_frameworks_langgraph": ("framework", "langgraph"),
 }
 NO_MODEL_LABS = {"10_tools_mcp", "15_learning_curve_trust"}  # these labs never call ask()
+# Diagrams are exported by scripts/export_diagrams.js and served by the course site (GitHub Pages).
+DIAGRAM_URL = "https://mkassaf.github.io/agentic-ai-course/assets/diagrams/{number}.svg"
 
 
 def source_cell(kind, source):
@@ -40,7 +42,7 @@ def setup_for(slug, revision):
     return source
 
 
-def build(lesson, revision):
+def build(lesson, revision, diagrams):
     slug = lesson["slug"]
     number = slug.split("_", 1)[0]
     intro = (f'# Lab {number} · {lesson["title"]}\n\n'
@@ -60,7 +62,9 @@ def build(lesson, revision):
     patterns = []  # field-guide pattern cards follow the overview, before the setup
     while steps and steps[0]["type"] == "markdown" and steps[0]["source"].startswith("## Pattern · "):
         patterns.append(source_cell("markdown", steps.pop(0)["source"]))
-    cells = [source_cell("markdown", intro), source_cell("markdown", overview["source"]), *patterns,
+    alt = diagrams[number].replace("[", "(").replace("]", ")")
+    picture = f'\n\n**At a glance**\n\n![Lab {number} at a glance: {alt}]({DIAGRAM_URL.format(number=number)})'
+    cells = [source_cell("markdown", intro), source_cell("markdown", overview["source"] + picture), *patterns,
              source_cell("markdown", setup_note), source_cell("code", setup_for(slug, revision))]
     cells[-1].metadata["tags"] = ["setup"]
     for cell in steps:
@@ -86,11 +90,12 @@ def main():
     revision = (ROOT / "coursekit-ref.txt").read_text().strip()
     if not re.fullmatch(r"[0-9a-f]{40}", revision):
         raise ValueError("coursekit-ref.txt must contain a published commit SHA")
+    diagrams = json.loads((ROOT / "assets" / "diagrams" / "descriptions.json").read_text())
     for slug in config["labs"]:
         lesson = json.loads((ROOT / "lessons" / (slug + ".json")).read_text())
         if lesson["slug"] != slug:
             raise ValueError(f"Lesson/file slug mismatch: {slug}")
-        build(lesson, revision)
+        build(lesson, revision, diagrams)
 
 
 if __name__ == "__main__":

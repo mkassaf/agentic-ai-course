@@ -7,7 +7,6 @@ const labs = [
     "subtitle": "A Python rule on four projects, then a model's guesses",
     "topics": "rules llm prompt architecture monolith microservices baseline",
     "idea": "Write the policy as a function that explains its answer, then see where a model that never saw the policy disagrees.",
-    "flow": "projects → decide() and ask() → to_label() → agreement count",
     "objectives": [
       "Write a rule that returns a decision and a reason.",
       "Turn free-text model replies into labels.",
@@ -26,7 +25,6 @@ const labs = [
     "subtitle": "A guided prompt, a strict parser, and a five-case quality gate",
     "topics": "prompting cot criteria few shot json evaluation testing",
     "idea": "Give the model explicit criteria and a worked example, reject badly formatted replies, and score the prompt on labelled cases.",
-    "flow": "policy + example + case → JSON → parse → pass / fail / invalid → gate",
     "objectives": [
       "Write a precise, structured prompt.",
       "Validate model output before trusting it.",
@@ -45,7 +43,6 @@ const labs = [
     "subtitle": "Retrieval-Augmented Generation · Embeddings, a vector database, and grounded answers",
     "topics": "rag retrieval embeddings vectors vector database chroma similarity rules source architecture context retrieval-augmented generation",
     "idea": "Turn policies into embedding vectors, store them in a vector database, retrieve by meaning, and check that the answer cites its evidence.",
-    "flow": "question → embed → nearest policies in Chroma → distance threshold → grounded answer → citation check",
     "objectives": [
       "Explain embeddings and compare two with cosine similarity.",
       "Store and query vectors in a vector database.",
@@ -65,7 +62,6 @@ const labs = [
     "subtitle": "Single-Path Planning · Requirements, options, trade-offs, and a record, with a gate after each step",
     "topics": "prompt chaining workflow gate requirements options trade-offs adr patterns council single-path planning",
     "idea": "Split one decision into small prompts; each reply feeds the next prompt, and a gate in plain Python stops a bad reply before it spreads.",
-    "flow": "brief → requirements → gate → options → gate → trade-offs → gate → decision record → gate",
     "objectives": [
       "Decompose a decision into a chain of prompts.",
       "Write a gate that checks one step's reply.",
@@ -87,7 +83,6 @@ const labs = [
     "subtitle": "One-Step Tool Agent · A hotel search tool and a booking tool, step by step",
     "topics": "tools tool calling function calling hotel search booking read write confirmation live data one-step tool agent",
     "idea": "A model knows only its training and its prompt; tools let it read live data and change it, while our code checks every request.",
-    "flow": "question → model guesses → search tool → tool descriptions → model picks a tool → checked call → answer from the result → write tool after confirmation",
     "objectives": [
       "Explain why a model needs tools for live data.",
       "Describe tools and check every tool request.",
@@ -105,7 +100,6 @@ const labs = [
     "subtitle": "One-Step Tool Agent in a ReAct loop · A guarded ReAct loop with a history",
     "topics": "agent foundations patterns react action observation loop chaining routing one-step tool agent in a react loop",
     "idea": "The model chooses each action and sees every observation so far; our code owns the tools, the guards, and the turn limit.",
-    "flow": "goal + history → action → tool → observation → … → finish → check",
     "objectives": [
       "Follow a model-selected sequence of actions.",
       "Explain each guard and the turn limit.",
@@ -125,7 +119,6 @@ const labs = [
     "subtitle": "Debate-Based Cooperation · Independent proposals on three model families, challenges, and a chair",
     "topics": "multi-agent council debate parallel proposals critique revision consensus voting dissent chair coordinator grounding model families patterns debate-based cooperation",
     "idea": "Three architects on three model families propose alone and in parallel; a chair challenges unsupported claims, counts grounded votes, keeps the dissent, and escalates a deadlock.",
-    "flow": "shared sources → 3 proposals in parallel → challenge ungrounded claims → revise → grounded votes → decision + dissent | escalation",
     "objectives": [
       "Collect independent proposals in parallel.",
       "Turn disagreement into sourced claims.",
@@ -145,7 +138,6 @@ const labs = [
     "subtitle": "Human in the Loop, Scratchpad and Archival Memory · Human review, short- and long-term memory, and a held-out evaluation",
     "topics": "human in the loop feedback memory vector database chroma lessons evaluation held-out learning patterns council human in the loop and archival memory short-term memory long-term memory scratchpad",
     "idea": "The human architect reviews each proposal and keeps the final say; the accepted decision and its reasons become a memory that later cases recall.",
-    "flow": "proposal → human review → revise with feedback → accept → store lesson → recall for new cases → score before / after",
     "objectives": [
       "Keep a human's final authority in a bounded review loop.",
       "Store and recall lessons from past decisions.",
@@ -165,7 +157,6 @@ const labs = [
     "subtitle": "A baseline comparison with a calibrated LLM judge",
     "topics": "evaluation baseline experiment llm judge calibration human ratings grounding cost latency council patterns",
     "idea": "Compare the council with each of its models alone on the same scenarios, by correctness, grounding, a judged trade-off measure, and cost; trust the LLM judge only after it agrees with human ratings.",
-    "flow": "recorded runs → correct / grounded / calls / seconds → LLM judge → agreement with human sample → council vs best single model",
     "objectives": [
       "Compare a system with the strongest baseline.",
       "Use an LLM judge with a narrow rubric.",
@@ -184,7 +175,6 @@ const labs = [
     "subtitle": "Routing · A model router, a dispatch table, a safe fallback, and the cost of each mistake",
     "topics": "routing router classifier dispatch handlers fallback cost few shot council patterns",
     "idea": "A router reads each case and picks a handler: plain code for routine cases, the council for contested ones. Code owns the routes and falls back to the council when a reply is unusable.",
-    "flow": "case → router (model) → valid route? → HANDLERS[route] → rule (0 calls) | council (5 calls) → compare with human routes",
     "objectives": [
       "Route inputs with a model and a dispatch table.",
       "Fall back safely on an unusable reply.",
@@ -204,7 +194,6 @@ const labs = [
     "subtitle": "Registry & Adapter · Read and write tools with validation and errors",
     "topics": "tools mcp server client extract action agent foundations registry & adapter",
     "idea": "A tool reads data or performs an allowed action; MCP publishes its name, description, and input schema to any client.",
-    "flow": "list_tools → get_project → apply policy → save_decision → error results",
     "objectives": [
       "Build MCP tools with typed arguments.",
       "Discover tools and their schemas as a client.",
@@ -224,7 +213,6 @@ const labs = [
     "subtitle": "Skill Library Evolution · Choose a skill from a catalog, then check its output",
     "topics": "skills skill.md adr architecture decision record reusable skill library evolution",
     "idea": "A skill packages a procedure with a name and a description; an agent chooses from the descriptions and loads only the chosen instructions.",
-    "flow": "catalog of descriptions → choose skill → load instructions + case → ADR → checker",
     "objectives": [
       "Split a SKILL.md file into its header and body.",
       "Explain progressive disclosure.",
@@ -244,7 +232,6 @@ const labs = [
     "subtitle": "Generator–Critic Loop · A tiny hotel-desk agent over A2A, then review and revision",
     "topics": "a2a agent card discovery message review architecture generator–critic loop agent card hotel desk",
     "idea": "A2A lets one agent discover another through its Agent Card and exchange messages; the reviewer's feedback can drive a revision.",
-    "flow": "propose → A2A review → FAIL? revise with feedback → review again",
     "objectives": [
       "Discover a reviewer agent and read its reply.",
       "Use another agent's feedback to revise.",
@@ -264,7 +251,6 @@ const labs = [
     "subtitle": "Generator–Critic Loop · A LangGraph loop with a conditional retry",
     "topics": "framework langgraph state nodes edges evaluate architecture generator–critic loop",
     "idea": "A framework makes the steps, the shared state, and the decision to retry explicit.",
-    "flow": "START → choose → check → retry? → choose … → END",
     "objectives": [
       "Define graph state and nodes.",
       "Route with a conditional edge.",
@@ -285,7 +271,6 @@ const labs = [
     "subtitle": "Passive Goal Creator and a contract · Quality-attribute scenarios, a typed proposal, and swappable architects",
     "topics": "framing quality attribute scenarios iso 25010 message contract schema confidence swappable agents chair passive goal creator and a contract",
     "idea": "The chair frames a brief as measurable quality-attribute scenarios; every proposal must follow one contract, so any architect can be added or replaced.",
-    "flow": "brief → chair frames 3 ISO 25010 scenarios → gate → proposals → contract check → votes and confidence",
     "objectives": [
       "Write measurable quality-attribute scenarios.",
       "Enforce a message contract with confidence and trade-offs.",
@@ -305,7 +290,6 @@ const labs = [
     "subtitle": "Voting-Based Cooperation · A feedback/test split, trust-weighted votes, and a curve",
     "topics": "evaluation experiment feedback test split held-out learning curve per-model trust weighted vote council voting-based cooperation",
     "idea": "Learn from feedback cases only, weight each architect by how much better than chance it has been, and score the test cases after every round.",
-    "flow": "benchmark → split once → feedback round → update trust → weighted vote on test cases → learning curve",
     "objectives": [
       "Keep feedback and test cases apart.",
       "Turn agreement with the human into vote weights.",
@@ -382,8 +366,19 @@ labs.forEach((lab, i) => {
   detail.className = 'lab';
   detail.id = `lab-${lab.id}`;
   detail.dataset.search = `${lab.title} ${lab.subtitle} ${lab.topics}`.toLowerCase();
-  detail.innerHTML = `<summary><span class="lab-number">${String(i).padStart(2, '0')}</span><div><h3>${esc(lab.title)}</h3><p>${esc(lab.subtitle)}</p></div><span class="lab-time">15–20 min</span><span class="expand-icon" aria-hidden="true">+</span></summary><div class="lab-body"><p class="lab-intro">${esc(lab.idea)}</p><pre class="lab-flow" aria-label="Control flow for ${esc(lab.title)}">${esc(lab.flow)}</pre><div class="lesson-grid"><div><h4>What you will learn</h4><ul>${lab.objectives.map(t => `<li>${esc(t)}</li>`).join('')}</ul></div><div><h4>Walk through an example</h4><p>${esc(lab.example)}</p></div><div><h4>Make it your own</h4><p>${esc(lab.exercise)}</p></div><div><h4>Expected output & check</h4><p>${esc(lab.checks)}</p></div></div><p class="lesson-takeaway"><strong>Takeaway.</strong> ${esc(lab.bridge)}</p><div class="lab-actions">${notebookActions(lab)}<label class="completion"><input type="checkbox" data-lab="${lab.id}" ${completed.includes(lab.id) ? 'checked' : ''}> I explored lab ${String(i).padStart(2, '0')}</label></div>${configured ? '' : '<p class="publish-note">Download this notebook and upload it to Colab, or configure the repository links.</p>'}</div>`;
+  detail.innerHTML = `<summary><span class="lab-number">${String(i).padStart(2, '0')}</span><div><h3>${esc(lab.title)}</h3><p>${esc(lab.subtitle)}</p></div><span class="lab-time">15–20 min</span><span class="expand-icon" aria-hidden="true">+</span></summary><div class="lab-body"><p class="lab-intro">${esc(lab.idea)}</p><figure class="lab-diagram" data-diagram="${lab.id}"></figure><div class="lesson-grid"><div><h4>What you will learn</h4><ul>${lab.objectives.map(t => `<li>${esc(t)}</li>`).join('')}</ul></div><div><h4>Walk through an example</h4><p>${esc(lab.example)}</p></div><div><h4>Make it your own</h4><p>${esc(lab.exercise)}</p></div><div><h4>Expected output & check</h4><p>${esc(lab.checks)}</p></div></div><p class="lesson-takeaway"><strong>Takeaway.</strong> ${esc(lab.bridge)}</p><div class="lab-actions">${notebookActions(lab)}<label class="completion"><input type="checkbox" data-lab="${lab.id}" ${completed.includes(lab.id) ? 'checked' : ''}> I explored lab ${String(i).padStart(2, '0')}</label></div>${configured ? '' : '<p class="publish-note">Download this notebook and upload it to Colab, or configure the repository links.</p>'}</div>`;
   trackGroups[lab.track].appendChild(detail);
+  detail.addEventListener('toggle', () => { if (detail.open) drawDiagram(detail); });
+});
+
+function drawDiagram(detail) {
+  const figure = detail.querySelector('.lab-diagram');
+  if (figure && typeof renderDiagram === 'function') renderDiagram(figure, figure.dataset.diagram);
+}
+let resizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => list.querySelectorAll('.lab[open]').forEach(drawDiagram), 150);
 });
 
 list.addEventListener('change', event => {

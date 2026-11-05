@@ -22,8 +22,9 @@ jobs:
       - run: python -m pip install -r requirements-dev.txt
       # Lab 02 embeds text with a small local model; download it once, outside the notebook timeout.
       - run: python -c "from chromadb.utils.embedding_functions import DefaultEmbeddingFunction as E; E()(['warm up'])"
+      - run: node scripts/export_diagrams.js
       - run: python scripts/build_notebooks.py
-      - run: git diff --exit-code -- notebooks
+      - run: git diff --exit-code -- notebooks assets/diagrams
       - run: python -m unittest discover -s tests -v
       - run: python scripts/check_course.py
       - run: python scripts/execute_notebooks.py

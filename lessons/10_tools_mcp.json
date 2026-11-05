@@ -8,7 +8,7 @@
   "cells": [
     {
       "type": "markdown",
-      "source": "## Give the program tools through MCP\n\n**So far:** in Lab 05, the agent called tools that were plain Python functions inside the notebook. This self-study lab publishes tools through a real protocol, so that any client can find and call them.\n\n**New:** *tools*, which are functions that read data or take an action. The **Model Context Protocol (MCP)** publishes tools so that any MCP client can discover and call them, with typed arguments and clear errors.\n\nWe build an MCP server with two tools. `get_project` *reads* the facts of one project. `save_decision` *changes state* by recording a decision, and it refuses bad input. The official MCP SDK connects the client and server inside this notebook, so no port, external service, or model key is needed."
+      "source": "## Give the program tools through MCP\n\n**So far:** in Labs 04 and 05, the model called tools that were plain Python functions inside the notebook, and our own code described each tool and checked every call.\n\n**New:** the **Model Context Protocol (MCP)**. It moves the tools into a *server* that publishes them, so that any MCP client can discover and call them, with typed arguments and clear errors.\n\nWe build an MCP server with two tools. `get_project` *reads* the facts of one project. `save_decision` *changes state* by recording a decision, and it refuses bad input. The official MCP SDK connects the client and server inside this notebook, so no port, external service, or model key is needed."
     },
     {
       "type": "markdown",
@@ -32,7 +32,7 @@
     },
     {
       "type": "markdown",
-      "source": "## Step 3 · Discover the tools as a client\n\nThe client does not read our Python code. It asks the server for its tools and gets back each tool's name, description, and input schema. Lab 05's model needed exactly this information to choose a tool. `await` is needed because MCP messages are asynchronous, and Colab notebooks accept `await` directly."
+      "source": "## Step 3 · Discover the tools as a client\n\nThe client does not read our Python code. It asks the server for its tools and gets back each tool's name, description, and input schema. It is the same information that Lab 04's `describe()` wrote by hand for the model. `await` is needed because MCP messages are asynchronous, and Colab notebooks accept `await` directly."
     },
     {
       "type": "code",
