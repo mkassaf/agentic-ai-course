@@ -30,19 +30,19 @@ Each step adds one piece of logic, so students can stop after any step and still
 | --- | --- | --- |
 | 1 | 00 Rules and LLM calls · 01 Prompts and evaluation · 02 RAG | Ask, check, retrieve |
 | 2 | 03 Prompt chaining · 04 Tools · 05 ReAct | Chain, call tools, act |
-| 3 | 06 The council · 07 Observe, trace, swap · 08 Human and memory | Debate, trace, decide |
+| 3 | 06 Multi-agent debate · 07 Observability and tracing · 08 Human-in-the-loop and memory | Debate, trace, decide |
 
 A plan for each lecture:
 
 | Minutes | Activity |
 | --- | --- |
-| 0–10 | Introduce the lecture's idea and the case. In Lecture 1, open Colab and save a copy first; in Lecture 3, mention that Lab 07 downloads an 80 MB embedding model. |
+| 0–10 | Introduce the lecture's idea and the case. In Lecture 1, open Colab and save a copy first; in Lecture 3, mention that Lab 08 downloads an 80 MB embedding model. |
 | 10–30 | First lab: predict, run, check. |
 | 30–50 | Second lab. |
 | 50–75 | Third lab. In Lectures 1 and 3 it is one of the longest (02 and 08 have five steps); in Lecture 3, every lab has five, so keep the discussion of Lab 07 short. |
 | 75–90 | Discussion of the lecture's question, one live-mode run if time allows, and the self-study pointer. |
 
-Keep the *Try it* exercises that need live mode, and the last one or two exercises of each lab, as homework. After Lecture 2, point students to self-study Labs 11 (MCP) and 13 (A2A); after Lecture 3, to Labs 09 (the council against single models), 10 (routing), 12 (skills), and 14 (LangGraph), and to Labs 15 (framing and the message contract) and 16 (the learning curve) before the project starts. The curriculum's *Project readiness* table maps every requirement of the brief to a lab. Each self-study lab ends with a challenge that applies it to the student's own council, which is a natural first project milestone.
+Keep the *Try it* exercises that need live mode, and the last one or two exercises of each lab, as homework. After Lecture 2, point students to self-study Labs 11 (MCP) and 13 (A2A); after Lecture 3, to Labs 09 (evaluation against single models), 10 (routing), 12 (skills), and 14 (LangGraph), and to Labs 15 (framing and the message contract) and 16 (the learning curve) before the project starts. The curriculum's *Project readiness* table maps every requirement of the brief to a lab. Each self-study lab ends with a challenge that applies it to the student's own council, which is a natural first project milestone.
 
 ## One question per lab
 
