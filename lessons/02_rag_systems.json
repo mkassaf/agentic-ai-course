@@ -1,6 +1,6 @@
 {
   "slug": "02_rag_systems",
-  "title": "Retrieve architecture rules with RAG",
+  "title": "RAG: ground answers in retrieved knowledge",
   "section": "Lecture 1: Ask, check, retrieve",
   "cells": [
     {

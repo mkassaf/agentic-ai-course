@@ -1,11 +1,11 @@
 {
-  "slug": "13_frameworks_langgraph",
-  "title": "A framework for choosing and checking",
-  "section": "Self-study: Build your council further",
+  "slug": "14_frameworks_langgraph",
+  "title": "Agent frameworks: graphs with LangGraph",
+  "section": "Self-study: Go deeper",
   "cells": [
     {
       "type": "markdown",
-      "source": "## Run the same loop in a framework\n\n**So far:** we wrote each workflow by hand. In Lab 12, a loop proposed a decision, had it checked, and retried once on a failure.\n\n**New:** **LangGraph**, a framework that names the parts of a workflow. *Nodes* are steps, *edges* set their order, and the *state* is the data that the nodes share. A *conditional edge* picks the next node from the state. That is how a graph loops back.\n\nOur graph has two nodes. `choose` asks the model for a decision, and `check` tests it against the policy. After `check`, a router either ends the run or sends it back to `choose` with feedback. The framework does not make the model's choice correct. It makes each step and each retry visible."
+      "source": "## Run the same loop in a framework\n\n**So far:** we wrote each workflow by hand. In Lab 13, a loop proposed a decision, had it checked, and retried once on a failure.\n\n**New:** **LangGraph**, a framework that names the parts of a workflow. *Nodes* are steps, *edges* set their order, and the *state* is the data that the nodes share. A *conditional edge* picks the next node from the state. That is how a graph loops back.\n\nOur graph has two nodes. `choose` asks the model for a decision, and `check` tests it against the policy. After `check`, a router either ends the run or sends it back to `choose` with feedback. The framework does not make the model's choice correct. It makes each step and each retry visible."
     },
     {
       "type": "markdown",
@@ -13,7 +13,7 @@
     },
     {
       "type": "markdown",
-      "source": "## Step 1 · Describe the state\n\n`State` lists every field the nodes can read or write. `total=False` means a run may start with only some of them. We start each run with just the project. The scripted replies work as in Lab 12: one per attempt."
+      "source": "## Step 1 · Describe the state\n\n`State` lists every field the nodes can read or write. `total=False` means a run may start with only some of them. We start each run with just the project. The scripted replies work as in Lab 13: one per attempt."
     },
     {
       "type": "code",

@@ -3,7 +3,7 @@ const labs = [
   {
     "id": "00",
     "file": "00_rules_and_llms",
-    "title": "Rules, then LLM calls",
+    "title": "From rules to LLM calls",
     "subtitle": "A Python rule on four projects, then a model's guesses",
     "topics": "rules llm prompt architecture monolith microservices baseline",
     "idea": "Write the policy as a function that explains its answer, then see where a model that never saw the policy disagrees.",
@@ -46,7 +46,7 @@ const labs = [
   {
     "id": "01",
     "file": "01_prompting_evaluation",
-    "title": "Better prompts and small evaluations",
+    "title": "Prompting and small evaluations",
     "subtitle": "A guided prompt, a strict parser, and a five-case quality gate",
     "topics": "prompting cot criteria few shot json evaluation testing",
     "idea": "Give the model explicit criteria and a worked example, reject badly formatted replies, and score the prompt on labelled cases.",
@@ -88,7 +88,7 @@ const labs = [
   {
     "id": "02",
     "file": "02_rag_systems",
-    "title": "Retrieve architecture rules with RAG",
+    "title": "RAG: ground answers in retrieved knowledge",
     "subtitle": "Embeddings, a vector database, and grounded answers",
     "topics": "rag retrieval embeddings vectors vector database chroma similarity rules source architecture context retrieval-augmented generation",
     "idea": "Turn policies into embedding vectors, store them in a vector database, retrieve by meaning, and check that the answer cites its evidence.",
@@ -133,7 +133,7 @@ const labs = [
   {
     "id": "03",
     "file": "03_prompt_chaining",
-    "title": "Chain the steps of a decision",
+    "title": "Prompt chaining with quality gates",
     "subtitle": "Requirements, options, trade-offs, and a record, with a gate after each step",
     "topics": "prompt chaining workflow gate requirements options trade-offs adr patterns council single-path planning",
     "idea": "Split one decision into small prompts; each reply feeds the next prompt, and a gate in plain Python stops a bad reply before it spreads.",
@@ -180,7 +180,7 @@ const labs = [
     "file": "04_why_tools",
     "track": "lecture-2",
     "pattern": "One-Step Tool Agent",
-    "title": "Tools: let the model read and change live data",
+    "title": "Tool calling: let the model read and change live data",
     "subtitle": "A hotel search tool and a booking tool, step by step",
     "topics": "tools tool calling function calling hotel search booking read write confirmation live data one-step tool agent",
     "idea": "A model knows only its training and its prompt; tools let it read live data and change it, while our code checks every request.",
@@ -223,7 +223,7 @@ const labs = [
   {
     "id": "05",
     "file": "05_react_agent",
-    "title": "ReAct: choose a tool, then decide",
+    "title": "ReAct agents: reason, act, observe",
     "subtitle": "A guarded ReAct loop with a history",
     "topics": "agent foundations patterns react action observation loop chaining routing one-step tool agent in a react loop",
     "idea": "The model chooses each action and sees every observation so far; our code owns the tools, the guards, and the turn limit.",
@@ -235,7 +235,7 @@ const labs = [
     "example": "The goal names “our wiki project”, so the agent must list the projects, read the right one, and then decide.",
     "exercise": "Make the agent finish too early, recover from a wrong project name, and change the goal.",
     "checks": "Three turns: list_projects, get_project, finish. The decision matches the policy after two tool calls.",
-    "bridge": "The model chooses the steps, but code owns the tools, the guards, and the turn limit. Self-study Lab 10 serves tools through MCP.",
+    "bridge": "The model chooses the steps, but code owns the tools, the guards, and the turn limit. Self-study Lab 11 serves tools through MCP.",
     "track": "lecture-2",
     "pattern": "One-Step Tool Agent in a ReAct loop",
     "steps": 4,
@@ -267,8 +267,8 @@ const labs = [
   },
   {
     "id": "06",
-    "file": "06_architecture_council",
-    "title": "A council of architects: propose, challenge, agree",
+    "file": "06_multi_agent_debate",
+    "title": "Multi-agent debate: propose, challenge, agree",
     "subtitle": "Independent proposals on three model families, challenges, and a chair",
     "topics": "multi-agent council debate parallel proposals critique revision consensus voting dissent chair coordinator grounding model families patterns debate-based cooperation",
     "idea": "Three architects on three model families propose alone and in parallel; a chair challenges unsupported claims, counts grounded votes, keeps the dissent, and escalates a deadlock.",
@@ -313,8 +313,53 @@ const labs = [
   },
   {
     "id": "07",
-    "file": "07_human_feedback_memory",
-    "title": "The human decides, the council learns",
+    "file": "07_observe_trace_swap",
+    "title": "Observability, tracing, and swappable agents",
+    "subtitle": "A typed message, logs you can watch and search, a LangSmith trace, and an agent added in one line",
+    "topics": "observability logging logs log file json lines traceability swappable message bus registry schema dataclass provenance langsmith tracing trace spans",
+    "idea": "Log every message twice, as a live line and as a JSON record in a log file, make every message cite its basis, and find agents in a registry, so the council can be watched, traced, and changed.",
+    "objectives": [
+      "Define a typed, read-only message that cites its sources.",
+      "Make a council observable with logs, a live stream and a JSON log file, and with a LangSmith trace.",
+      "Trace a decision back to its evidence from the log file, and add an agent without changing the council's code."
+    ],
+    "example": "Two architects disagree and the chair logs an escalation warning; a rule-based agent joins with one line; council.log rebuilds the evidence trail, and LangSmith shows each run as a tree of timed steps.",
+    "exercise": "Cite a missing source, count warnings from the log file, make the decision cite the dissent, and give one architect its own model.",
+    "checks": "Run 1 logs an escalation warning at 1 vote of 2; run 2 decides microservices 2 of 3, and the trace of m6 from the log file reaches R1 and F1.",
+    "bridge": "The logs make the council observable, the citations in them make it traceable, and the registry makes its agents swappable.",
+    "track": "lecture-3",
+    "steps": 5,
+    "patterns": [
+      "Shared Memory",
+      "Registry & Adapter"
+    ],
+    "background": [
+      "As soon as several agents work together, a new question appears: what is the system actually doing? With one model call you can read the reply. With a council, a decision comes out of many messages between many agents, and a wrong decision is hard to explain unless every step was recorded. Software engineering met the same problem with distributed systems, and answered it with observability: logs, metrics, and traces that let you see a running system from the outside.",
+      "Three properties carry over to agents. A system is observable when you can watch it work while it runs. It is traceable when every output can be followed back to who produced it and what it was based on, which is also called provenance. It is swappable when a part can be added or replaced through a fixed interface, without rewriting the rest. Logs are the first tool for all of this: a live stream to watch, and a log file of structured records to search, count, and trace afterwards. A bus that logs every message, and a registry of agents, give all three properties. This is the event-driven design that many large systems use: components publish events, and anything interested subscribes. Tracing tools such as LangSmith add the execution view: each run as a tree of steps, with inputs, outputs, and timings."
+    ],
+    "terms": [
+      [
+        "Observability",
+        "Seeing what a running system does from its outputs: logs, metrics, and traces."
+      ],
+      [
+        "Trace",
+        "A record of one run as a tree of steps, with each step's input, output, and timing; LangSmith shows traces of LLM applications."
+      ],
+      [
+        "Log",
+        "A time-stamped record of what happened; structured logs, such as JSON lines, can be searched and counted."
+      ],
+      [
+        "Registry",
+        "A lookup table of agents by name, so the system never hard-codes who takes part."
+      ]
+    ]
+  },
+  {
+    "id": "08",
+    "file": "08_human_feedback_memory",
+    "title": "Human-in-the-loop and agent memory",
     "subtitle": "Human review, short- and long-term memory, and a held-out evaluation",
     "topics": "human in the loop feedback memory vector database chroma lessons evaluation held-out learning patterns council human in the loop and archival memory short-term memory long-term memory scratchpad",
     "idea": "The human architect reviews each proposal and keeps the final say; the accepted decision and its reasons become a memory that later cases recall.",
@@ -359,9 +404,9 @@ const labs = [
     ]
   },
   {
-    "id": "08",
-    "file": "08_council_evaluation",
-    "title": "Does the council beat a single model?",
+    "id": "09",
+    "file": "09_multi_agent_evaluation",
+    "title": "Evaluation: a multi-agent system against a single model",
     "subtitle": "A baseline comparison with a calibrated LLM judge",
     "topics": "evaluation baseline experiment llm judge calibration human ratings grounding cost latency council patterns",
     "idea": "Compare the council with each of its models alone on the same scenarios, by correctness, grounding, a judged trade-off measure, and cost; trust the LLM judge only after it agrees with human ratings.",
@@ -374,7 +419,7 @@ const labs = [
     "exercise": "Raise the calibration threshold, make the council wrong once, and remove a run.",
     "checks": "The judge agrees with the human on 3 of 4 answers. The council ties DeepSeek on correctness and beats it on grounding, at 5 times the calls.",
     "bridge": "Two scenarios demonstrate the method; the project needs 20 or more, and an honest report even when the council does not win.",
-    "track": "lecture-3",
+    "track": "self-study",
     "steps": 5,
     "patterns": [],
     "background": [
@@ -401,9 +446,9 @@ const labs = [
     ]
   },
   {
-    "id": "09",
-    "file": "09_routing",
-    "title": "Route each case: rule or council",
+    "id": "10",
+    "file": "10_routing",
+    "title": "Routing: rules, models, and a safe fallback",
     "subtitle": "A model router, a dispatch table, a safe fallback, and the cost of each mistake",
     "topics": "routing router classifier dispatch handlers fallback cost few shot council patterns",
     "idea": "A router reads each case and picks a handler: plain code for routine cases, the council for contested ones. Code owns the routes and falls back to the council when a reply is unusable.",
@@ -446,9 +491,9 @@ const labs = [
     ]
   },
   {
-    "id": "10",
-    "file": "10_tools_mcp",
-    "title": "Architecture tools and our own MCP server",
+    "id": "11",
+    "file": "11_tools_mcp",
+    "title": "MCP: serve tools through a standard protocol",
     "subtitle": "Read and write tools with validation and errors",
     "topics": "tools mcp server client extract action agent foundations registry & adapter",
     "idea": "A tool reads data or performs an allowed action; MCP publishes its name, description, and input schema to any client.",
@@ -491,9 +536,9 @@ const labs = [
     ]
   },
   {
-    "id": "11",
-    "file": "11_agent_skills",
-    "title": "A skill for a short architecture decision record",
+    "id": "12",
+    "file": "12_agent_skills",
+    "title": "Agent skills: reusable instructions on demand",
     "subtitle": "Choose a skill from a catalog, then check its output",
     "topics": "skills skill.md adr architecture decision record reusable skill library evolution",
     "idea": "A skill packages a procedure with a name and a description; an agent chooses from the descriptions and loads only the chosen instructions.",
@@ -536,9 +581,9 @@ const labs = [
     ]
   },
   {
-    "id": "12",
-    "file": "12_a2a_protocol",
-    "title": "Delegate an architecture review with A2A",
+    "id": "13",
+    "file": "13_a2a_protocol",
+    "title": "A2A: delegate work to another agent",
     "subtitle": "A tiny hotel-desk agent over A2A, then review and revision",
     "topics": "a2a agent card discovery message review architecture generator–critic loop agent card hotel desk",
     "idea": "A2A lets one agent discover another through its Agent Card and exchange messages; the reviewer's feedback can drive a revision.",
@@ -581,9 +626,9 @@ const labs = [
     ]
   },
   {
-    "id": "13",
-    "file": "13_frameworks_langgraph",
-    "title": "A framework for choosing and checking",
+    "id": "14",
+    "file": "14_frameworks_langgraph",
+    "title": "Agent frameworks: graphs with LangGraph",
     "subtitle": "A LangGraph loop with a conditional retry",
     "topics": "framework langgraph state nodes edges evaluate architecture generator–critic loop",
     "idea": "A framework makes the steps, the shared state, and the decision to retry explicit.",
@@ -626,10 +671,10 @@ const labs = [
     ]
   },
   {
-    "id": "14",
-    "file": "14_framing_contract",
+    "id": "15",
+    "file": "15_framing_contract",
     "track": "self-study",
-    "title": "Frame the debate and agree on a message contract",
+    "title": "Problem framing and typed message contracts",
     "subtitle": "Quality-attribute scenarios, a typed proposal, and swappable architects",
     "topics": "framing quality attribute scenarios iso 25010 message contract schema confidence swappable agents chair passive goal creator and a contract",
     "idea": "The chair frames a brief as measurable quality-attribute scenarios; every proposal must follow one contract, so any architect can be added or replaced.",
@@ -641,7 +686,7 @@ const labs = [
     "example": "A Booking service with a Monday spike and an audit requirement; four architects answer, and one is rejected for breaking the contract.",
     "exercise": "Fix the rejected reply, make votes and confidence disagree, add an architect, and break the frame.",
     "checks": "Three scenarios pass the gate; the Auditor is rejected; votes 2 to 1 and confidence 1.3 to 0.9 agree.",
-    "bridge": "Self-reported confidence is information, not proof; Lab 15 learns whom to trust from outcomes.",
+    "bridge": "Self-reported confidence is information, not proof; Lab 16 learns whom to trust from outcomes.",
     "pattern": "Passive Goal Creator and a contract",
     "steps": 5,
     "patterns": [
@@ -671,10 +716,10 @@ const labs = [
     ]
   },
   {
-    "id": "15",
-    "file": "15_learning_curve_trust",
+    "id": "16",
+    "file": "16_learning_curve_trust",
     "track": "self-study",
-    "title": "Learn from feedback: a learning curve and per-model trust",
+    "title": "Learning from feedback: learning curves and trust weights",
     "subtitle": "A feedback/test split, trust-weighted votes, and a curve",
     "topics": "evaluation experiment feedback test split held-out learning curve per-model trust weighted vote council voting-based cooperation",
     "idea": "Learn from feedback cases only, weight each architect by how much better than chance it has been, and score the test cases after every round.",
@@ -730,6 +775,7 @@ const patternGuide = [
   {"name": "Skill Library Evolution", "category": "Multi-agent"},
   {"name": "Scratchpad Memory", "category": "Memory"},
   {"name": "Archival Memory", "category": "Memory"},
+  {"name": "Shared Memory", "category": "Memory"},
   {"name": "Routing", "category": "Built from the guide", "note": "Combines Human in the Loop's risk classification with Registry & Adapter's dispatch."}
 ];
 
@@ -749,14 +795,14 @@ const tracks = [
   {
     "id": "lecture-3",
     "label": "Lecture 3 · 90 minutes",
-    "title": "Debate, decide, measure",
-    "note": "A council of architects debates, a human decides, short- and long-term memory keep the lessons, and an experiment tests the council."
+    "title": "Debate, trace, decide",
+    "note": "A council of architects debates through a message bus that you can watch and trace, a human decides, and short- and long-term memory keep the lessons."
   },
   {
     "id": "self-study",
     "label": "Self-study · at your own pace",
-    "title": "Build your council further",
-    "note": "Routing, protocols, skills, a framework, framing, and a learning experiment: what the project needs beyond the lectures. Each lab ends with a challenge for your council."
+    "title": "Go deeper",
+    "note": "An evaluation against single models, routing, protocols, skills, a framework, framing, and a learning experiment: what the project needs beyond the lectures. Each lab ends with a challenge for your council."
   }
 ];
 
@@ -765,7 +811,7 @@ const esc = text => String(text).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const config = window.COURSE_CONFIG || {};
 const configured = typeof config.repo === 'string' && /^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})\/[A-Za-z0-9_.-]+$/.test(config.repo) && config.repo !== 'OWNER/REPO';
 const ref = typeof config.ref === 'string' ? config.ref : 'main';
-const STORAGE_KEY = 'agentic-ai-course-architecture-v2-progress';
+const STORAGE_KEY = 'agentic-ai-course-architecture-v3-progress';
 const number = i => String(i).padStart(2, '0');
 let completed = [];
 try { const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); if (Array.isArray(stored)) completed = stored.filter(x => labs.some(l => l.id === x)); } catch (_) { /* Browser storage is optional. */ }

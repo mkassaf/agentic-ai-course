@@ -1,7 +1,7 @@
 {
-  "slug": "10_tools_mcp",
-  "title": "Architecture tools and our own MCP server",
-  "section": "Self-study: Build your council further",
+  "slug": "11_tools_mcp",
+  "title": "MCP: serve tools through a standard protocol",
+  "section": "Self-study: Go deeper",
   "packages": [
     "mcp==2.3.0"
   ],

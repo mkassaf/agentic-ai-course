@@ -1,10 +1,11 @@
 {
-  "10": "MCP server (2 registered tools), then list_tools (names + schemas), then get_project (read), then Apply the policy (plain Python), then save_decision (write), then State check (rejected calls change nothing).",
-  "11": "Skill catalog (names + descriptions), then Pick a skill (name only), then Load instructions (SKILL.md body), then Write the ADR (per case), then Check the ADR (adr_problems()).",
-  "12": "Project, then Propose (label only), then Reviewer agent (over A2A: card + message), then PASS?, then Accepted. Then back to Propose: FAIL · one revision with feedback.",
-  "13": "START, then choose (node), then check (node), then route, then END. Then back to choose: retry · at most 2 attempts.",
-  "14": "Brief (Booking service), then Chair frames (3 ISO 25010 scenarios), then has numbers?, then 4 architects (one contract), then Contract check (option · marks · confidence), then Aggregate (votes vs confidence).",
-  "15": "Benchmark (10 cases), then Split once (6 feedback · 4 test), then Feedback case (one per round), then Update trust (per architect), then Weighted vote (test cases only), then Learning curve. Then back to Feedback case: next round.",
+  "10": "Case (facts + note), then Router (route + reason), then valid?, then Rule (0 calls) or Council (5 calls), then Compare (vs human routes).",
+  "11": "MCP server (2 registered tools), then list_tools (names + schemas), then get_project (read), then Apply the policy (plain Python), then save_decision (write), then State check (rejected calls change nothing).",
+  "12": "Skill catalog (names + descriptions), then Pick a skill (name only), then Load instructions (SKILL.md body), then Write the ADR (per case), then Check the ADR (adr_problems()).",
+  "13": "Project, then Propose (label only), then Reviewer agent (over A2A: card + message), then PASS?, then Accepted. Then back to Propose: FAIL · one revision with feedback.",
+  "14": "START, then choose (node), then check (node), then route, then END. Then back to choose: retry · at most 2 attempts.",
+  "15": "Brief (Booking service), then Chair frames (3 ISO 25010 scenarios), then has numbers?, then 4 architects (one contract), then Contract check (option · marks · confidence), then Aggregate (votes vs confidence).",
+  "16": "Benchmark (10 cases), then Split once (6 feedback · 4 test), then Feedback case (one per round), then Update trust (per architect), then Weighted vote (test cases only), then Learning curve. Then back to Feedback case: next round.",
   "00": "4 projects (every fact combination), then Apply the rule (decide()) or Ask a model (ask() + to_label()), then Compare (agreement count).",
   "01": "Labelled case (5 tests), then Guided prompt (policy + example), then Model (JSON reply), then Parse (parse_reply()), then Score (pass · fail · invalid), then ≥ 80%.",
   "02": "Question, then Embed (MiniLM vectors), then Nearest policies (Chroma), then close?, then Grounded answer (cites [R1]), then Citation check (cited ⊆ retrieved).",
@@ -12,7 +13,7 @@
   "04": "Request, then Pick a tool ({\"tool\", \"args\"}), then call_tool() (name · types), then User confirms (write tools only), then search_hotels() (reads live data) or book_room() (changes data), then Answer (from the result).",
   "05": "Goal, then Next action (JSON), then Guards (known tool · facts read), then Run the tool (list / get_project), then Observation (added to history). Then back to Next action: repeat · at most 5 turns.",
   "06": "Shared sources (R1 · F1–F3), then Minimalist (Qwen) or Safeguard (DeepSeek) or Modernizer (Gemini), then grounded?, then Challenge + revise (one round), then Chair counts (⅔ of grounded votes), then Decision (+ dissent kept) or Escalate (no majority).",
-  "07": "Council proposal (microservices 2–1), then Human review (verdict + reason), then Council revises (reads short-term notes), then Long-term memory (lesson in Chroma), then Recall (similar new cases), then Held-out score (before vs after). Then back to Human review: at most 2 reviews.",
-  "08": "Recorded runs (4 systems × 2 cases), then Correct · grounded (calls · seconds), then LLM judge (names a cost?), then Calibrate (agree with human ≥ 75%), then Council vs best (wins, and at what cost).",
-  "09": "Case (facts + note), then Router (route + reason), then valid?, then Rule (0 calls) or Council (5 calls), then Compare (vs human routes)."
+  "07": "Minimalist (model agent) or Modernizer (model agent) or Rulebook (added in one line), then Schema check (typed Message), then Message bus (publish()), then Live log (time · level · line) or council.log (one JSON per line) or LangSmith (trace tree (optional)), then Chair (majority or escalate), then Evidence trail (trace() from council.log).",
+  "08": "Council proposal (microservices 2–1), then Human review (verdict + reason), then Council revises (reads short-term notes), then Long-term memory (lesson in Chroma), then Recall (similar new cases), then Held-out score (before vs after). Then back to Human review: at most 2 reviews.",
+  "09": "Recorded runs (4 systems × 2 cases), then Correct · grounded (calls · seconds), then LLM judge (names a cost?), then Calibrate (agree with human ≥ 75%), then Council vs best (wins, and at what cost)."
 }

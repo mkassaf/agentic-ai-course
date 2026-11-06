@@ -11,12 +11,13 @@ import nbformat
 ROOT = Path(__file__).resolve().parents[1]
 EXTRAS = {
     "02_rag_systems": ("rag", "chromadb"),
-    "07_human_feedback_memory": ("rag", "chromadb"),
-    "10_tools_mcp": ("mcp", "mcp"),
-    "12_a2a_protocol": ("a2a", "a2a"),
-    "13_frameworks_langgraph": ("framework", "langgraph"),
+    "07_observe_trace_swap": ("framework", "langsmith"),  # langgraph brings the LangSmith SDK
+    "08_human_feedback_memory": ("rag", "chromadb"),
+    "11_tools_mcp": ("mcp", "mcp"),
+    "13_a2a_protocol": ("a2a", "a2a"),
+    "14_frameworks_langgraph": ("framework", "langgraph"),
 }
-NO_MODEL_LABS = {"10_tools_mcp", "15_learning_curve_trust"}  # these labs never call ask()
+NO_MODEL_LABS = {"11_tools_mcp", "16_learning_curve_trust"}  # these labs never call ask()
 # Diagrams are exported by scripts/export_diagrams.js and served by the course site (GitHub Pages).
 DIAGRAM_URL = "https://mkassaf.github.io/agentic-ai-course/assets/diagrams/{number}.svg"
 

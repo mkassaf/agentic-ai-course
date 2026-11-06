@@ -1,6 +1,6 @@
 {
   "slug": "04_why_tools",
-  "title": "Tools: let the model read and change live data",
+  "title": "Tool calling: let the model read and change live data",
   "section": "Lecture 2: Chain, call tools, act",
   "cells": [
     {

@@ -51,6 +51,13 @@ const DIAGRAMS = {
     {k: 'check', t: 'Chair counts', s: '⅔ of grounded votes'},
     [{k: 'data', t: 'Decision', s: '+ dissent kept'}, {k: 'human', t: 'Escalate', s: 'no majority'}]]},
   '07': {stages: [
+    [{k: 'model', t: 'Minimalist', s: 'model agent'}, {k: 'model', t: 'Modernizer', s: 'model agent'}, {k: 'code', t: 'Rulebook', s: 'added in one line'}],
+    {k: 'check', t: 'Schema check', s: 'typed Message', out: 'broken → rejected'},
+    {k: 'code', t: 'Message bus', s: 'publish()'},
+    [{k: 'data', t: 'Live log', s: 'time · level · line'}, {k: 'data', t: 'council.log', s: 'one JSON per line'}, {k: 'data', t: 'LangSmith', s: 'trace tree (optional)'}],
+    {k: 'check', t: 'Chair', s: 'majority or escalate'},
+    {k: 'data', t: 'Evidence trail', s: 'trace() from council.log'}]},
+  '08': {stages: [
     {k: 'data', t: 'Council proposal', s: 'microservices 2–1'},
     {k: 'human', t: 'Human review', s: 'verdict + reason'},
     {k: 'model', t: 'Council revises', s: 'reads short-term notes', in: 'reject'},
@@ -58,53 +65,53 @@ const DIAGRAMS = {
     {k: 'code', t: 'Recall', s: 'similar new cases'},
     {k: 'check', t: 'Held-out score', s: 'before vs after'}],
     loops: [{from: 2, to: 1, t: 'at most 2 reviews'}]},
-  '08': {stages: [
+  '09': {stages: [
     {k: 'data', t: 'Recorded runs', s: '4 systems × 2 cases'},
     {k: 'check', t: 'Correct · grounded', s: 'calls · seconds'},
     {k: 'model', t: 'LLM judge', s: 'names a cost?'},
     {k: 'human', t: 'Calibrate', s: 'agree with human ≥ 75%'},
     {k: 'check', t: 'Council vs best', s: 'wins, and at what cost'}]},
-  '09': {stages: [
+  '10': {stages: [
     {k: 'data', t: 'Case', s: 'facts + note'},
     {k: 'model', t: 'Router', s: 'route + reason'},
     {k: 'gate', t: 'valid?', out: 'no → council'},
     [{k: 'code', t: 'Rule', s: '0 calls'}, {k: 'model', t: 'Council', s: '5 calls'}],
     {k: 'check', t: 'Compare', s: 'vs human routes'}]},
-  '10': {stages: [
+  '11': {stages: [
     {k: 'code', t: 'MCP server', s: '2 registered tools'},
     {k: 'code', t: 'list_tools', s: 'names + schemas'},
     {k: 'code', t: 'get_project', s: 'read'},
     {k: 'code', t: 'Apply the policy', s: 'plain Python'},
     {k: 'code', t: 'save_decision', s: 'write', out: 'bad input → is_error'},
     {k: 'check', t: 'State check', s: 'rejected calls change nothing'}]},
-  '11': {stages: [
+  '12': {stages: [
     {k: 'data', t: 'Skill catalog', s: 'names + descriptions'},
     {k: 'model', t: 'Pick a skill', s: 'name only'},
     {k: 'code', t: 'Load instructions', s: 'SKILL.md body'},
     {k: 'model', t: 'Write the ADR', s: 'per case'},
     {k: 'check', t: 'Check the ADR', s: 'adr_problems()'}]},
-  '12': {stages: [
+  '13': {stages: [
     {k: 'data', t: 'Project'},
     {k: 'model', t: 'Propose', s: 'label only'},
     {k: 'code', t: 'Reviewer agent', s: 'over A2A: card + message'},
     {k: 'gate', t: 'PASS?'},
     {k: 'data', t: 'Accepted'}],
     loops: [{from: 3, to: 1, t: 'FAIL · one revision with feedback'}]},
-  '13': {stages: [
+  '14': {stages: [
     {k: 'data', t: 'START'},
     {k: 'model', t: 'choose', s: 'node'},
     {k: 'check', t: 'check', s: 'node'},
     {k: 'gate', t: 'route'},
     {k: 'data', t: 'END', in: 'done'}],
     loops: [{from: 3, to: 1, t: 'retry · at most 2 attempts'}]},
-  '14': {stages: [
+  '15': {stages: [
     {k: 'data', t: 'Brief', s: 'Booking service'},
     {k: 'model', t: 'Chair frames', s: '3 ISO 25010 scenarios'},
     {k: 'gate', t: 'has numbers?', out: 'no → stop'},
     {k: 'model', t: '4 architects', s: 'one contract'},
     {k: 'check', t: 'Contract check', s: 'option · marks · confidence', out: 'broken → rejected'},
     {k: 'check', t: 'Aggregate', s: 'votes vs confidence'}]},
-  '15': {stages: [
+  '16': {stages: [
     {k: 'data', t: 'Benchmark', s: '10 cases'},
     {k: 'code', t: 'Split once', s: '6 feedback · 4 test'},
     {k: 'human', t: 'Feedback case', s: 'one per round'},

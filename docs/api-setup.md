@@ -53,6 +53,10 @@ Gemini and DeepSeek models reason before they answer by default, and the hidden 
 
 Lab 06's council needs at least three model families in live mode, so its architects use all three providers: Qwen on FreeInference, DeepSeek, and Gemini. Save all three keys in Colab Secrets.
 
+## Optional: LangSmith traces (Lab 07)
+
+Lab 07 can send a trace of each council run to [LangSmith](https://smith.langchain.com/). Create a free account and an API key, save it in Colab Secrets as `LANGSMITH_API_KEY`, and set `LANGSMITH_TRACING="true"` before the first step, as the lab shows. Without the key, nothing is sent, and the lab runs on its logs alone. A trace contains the case and every agent's reply, so do not trace private data to a shared project.
+
 ## Calls, errors, and limits
 
 The example client uses HTTPS, a timeout, bounded calls/output, and no silent retry or credential switching. It keeps usage unknown when the provider does not report it. FreeInference requests are non-streaming; provider-specific settings remain separate from the general interface. A cold-start placeholder should be treated as a request to wait and retry manually, not as a useful answer.

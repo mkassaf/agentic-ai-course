@@ -1,15 +1,15 @@
 {
   "slug": "05_react_agent",
-  "title": "ReAct: choose a tool, then decide",
+  "title": "ReAct agents: reason, act, observe",
   "section": "Lecture 2: Chain, call tools, act",
   "cells": [
     {
       "type": "markdown",
-      "source": "## Let the model choose the next step\n\n**So far:** in Lab 04, the model chose one tool for one request, and our code checked and ran it.\n\n**New:** an *agent loop*. The model chooses an action, our code runs it, and the result (the *observation*) goes into the next prompt as part of the *history*. This act-then-observe cycle is the core of the ReAct pattern.\n\nOur code stays in control. It runs only known tools, refuses to finish before any project facts were read, and stops after five turns. The tools are plain Python functions, as in Lab 04, so the loop is easy to follow; self-study Lab 10 serves tools like these through MCP."
+      "source": "## Let the model choose the next step\n\n**So far:** in Lab 04, the model chose one tool for one request, and our code checked and ran it.\n\n**New:** an *agent loop*. The model chooses an action, our code runs it, and the result (the *observation*) goes into the next prompt as part of the *history*. This act-then-observe cycle is the core of the ReAct pattern.\n\nOur code stays in control. It runs only known tools, refuses to finish before any project facts were read, and stops after five turns. The tools are plain Python functions, as in Lab 04, so the loop is easy to follow; self-study Lab 11 serves tools like these through MCP."
     },
     {
       "type": "markdown",
-      "source": "## Pattern · One-Step Tool Agent\n\n*The same single-agent pattern as Lab 04, from the [Architectural Patterns for Agentic AI](https://karthikv1392.github.io/agentic-patterns/) field guide; see Lab 04 for the full card. Related: Incremental Tool Agent, Registry & Adapter (Lab 10).*\n\n| | |\n| --- | --- |\n| **What changes** | Lab 04 made one tool call per request. Here each turn is one One-Step Tool Agent call, and repeating it, with every observation in the history, makes a *ReAct* loop. |\n| **Flow** | Goal → Choose action → Tool → Observe → repeat, or Finish |\n| **New liability** | A loop can run forever, or finish before it has looked at anything. The turn limit and the finish guard address both, on top of Lab 04's checks of each request. |"
+      "source": "## Pattern · One-Step Tool Agent\n\n*The same single-agent pattern as Lab 04, from the [Architectural Patterns for Agentic AI](https://karthikv1392.github.io/agentic-patterns/) field guide; see Lab 04 for the full card. Related: Incremental Tool Agent, Registry & Adapter (Lab 11).*\n\n| | |\n| --- | --- |\n| **What changes** | Lab 04 made one tool call per request. Here each turn is one One-Step Tool Agent call, and repeating it, with every observation in the history, makes a *ReAct* loop. |\n| **Flow** | Goal → Choose action → Tool → Observe → repeat, or Finish |\n| **New liability** | A loop can run forever, or finish before it has looked at anything. The turn limit and the finish guard address both, on top of Lab 04's checks of each request. |"
     },
     {
       "type": "markdown",
