@@ -36,11 +36,23 @@ A plan for each lecture:
 
 | Minutes | Activity |
 | --- | --- |
-| 0–10 | Introduce the lecture's idea and the case. In Lecture 1, open Colab and save a copy first; in Lecture 3, mention that Lab 08 downloads an 80 MB embedding model. |
+| 0–10 | Introduce the lecture's idea and the case. In Lecture 1, open Colab and save a copy first. |
 | 10–30 | First lab: predict, run, check. |
 | 30–50 | Second lab. |
-| 50–75 | Third lab. In Lectures 1 and 3 it is one of the longest (02 and 08 have five steps); in Lecture 3, every lab has five, so keep the discussion of Lab 07 short. |
+| 50–75 | Third lab. In Lecture 1 it is one of the longest (02 has five steps). |
 | 75–90 | Discussion of the lecture's question, one live-mode run if time allows, and the self-study pointer. |
+
+Lecture 3 is the fullest: Labs 06, 07, and 08 have five steps each. Use this plan instead:
+
+| Minutes | Activity |
+| --- | --- |
+| 0–5 | Introduce multi-agent debate and the Payments case. Students open Lab 08 in a second tab and run its setup cell now, so its packages install in the background; its Step 3 downloads an 80 MB embedding model, so warn them it takes a minute. |
+| 5–30 | Lab 06 in practice mode. In class: *Try it* 1 and 3. |
+| 30–55 | Lab 07. In class: *Try it* 1 and 2 (a broken message, then count from the logs). |
+| 55–80 | Lab 08. In class: *Try it* 1 and 2. |
+| 80–90 | Discussion: who said what, based on what, and who has the final word? Then the self-study pointer. |
+
+Homework for Lecture 3: Lab 06 *Try it* 2, 4, and 5; Lab 07 *Try it* 3 to 7, including the LangSmith trace; Lab 08 *Try it* 3 to 5.
 
 Keep the *Try it* exercises that need live mode, and the last one or two exercises of each lab, as homework. After Lecture 2, point students to self-study Labs 11 (MCP) and 13 (A2A); after Lecture 3, to Labs 09 (evaluation against single models), 10 (routing), 12 (skills), and 14 (LangGraph), and to Labs 15 (framing and the message contract) and 16 (the learning curve) before the project starts. The curriculum's *Project readiness* table maps every requirement of the brief to a lab. Each self-study lab ends with a challenge that applies it to the student's own council, which is a natural first project milestone.
 
