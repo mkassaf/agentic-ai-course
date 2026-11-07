@@ -365,12 +365,12 @@ const labs = [
     "idea": "The human architect reviews each proposal and keeps the final say; the accepted decision and its reasons become a memory that later cases recall.",
     "objectives": [
       "Keep a human's final authority in a bounded review loop.",
-      "Store and recall lessons from past decisions.",
+      "Store lessons with a human-approved scope, then retrieve applicable ones.",
       "Measure improvement on held-out cases only."
     ],
     "example": "The human rejects microservices for its operating cost; the lesson later changes the Logistics tracker's decision but not the Search platform's.",
     "exercise": "Accept or reject every proposal, tighten the recall distance, and add a case where the lesson should not apply.",
-    "checks": "The revision is accepted after two reviews. Held-out score: 1 of 2 without memory, 2 of 2 with it.",
+    "checks": "Practice: the revision is accepted; held-out scores are 1 of 2 before and 2 of 2 after memory. Live scores are measured, not guaranteed.",
     "bridge": "Similar text does not mean a lesson applies; the project needs 20 or more held-out scenarios and repeated live runs.",
     "track": "lecture-3",
     "pattern": "Human in the Loop and Archival Memory",
@@ -382,7 +382,7 @@ const labs = [
     ],
     "background": [
       "Some decisions are too costly to automate fully, and someone must be accountable for them. Human-in-the-loop design places an approval point where the risk is high, and records the reasons. Those reasons are valuable: they hold knowledge that no written policy contains, such as \"one operations engineer cannot run a service per squad\".",
-      "An LLM remembers nothing between calls; every call starts fresh. An agent's memory is therefore something the program builds. Short-term memory carries notes through one task, inside the prompt. Long-term memory keeps lessons across tasks, often in a vector database, and recalls them by similarity, as in the Generative Agents and Reflexion research. A similar case is not always a relevant one, so a lesson keeps its facts and its reason, and improvement is measured on cases that never gave feedback."
+      "An LLM remembers nothing between calls; every call starts fresh. An agent's memory is therefore something the program builds. Short-term memory carries notes through one task, inside the prompt. Long-term memory keeps lessons across tasks, often in a vector database, and recalls them by similarity, as in the Generative Agents and Reflexion research. A similar case is not always a relevant one, so a lesson keeps its facts, reason, and human-approved scope. This lab filters by the operations-team size before adding a recalled lesson to the prompt, and measures the score change on cases that never gave feedback."
     ],
     "terms": [
       [
@@ -545,7 +545,7 @@ const labs = [
     "objectives": [
       "Split a SKILL.md file into its header and body.",
       "Explain progressive disclosure.",
-      "Check a skill's output format."
+      "Check a skill's output format and allow one bounded repair."
     ],
     "example": "Pick the ADR skill from a three-skill catalog, then write and check decision records for two projects.",
     "exercise": "Give an incident task, add a Risk line to an ADR, and write a fourth skill.",
