@@ -8,6 +8,8 @@ Run the checks in the [README](../README.md), then open the notebooks in Colab. 
 
 The labs share four fictional projects, one for each combination of the two facts. Lab 00 starts with the Course portal: `team_size=3` and `independent_deploys=False`. The fictional policy chooses microservices only for a team of at least eight people that also needs independent deployments; otherwise it chooses a modular monolith. Explain that this is a teaching fixture. Ask students which real architecture concerns this rule omits.
 
+For evaluation (Lab 09), MLflow tracks experiments locally. Lab 09 installs `mlflow` on first run and logs parameters and metrics to `file:///tmp/mlruns`. Students can open the UI with `mlflow ui --port 5000` and view the side-by-side comparison at `localhost:5000`. This is separate from LangSmith (Lab 07), which traces agent runs; MLflow logs experiment results. Test one run in the notebook before class to verify the install and UI work.
+
 Test one small live call with student-equivalent access. Defaults: FreeInference, `qwen3.6-35b`, and Colab Secret `FREEINFERENCE_API_KEY`. Service, model, and secret name are configurable. Verify current access and quotas; keep keys out of code and outputs.
 
 Gemini (`GEMINI_API_KEY`) and DeepSeek (`DEEPSEEK_API_KEY`) are built in as well: students set `PROVIDER` in the setup cell. The council lab (06) needs three model families in live mode, so it uses FreeInference (Qwen), DeepSeek, and Gemini together, and students need all three keys. FreeInference's free tier takes one request at a time (the course client queues the rest). Check each provider's pricing and quotas before class.
