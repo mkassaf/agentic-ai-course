@@ -56,7 +56,7 @@ Lecture 3 is the fullest: Labs 06, 07, and 08 have five steps each. Use this pla
 
 Homework for Lecture 3: Lab 06 *Try it* 2, 4, and 5; Lab 07 *Try it* 3 to 7, including the LangSmith trace; Lab 08 *Try it* 3 to 5.
 
-Keep the *Try it* exercises that need live mode, and the last one or two exercises of each lab, as homework. After Lecture 2, point students to self-study Labs 11 (MCP) and 13 (A2A); after Lecture 3, to Labs 09 (evaluation against single models), 10 (routing), 12 (skills), and 14 (LangGraph), and to Labs 15 (framing and the message contract) and 16 (the learning curve) before the project starts. The curriculum's *Project readiness* table maps every requirement of the brief to a lab. Each self-study lab ends with a challenge that applies it to the student's own council, which is a natural first project milestone.
+Keep the *Try it* exercises that need live mode, and the last one or two exercises of each lab, as homework. After Lecture 2, point students to self-study Labs 11 (MCP) and 13 (A2A); after Lecture 3, to Labs 09 (evaluation against single models), 10 (routing), 12 (skills), and 14 (LangGraph), and to Labs 15 (framing and the message contract), 16 (the learning curve), and 17 (the weighted decision matrix) before the project starts. The curriculum's *Project readiness* table maps every requirement of the brief to a lab. Each self-study lab ends with a challenge that applies it to the student's own council, which is a natural first project milestone.
 
 ## One question per lab
 
@@ -79,6 +79,7 @@ Keep the *Try it* exercises that need live mode, and the last one or two exercis
 | 14 | What is stored in graph state, what decides between retrying and finishing, and what does the check leave unassessed? |
 | 15 | Which scenario has a number you can check, and what does the contract let you change without touching the council's code? |
 | 16 | Why must feedback and test cases stay apart, when does the curve rise, and why does a coin toss get no vote? |
+| 17 | Which decision model hides its assumptions, and which single weight flips the winner when the scores do not change? |
 
 ## Evaluate useful behavior
 
@@ -92,6 +93,6 @@ For a formative submission, request one changed input, its result, and two sente
 
 ## Keep the implementation honest
 
-The self-study MCP lab builds its own small server and makes fixed client calls; Labs 04 and 05 have already shown model-selected tools. MCP’s save action changes an in-memory dictionary only. A2A’s reviewer is deterministic and uses real local protocol routes; the proposer is the course model, scripted in practice mode. The skills lab chooses from a small in-notebook catalog instead of a full skill host. These boundaries let students distinguish data, actions, agent messages, reusable procedures, and orchestration.
+The self-study MCP lab builds its own small server and makes fixed client calls; Labs 04 and 05 have already shown model-selected tools. MCP’s save action changes an in-memory dictionary only. A2A’s reviewer is deterministic and uses real local protocol routes; the proposer is the course model, scripted in practice mode. The skills lab chooses from a small in-notebook catalog instead of a full skill host. The decision-model lab computes its weighted matrix entirely in plain code and uses the TypeSafe SDK only for the optional live scoring step, so the arithmetic holds with no model key. These boundaries let students distinguish data, actions, agent messages, reusable procedures, and orchestration.
 
 The council labs keep the chair in plain code and replace Lab 06's council with one call in Lab 08, so each pattern stays visible. Larger skill catalogs, production hosting, persistent vector databases, and benchmarks of 20 or more scenarios can follow once these examples are clear. Continue with the linked learning resources.

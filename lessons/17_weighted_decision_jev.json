@@ -1,0 +1,59 @@
+{
+  "slug": "17_weighted_decision_jev",
+  "title": "Decision models: a weighted decision matrix with a scoring model",
+  "section": "Self-study: Go deeper",
+  "cells": [
+    {
+      "type": "markdown",
+      "source": "## Decide on evidence, not a gut call\n\n**So far:** the labs chose between `modular monolith` and `microservices` with rules, a council vote, confidence, and memory. Lab 15 framed the qualities to care about; Lab 16 weighted each architect's *voice*.\n\n**New:** a *decision model* — a repeatable way to turn judgements into a choice. Three approaches do the same job very differently:\n\n1. **A vote** counts opinions only: everyone picks an option, and the most popular wins. It ignores *why* and treats every reason as equal.\n2. **A weighted decision matrix** scores each option on a few criteria, multiplies each score by the criterion's *weight*, and sums. Weights are explicit, so a change of weight is a change of model, not a guess.\n3. **A scoring model (JEV)** supplies the per-option scores, and plain code does the arithmetic. Scores become *data* that any weight can be applied to, without re-judging.\n\nThe difference that matters: a vote and an average hide what you assumed; a weighted matrix states it. The model never chooses for you — it checks your weights against the facts. The first three steps need no model at all; Step 4 is live and needs a TypeSafe key."
+    },
+    {
+      "type": "markdown",
+      "source": "## Why a decision model, not a pattern card\n\nThe [Architectural Patterns for Agentic AI](https://karthikv1392.github.io/agentic-patterns/) field guide names *agentic* patterns: how several agents work together. A decision model is not a pattern of agents; it is a *technique you apply to judge options*, like Lab 09's evaluation methodology. Lab 16 used the guide's weighted-scoring form of **Voting-Based Cooperation** to combine votes. This lab keeps the same arithmetic but scores *options on criteria* instead, and lets a model like JEV fill in the per-criterion scores."
+    },
+    {
+      "type": "markdown",
+      "source": "## Step 1 · A gut call is a hidden average\n\nThe team scores each option from 0 to 4 on four criteria: how fast it ships (Delivery), how cheap it is to run (Cost), how much it needs the lean operations team (Operations), and how well it fits the team's skills (Fit). The first array is the modular monolith — slow to ship, cheap, light on operations, familiar. The second is microservices — the opposite. A plain average treats all four criteria as equally important: a gut call you can now see and challenge."
+    },
+    {
+      "type": "code",
+      "source": "criteria = [\"Delivery\", \"Cost\", \"Operations\", \"Team fit\"]\nmonolith = [2, 4, 4, 4]       # slow to ship, cheap, light on ops, familiar\nmicroservices = [4, 2, 1, 2]   # ships fast, pricier, heavy on ops, new skills\n\ndef average(scores):\n    return sum(scores) / len(scores)\n\nfor name, scores in [(\"modular monolith\", monolith), (\"microservices\", microservices)]:\n    print(f\"{name:<17} average {average(scores):.2f}\")"
+    },
+    {
+      "type": "markdown",
+      "source": "## Step 2 · The weighted decision matrix\n\nThe average treated every criterion equally, but this team's real constraint is the single operations engineer. Give Operations weight 3 and the other three criteria weight 1: a weighted score is `score * weight`, summed, then divided by the total weight so it stays on the 0–4 scale. The monolith, which barely touches operations, now wins by a wider margin."
+    },
+    {
+      "type": "code",
+      "source": "weights = [1, 1, 3, 1]          # Operations is the binding constraint\n\ndef weighted(scores):\n    return sum(s * w for s, w in zip(scores, weights)) / sum(weights)\n\ntable = [(name, weighted(s)) for name, s in\n         [(\"modular monolith\", monolith), (\"microservices\", microservices)]]\nfor name, score in table:\n    print(f\"{name:<17} {score:.2f}\")\nprint(\"winner:\", max(table, key=lambda r: r[1])[0])"
+    },
+    {
+      "type": "markdown",
+      "source": "## Step 3 · Weights are the model; scores are the facts\n\nNow the team grows to eight engineers and can run many services, so Operations is no longer the constraint: its weight drops to 0 and Delivery, the point of going microservices, rises to 3. The *scores are unchanged* — only the weights moved — and the decision flips. That separation is the point of a matrix: change a weight, never re-judge."
+    },
+    {
+      "type": "code",
+      "source": "weights_2 = [3, 1, 0, 1]        # a bigger ops run: Delivery now matters most\n\ndef weighted_2(scores):\n    return sum(s * w for s, w in zip(scores, weights_2)) / sum(weights_2)\n\ntable2 = [(name, weighted_2(s)) for name, s in\n          [(\"modular monolith\", monolith), (\"microservices\", microservices)]]\nfor name, score in table2:\n    print(f\"{name:<17} {score:.2f}\")\nprint(\"winner:\", max(table2, key=lambda r: r[1])[0])"
+    },
+    {
+      "type": "markdown",
+      "source": "## Step 4 (live) · Let JEV score the options once\n\nA scoring model turns each criterion into one typed question and returns a number, not a paragraph. First we build the `state` (the facts) and one `Score` question per option–criterion pair. The `rubric` is an ordered list, lowest to highest; JEV returns a position in it. Building the questions needs no network and no key."
+    },
+    {
+      "type": "code",
+      "source": "from os import environ\nfrom typesafe_sdk import Score, TypeSafeClient\n\nstate = {\n    \"team\": {\"size\": 3, \"can_independently_deploy\": False, \"ops_engineers\": 1},\n    \"options\": {\n        \"modular monolith\": {\"delivery_weeks\": 6, \"monthly_cost\": 1200, \"services_to_run\": 1},\n        \"microservices\": {\"delivery_weeks\": 4, \"monthly_cost\": 2200, \"services_to_run\": 6},\n    },\n}\nrubric = [\"clearly worst\", \"below average\", \"average\", \"good\", \"clearly best\"]\nscored = {\"modular monolith\": monolith, \"microservices\": microservices}\nprint(\"built\", len(state[\"options\"]), \"options and a\", len(rubric), \"-level rubric\")"
+    },
+    {
+      "type": "markdown",
+      "source": "## Step 5 (live) · Score once, reweight in code\n\nNow the one call: JEV scores the six questions in parallel and we keep only the numbers. The `weighted_2` matrix runs *unchanged* on JEV's answers, so you can change a weight without re-asking the model. Without a `TYPESAFE_API_KEY` the scripted scores stand in and the arithmetic still runs, so this step is optional."
+    },
+    {
+      "type": "code",
+      "source": "def ask():\n    questions = {f\"{o}:{c}\": Score(instructions=f\"Rate {o} on {c}. Higher is better.\", criteria=rubric)\n                 for o in state[\"options\"] for c in criteria}\n    with TypeSafeClient() as client:\n        return client.system_one(state=state, questions=questions)\n\nif environ.get(\"TYPESAFE_API_KEY\"):\n    resp = ask()\n    scored = {o: [resp.scores[f\"{o}:{c}\"].score for c in criteria] for o in state[\"options\"]}\nelse:\n    print(\"No TYPESAFE_API_KEY; using scripted scores for this cell.\")\n\nfor name, scores in scored.items():\n    print(f\"{name:<17} {weighted_2(scores):.2f}\")"
+    },
+    {
+      "type": "markdown",
+      "source": "## What you should see\n\nStep 1's plain average gives the monolith 3.5 against microservices' 2.25, so the monolith leads — but that average hides the operations constraint. Step 2 weights Operations by 3 and the same two score vectors give the monolith 3.67 and microservices 1.83, so the monolith's lead grows. Step 3 moves the weight onto Delivery and off Operations, and with the scores untouched the winner flips: microservices 3.2 beats the monolith 2.8. Step 5 runs that same `weighted_2` over JEV's scored answers (or the scripted stand-in), so you can change one weight and watch the choice move without re-judging.\n\n## Try it\n\n1. Add a fifth criterion, `Security`, scoring the monolith 3 and microservices 4, and give it weight 2. Which option wins now, and does that change when you drop its weight to 0 and raise `Cost` to 3?\n2. A `Score` answer carries a `confidence`. Print `resp.scores[...].confidence` and pull any answer below 0.5 down toward the average of the others. Why does a low-confidence judgement deserve its own weight?\n3. Two people disagree on weights. Write both weight vectors, run both matrices, and find the single weight that flips the winner. What does that tell you to negotiate first?\n4. **Use it in your council.** For one scenario, write three criteria, weight them, and score your two options by hand — then have JEV score them and compare the matrices. Where do they agree, and which differences come from weights rather than scores?\n\n## Takeaway\n\nA weighted decision matrix separates *scores* (the facts, or a model's judgement) from *weights* (the team's priorities). A vote, an average, and a gut call all hide a weight of some kind; the matrix shows it, so a changed priority is a one-line edit, not a re-argument. A System One model like JEV fills in the scores; the arithmetic stays in plain code.\n\n## Read further\n\n- [TypeSafe System One models](https://docs.typesafe.ai/concepts/system-one)\n- [The Score primitive](https://docs.typesafe.ai/primitives/score)\n- [Keeney and Raiffa, Decisions with Multiple Objectives (1993)](https://doi.org/10.1017/CBO9781139174084)"
+    }
+  ]
+}

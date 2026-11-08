@@ -759,6 +759,48 @@ const labs = [
         "Here, how often an architect has agreed with the human on the feedback cases."
       ]
     ]
+  },
+  {
+    "id": "17",
+    "file": "17_weighted_decision_jev",
+    "track": "self-study",
+    "title": "Decision models: a weighted decision matrix with a scoring model",
+    "subtitle": "Criteria weights in code, option scores from a System One model",
+    "topics": "decision matrix criteria weights scoring model typesafe jev system one score rubric composite judgement trade-off reweight",
+    "idea": "Scope each option on the same few criteria, weight the criteria explicitly, and let code keep the arithmetic — so a changed priority re-ranks the options without re-judging each one.",
+    "objectives": [
+      "Contrast a vote and an average with an explicit weighted matrix.",
+      "Separate scores (facts) from weights (priorities) so a weight change never re-judges.",
+      "Feed a System One scoring model's scores into the same matrix."
+    ],
+    "example": "A 3-person team scores modular monolith vs microservices on four criteria; weighting Operations picks one, weighting Delivery flips it, and JEV supplies the scores for the identical matrix.",
+    "exercise": "Add a Security criterion, pull low-confidence model scores toward the average, and find the one weight that flips the project's winner.",
+    "checks": "The plain average and the weighted matrices score 3.50/2.25, then 3.67/1.83, then 2.80/3.20 — the winner flips, with the scores untouched.",
+    "bridge": "Weights state your priorities; the model checks them against the facts. Decide the weights, not the winner.",
+    "steps": 5,
+    "patterns": [],
+    "background": [
+      "Choosing between two options usually ends in an argument because each side argues about a different criterion. A weighted decision matrix forces the disagreement into the open: everyone scores every option on the same criteria, then states how much each criterion matters. The winner is arithmetic, so a dispute about the winner becomes a dispute about a single weight — a much smaller, sharper argument.",
+      "A scoring model fits the same frame. TypeSafe JEV is a System One model: it answers typed questions with numbers and probabilities instead of free text, so a call returns a score position in a rubric and a confidence. Scores become data, and changing a weight no longer means re-asking the model."
+    ],
+    "terms": [
+      [
+        "Decision model",
+        "A repeatable procedure that turns judgements into a choice."
+      ],
+      [
+        "Weighted decision matrix",
+        "Option scores per criterion, each multiplied by the criterion's weight and summed."
+      ],
+      [
+        "Weight",
+        "How much one criterion counts toward the choice; the team's stated priority."
+      ],
+      [
+        "System One model",
+        "A model such as TypeSafe JEV that returns typed judgements and probabilities, not prose."
+      ]
+    ]
   }
 ];
 
@@ -802,7 +844,7 @@ const tracks = [
     "id": "self-study",
     "label": "Self-study · at your own pace",
     "title": "Go deeper",
-    "note": "An evaluation against single models, routing, protocols, skills, a framework, framing, and a learning experiment: what the project needs beyond the lectures. Each lab ends with a challenge for your council."
+    "note": "An evaluation against single models, routing, protocols, skills, a framework, framing, a learning experiment, and decision models: what the project needs beyond the lectures. Each lab ends with a challenge for your council."
   }
 ];
 

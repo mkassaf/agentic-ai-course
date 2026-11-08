@@ -53,6 +53,45 @@ Gemini and DeepSeek models reason before they answer by default, and the hidden 
 
 Lab 06's council needs at least three model families in live mode, so its architects use all three providers: Qwen on FreeInference, DeepSeek, and Gemini. Save all three keys in Colab Secrets.
 
+## Decision-model lab (17): TypeSafe JEV
+
+Lab 17's live step asks TypeSafe's System One model **JEV** to score each architecture option on a criterion, using the `Score` primitive, and then runs the same weighted matrix in plain code. It **does not** go through `make_ask`: TypeSafe serves a System One endpoint (`POST /v1/systemone`) with typed question primitives, not OpenAI-format chat completions, so the lab installs the TypeSafe SDK directly and keeps the arithmetic independent of the model.
+
+To run the live step:
+
+1. Install the SDK (the notebook setup does this): `pip install "typesafe-sdk==0.7.2"`.
+2. Add a Colab Secret named **`TYPESAFE_API_KEY`** and grant the notebook access.
+3. The lab reads the key from the environment (the SDK does this automatically). The default base URL is `https://api.typesafe.ai` and the default model is `jev-latest`.
+
+```python
+from typesafe_sdk import Score, TypeSafeClient
+with TypeSafeClient() as client:          # reads TYPESAFE_API_KEY from the environment
+    resp = client.system_one(state=..., questions={...})
+print(resp.scores["modular monolith:Cost"].score)   # a position in the rubric
+```
+
+**JEV over OpenRouter.** The TypeSafe JEV models are also reachable through [OpenRouter](https://openrouter.ai/models/typesafe) with a standard OpenRouter API key. `typesafe/jev-1.13` (alias for `typesafe/jev-1.13-<date>`) and `typesafe/jev-1.14` work, but **only through OpenRouter's decisions endpoint** (`POST /api/alpha/decisions`, not `/chat/completions`): JEV is a decisions model. The request mirrors TypeSafe's System One shape — a `state` plus `questions` keyed by id, each with a `type` of `score`, `choice`, `noul`, or `box`:
+
+```bash
+curl https://openrouter.ai/api/alpha/decisions \
+  -H "Authorization: Bearer $OPENROUTER_API_KEY" \
+  -d '{
+    "model": "typesafe/jev-1.13",
+    "state": {"option": "Microservices", "criterion": "Operations", "context": "..."},
+    "questions": {
+      "score_ops": {
+        "type": "score",
+        "instructions": "Score how well this option satisfies the criterion. Higher is better.",
+        "criteria": ["1: clearly worst", "2", "3: average", "4", "5: clearly best"]
+      }
+    }
+  }'
+```
+
+A successful call returns `answers.<id>.score` (a position on the rubric), per-level `probabilities`, and `confidence`. OpenRouter resolves `typesafe/jev-1.13` to a pinned dated snapshot. Note: `typesafe/jev-router` on OpenRouter routes to a non-TypeSafe model, so it is not a real JEV route — do not point students at it. The native `typesafe_sdk` route (above) is the simpler, primary path and is what the lab uses.
+
+Without a `TYPESAFE_API_KEY`, Lab 17 falls back to scripted scores and the matrix arithmetic still runs, so the live step is optional.
+
 ## Optional: LangSmith traces (Lab 07)
 
 Lab 07 can send a trace of each council run to [LangSmith](https://smith.langchain.com/). Create a free account and an API key, save it in Colab Secrets as `LANGSMITH_API_KEY`, and set `LANGSMITH_TRACING="true"` before the first step, as the lab shows. Without the key, nothing is sent, and the lab runs on its logs alone. A trace contains the case and every agent's reply, so do not trace private data to a shared project.

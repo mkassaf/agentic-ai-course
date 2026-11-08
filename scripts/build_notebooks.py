@@ -17,7 +17,12 @@ EXTRAS = {
     "13_a2a_protocol": ("a2a", "a2a"),
     "14_frameworks_langgraph": ("framework", "langgraph"),
 }
-NO_MODEL_LABS = {"11_tools_mcp", "16_learning_curve_trust"}  # these labs never call ask()
+# Labs that install their SDK straight from PyPI (publish-independent), not as a coursekit extra.
+# Lab 17 uses no coursekit helper, so it installs typesafe-sdk directly from PyPI.
+DIRECT_SDKS = {
+    "17_weighted_decision_jev": ("typesafe_sdk", "typesafe-sdk==0.7.2"),
+}
+NO_MODEL_LABS = {"11_tools_mcp", "16_learning_curve_trust", "17_weighted_decision_jev"}  # these labs never call ask()
 # Diagrams are exported by scripts/export_diagrams.js and served by the course site (GitHub Pages).
 DIAGRAM_URL = "https://mkassaf.github.io/agentic-ai-course/assets/diagrams/{number}.svg"
 
@@ -36,6 +41,11 @@ def setup_for(slug, revision):
     source = ("from importlib.util import find_spec\n"
               f"if not all(find_spec(name) for name in {modules!r}):\n"
               f'    %pip install -q "{package} @ {url}"')
+    direct_sdk = DIRECT_SDKS.get(slug)
+    if direct_sdk:
+        module, pip_spec = direct_sdk
+        source += (f"\nif not find_spec({module!r}):\n"
+                   f"    %pip install -q {pip_spec!r}")
     if slug not in NO_MODEL_LABS:
         source += ('\nfrom coursekit import make_ask\nMODE = "practice"\n'
                    'PROVIDER = "freeinference"  # or "gemini" or "deepseek"\n'

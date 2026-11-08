@@ -2,7 +2,7 @@
 
 Seventeen beginner labs teach general agentic AI through one small software architecture question: **modular monolith or microservices?** Keep the case familiar while changing one mechanism at a time.
 
-Each lab takes **15–20 minutes**, plus first-run installation. It has two to five numbered steps, each one code cell of at most **20 Python lines** (at most **75 example lines** per lab), a check, and small exercises. Students need basic Python. Nine core labs fit three 90-minute lectures, three labs each; seven self-study labs follow.
+Each lab takes **15–20 minutes**, plus first-run installation. It has two to five numbered steps, each one code cell of at most **20 Python lines** (at most **75 example lines** per lab), a check, and small exercises. Students need basic Python. Nine core labs fit three 90-minute lectures, three labs each; nine self-study labs follow.
 
 ## The shared case
 
@@ -12,7 +12,7 @@ This deliberately small policy makes comparisons easy. It is not a real-world ar
 
 ## Three lectures and self-study
 
-The core labs, 00–08, cover every pattern that the council project needs, so a student who attends the three lectures has seen all of them. The self-study labs, 09–16, cover what the project needs beyond the lectures. Lab 09 runs the project's first experiment, the council against single models, and Lab 10 adds routing. Labs 11–14 are the *implementation choices* that the brief leaves open: MCP for tools, Agent Skills for reusable procedures, A2A for agents that talk across processes, and LangGraph for orchestration. Labs 15–16 are two project steps that need more time than a lecture allows: framing the debate with quality-attribute scenarios and a message contract, and measuring learning with a feedback/test split, a learning curve, and per-model trust. Students take them at their own pace, and each ends with a challenge that applies it to their own council.
+The core labs, 00–08, cover every pattern that the council project needs, so a student who attends the three lectures has seen all of them. The self-study labs, 09–17, cover what the project needs beyond the lectures. Lab 09 runs the project's first experiment, the council against single models, and Lab 10 adds routing. Labs 11–14 are the *implementation choices* that the brief leaves open: MCP for tools, Agent Skills for reusable procedures, A2A for agents that talk across processes, and LangGraph for orchestration. Labs 15–17 are three project steps that need more time than a lecture allows: framing the debate with quality-attribute scenarios and a message contract, measuring learning with a feedback/test split, a learning curve, and per-model trust, and scoring options with a weighted decision matrix that a System One model can fill in. Students take them at their own pace, and each ends with a challenge that applies it to their own council.
 
 Each lab adds one mechanism to the previous one and says so at the top: **So far** recalls the last lab, **New** names the single addition. The same projects, the policy sentence, and names such as `projects`, `expected`, and `scripted` recur, so only the new idea needs attention. Each step adds one piece of logic and prints something to check.
 
@@ -52,13 +52,14 @@ Each lab adds one mechanism to the previous one and says so at the top: **So far
 | **14 · Agent frameworks: graphs with LangGraph** | Choose-and-check graph with a conditional retry | Which node proposes, which validates, and what ends the loop? |
 | **15 · Problem framing and typed message contracts** | ISO/IEC 25010 quality-attribute scenarios, a proposal contract with confidence, swappable architects | Which scenario has no number, and what does a contract make possible? |
 | **16 · Learning from feedback: learning curves and trust weights** | Feedback/test split, trust-weighted votes, a learning curve | When does the curve rise, why can it fall, and why does a coin toss get no vote? |
+| **17 · Decision models: a weighted decision matrix with a scoring model** | Criterion weights stated explicitly, option scores per criterion, a System One model filling in the scores | Which decision model hides its assumptions, and which weight flips the winner? |
 
 ## Four core areas
 
 | Area | Labs |
 | --- | --- |
 | LLMs and Prompting · RAG Systems | 00–02 (Lecture 1) |
-| Foundations of AI Agents · Agentic Patterns | 03–08 (Lectures 2 and 3); 09, 10, 15, 16 (self-study) |
+| Foundations of AI Agents · Agentic Patterns | 03–08 (Lectures 2 and 3); 09, 10, 15, 16, 17 (self-study) |
 | Tools and MCP · A2A Protocol | 04 and 05 (tools, Lecture 2); 11 and 13 (self-study) |
 | Skills · Frameworks | 12 and 14 (self-study) |
 
@@ -84,6 +85,7 @@ Labs 03–10 build the course project's council one pattern at a time, in the or
 | Observable, traceable, swappable agents | Shared Memory; Registry & Adapter | 07: typed, read-only messages, a bus that logs each one live and to a JSON log file, an optional LangSmith trace of each run, a trace from the decision back to its sources in that file, and a registry where an agent joins in one line | Meet the brief's "must be" rules without rewrites |
 | Structured messages and shared state | Shared Memory | 01 (JSON replies), 06 (a transcript of `round`, `speaker`, `kind` messages), 07 (a typed `Message` dataclass), self-study 14 (graph state) | Identify the speaker, proposal, critique, evidence, and round |
 | Evaluation | Not a pattern: it measures the patterns' quality attributes | 01 (labelled checks), 08 (held-out cases before and after memory), 09 (council against the best single model, with an LLM judge calibrated against human ratings), 16 (a feedback/test split and a learning curve) | Compare approaches, measure improvement on unseen cases, and trust a judge only as far as it agrees with people |
+| Decision model | Not a pattern: a technique that judges options | 17: criterion weights stated explicitly, per-option scores (by hand, a vote, or a System One model), a weighted total | Decide which option the project's priorities pick, and change a weight instead of re-arguing |
 | MCP, A2A, skills, frameworks | Registry & Adapter; Generator–Critic Loop; Skill Library Evolution | Self-study 11, 13, 12, 14 | Ways to connect and organize the implementation |
 
 *Orchestrator–workers*, where a central model splits a task into subtasks for specialist workers, has no lab of its own: the brief gives every architect the full mandate, and Lab 06's chair already coordinates the peers. Students can add a chair agent that frames the case or writes the final decision record.
@@ -103,7 +105,7 @@ The labs never solve the project: they use a different question (modular monolit
 | Frame: the chair sets the context and quality-attribute scenarios | 15 |
 | Propose alone, then debate | 06 |
 | Critique and revise, change one's mind only for an argument | 06 (sourced challenges); 13 and 14 (reviewer and checker feedback) |
-| Converge by vote, score, or consensus | 06 (grounded votes), 15 (confidence), 16 (trust-weighted votes) |
+| Converge by vote, score, or consensus | 06 (grounded votes), 15 (confidence), 16 (trust-weighted votes), 17 (weighted decision matrix) |
 | Decide: a decision record with the dissent | 03 and 12 (decision records), 06 (recorded dissent); Lab 12's challenge adds the dissent to the record |
 | Bounded rounds; deadlock goes to the chair or the human | 06, 08, 16 (ties escalate) |
 | Structured, observable, traceable, and swappable communication | 07 (a typed message, live logs and a JSON log file, a trace to sources from the log, agents added through a registry), 06 (transcript), 15 (contract and a fourth architect), 13 (A2A messages) |
@@ -124,6 +126,6 @@ Prompt decomposition means checking explicit criteria and asking for a brief, ve
 
 Evaluate three things: adherence to the supplied policy, grounding in the case and retrieved evidence, and the clarity of one consequence or trade-off. The automatic checks cover only part of that assessment. Scripted practice scores demonstrate the evaluation code; only live runs provide evidence about model behavior, and five cases cannot establish general quality.
 
-The RAG lab embeds policies with a small local model (`all-MiniLM-L6-v2`) and stores them in an in-memory Chroma vector database; a word-matching step shows what embeddings add. The memory lab reuses the same model and database for past decisions. The council's chair is plain code; Lab 08's `council` stands in for the full council with one model call to keep the lab short. MCP and A2A use their real SDKs locally; the save action changes only in-memory data. The skills lab chooses from a small in-notebook catalog rather than a full skill host. LangGraph runs an actual two-node graph with a conditional retry. Supporting transport code stays in the installable course package.
+The RAG lab embeds policies with a small local model (`all-MiniLM-L6-v2`) and stores them in an in-memory Chroma vector database; a word-matching step shows what embeddings add. The memory lab reuses the same model and database for past decisions. The council's chair is plain code; Lab 08's `council` stands in for the full council with one model call to keep the lab short. MCP and A2A use their real SDKs locally; the save action changes only in-memory data. The skills lab chooses from a small in-notebook catalog rather than a full skill host. LangGraph runs an actual two-node graph with a conditional retry. The decision-model lab computes its matrix in plain code and uses the TypeSafe SDK only for the optional live scoring step, so the arithmetic works without a model key. Supporting transport code stays in the installable course package.
 
 See the [instructor guide](instructor-guide.md) and [technical references](sources.md).

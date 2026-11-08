@@ -6,6 +6,7 @@
   "14": "START, then choose (node), then check (node), then route, then END. Then back to choose: retry · at most 2 attempts.",
   "15": "Brief (Booking service), then Chair frames (3 ISO 25010 scenarios), then has numbers?, then 4 architects (one contract), then Contract check (option · marks · confidence), then Aggregate (votes vs confidence).",
   "16": "Benchmark (10 cases), then Split once (6 feedback · 4 test), then Feedback case (one per round), then Update trust (per architect), then Weighted vote (test cases only), then Learning curve. Then back to Feedback case: next round.",
+  "17": "Two options (monolith · microservices), then Score criteria (0–4 per option) or JEV scores (Score primitive), then Weights (the team’s priorities), then Weighted total (Σ score × weight), then Winner (higher total wins). Then back to Weighted total: reweight, never re-judge.",
   "00": "4 projects (every fact combination), then Apply the rule (decide()) or Ask a model (ask() + to_label()), then Compare (agreement count).",
   "01": "Labelled case (5 tests), then Guided prompt (policy + example), then Model (JSON reply), then Parse (parse_reply()), then Score (pass · fail · invalid), then ≥ 80%.",
   "02": "Question, then Embed (MiniLM vectors), then Nearest policies (Chroma), then close?, then Grounded answer (cites [R1]), then Citation check (cited ⊆ retrieved).",

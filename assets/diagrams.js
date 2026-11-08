@@ -119,6 +119,13 @@ const DIAGRAMS = {
     {k: 'check', t: 'Weighted vote', s: 'test cases only'},
     {k: 'data', t: 'Learning curve'}],
     loops: [{from: 4, to: 2, t: 'next round'}]},
+  '17': {stages: [
+    {k: 'data', t: 'Two options', s: 'monolith · microservices'},
+    [{k: 'code', t: 'Score criteria', s: '0–4 per option'}, {k: 'model', t: 'JEV scores', s: 'Score primitive'}],
+    {k: 'code', t: 'Weights', s: 'the team’s priorities'},
+    {k: 'code', t: 'Weighted total', s: 'Σ score × weight'},
+    {k: 'data', t: 'Winner', s: 'higher total wins'}],
+    loops: [{from: 1, to: 3, t: 'reweight, never re-judge'}]},
 };
 
 const DIAGRAM_KINDS = {
