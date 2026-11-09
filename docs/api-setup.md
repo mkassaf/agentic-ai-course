@@ -53,6 +53,21 @@ Gemini and DeepSeek models reason before they answer by default, and the hidden 
 
 Lab 06's council needs at least three model families in live mode, so its architects use all three providers: Qwen on FreeInference, DeepSeek, and Gemini. Save all three keys in Colab Secrets.
 
+## Reasoning demo (Lab 01): a plain model vs a reasoning model
+
+Lab 01's Step 5 is an optional live demonstration of **reasoning models** and **tokens**, using the "how many R's in strawberry" task. It **does not** go through `make_ask`: it makes a direct request to OpenRouter so it can read the model's `reasoning` field (which `make_ask` drops) and so it can call a reasoning model with thinking *enabled* (the `make_ask` presets turn reasoning off).
+
+To run it live:
+
+1. Add a Colab Secret named **`OPENROUTER_API_KEY`** and grant the notebook access. Never paste the key into a cell.
+2. Set `MODE = "live"` in the setup cell. The step runs only when the key is present **and** `MODE` is `"live"`; otherwise it prints scripted answers (2 / 3 / 3), so the automated practice run stays offline.
+3. The step calls three setups on [OpenRouter](https://openrouter.ai/models):
+   - `openai/gpt-3.5-turbo-0613` with a simple prompt — typically misses the count (`2`).
+   - the same old model with a chain-of-thought prompt — typically counts `3`.
+   - `qwen/qwen3-235b-a22b-thinking-2507` (a reasoning model) with the simple prompt — counts `3`: it writes the count in a `reasoning` field before answering in `content`.
+
+The reasoning model's inner writing is charged as **output tokens** (`completion_tokens_details.reasoning_tokens`), so give it a generous `max_tokens` (the step uses 900) or it runs out *mid-reasoning* and never emits the final answer. Model ids change over time; verify both ids serve on your key before class.
+
 ## Decision-model lab (17): TypeSafe JEV
 
 Lab 17's live step asks TypeSafe's System One model **JEV** to score each architecture option on a criterion, using the `Score` primitive, and then runs the same weighted matrix in plain code. It **does not** go through `make_ask`: TypeSafe serves a System One endpoint (`POST /v1/systemone`) with typed question primitives, not OpenAI-format chat completions, so the lab installs the TypeSafe SDK directly and keeps the arithmetic independent of the model.

@@ -26,7 +26,7 @@ Open a notebook in **Google Colab**, save a copy to your Drive, and run the cell
 | Lab | Worked example | Colab | Notebook |
 | --- | --- | --- | --- |
 | 00 · From rules to LLM calls | Run a Python rule on four projects, then count how often a model agrees | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/00_rules_and_llms.ipynb) | [View](notebooks/00_rules_and_llms.ipynb) |
-| 01 · Prompting and small evaluations | A guided prompt, a strict JSON parser, and a five-case quality gate | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/01_prompting_evaluation.ipynb) | [View](notebooks/01_prompting_evaluation.ipynb) |
+| 01 · Prompting and small evaluations | A guided prompt, a strict JSON parser, a five-case quality gate, and a live plain-vs-reasoning contrast | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/01_prompting_evaluation.ipynb) | [View](notebooks/01_prompting_evaluation.ipynb) |
 | 02 · RAG: ground answers in retrieved knowledge | Embed policies, store them in a Chroma vector database, retrieve by meaning, and check citations | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/02_rag_systems.ipynb) | [View](notebooks/02_rag_systems.ipynb) |
 
 **Lecture 2 · Chain, call tools, act (90 minutes)**
@@ -79,7 +79,9 @@ ask = make_ask(mode=MODE, provider=PROVIDER)
 | `gemini` | `gemini-3.5-flash` (Gemini) | `GEMINI_API_KEY` |
 | `deepseek` | `deepseek-flash` (DeepSeek) | `DEEPSEEK_API_KEY` |
 
-`make_ask` also accepts `model`, `base_url`, and `secret_name` to override a provider's defaults or to use another compatible service. The MCP, learning-curve, and decision-model labs need no live model to run; in the A2A lab, a live model proposes and a deterministic agent reviews. The council lab (06) needs **three model families** in live mode, so it uses all three providers at once and needs all three keys. The decision-model lab (17) has an optional live step that asks TypeSafe's System One model **JEV** to score each option; it needs a `TYPESAFE_API_KEY` in Colab Secrets and installs the TypeSafe SDK. JEV can also be reached over OpenRouter as `typesafe/jev-1.13`, served through OpenRouter's decisions endpoint rather than chat completions. See [API setup](docs/api-setup.md).
+`make_ask` also accepts `model`, `base_url`, and `secret_name` to override a provider's defaults or to use another compatible service. The MCP, learning-curve, and decision-model labs need no live model to run; in the A2A lab, a live model proposes and a deterministic agent reviews. The council lab (06) needs **three model families** in live mode, so it uses all three providers at once and needs all three keys. The decision-model lab (17) has an optional live step that asks TypeSafe's System One model **JEV** to score each option; it needs a `TYPESAFE_API_KEY` in Colab Secrets and installs the TypeSafe SDK. JEV can also be reached over OpenRouter as `typesafe/jev-1.13`, served through OpenRouter's decisions endpoint rather than chat completions. Lab 01's Step 5 is an optional live demo of **reasoning models** — it calls a plain `gpt-3.5-turbo-0613` and a reasoning `qwen/qwen3-235b-a22b-thinking-2507` directly on OpenRouter and needs `OPENROUTER_API_KEY` in Colab Secrets (see below). See [API setup](docs/api-setup.md).
+
+The course model keys: `FREEINFERENCE_API_KEY` (default), `GEMINI_API_KEY`, and `DEEPSEEK_API_KEY` for the council, `TYPESAFE_API_KEY` for Lab 17's scoring step, and `OPENROUTER_API_KEY` for Lab 01's reasoning demo.
 
 ## Teaching guides
 

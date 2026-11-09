@@ -63,7 +63,7 @@ Keep the *Try it* exercises that need live mode, and the last one or two exercis
 | Lab | Ask |
 | --- | --- |
 | 00 | Where does the model without the policy disagree with the rule, and why are those the mixed cases? |
-| 01 | Which part of the guided prompt removes Lab 00's guesswork, and which test case could reveal a mistake? |
+| 01 | Which part of the guided prompt removes Lab 00's guesswork, which test case could reveal a mistake, and why does a plain model miss the R's that chain-of-thought and a reasoning model catch? |
 | 02 | Why do embeddings find R1 for the reworded question when word matching does not, and why does the lunch question get no answer? |
 | 03 | What does each link of the chain receive, and what can a gate check that a single prompt hides? |
 | 04 | Why did the model guess without a tool, what does `call_tool` check, and why must a write wait for the user? |
@@ -88,6 +88,8 @@ Use a small rubric: **policy adherence**, **grounding in supplied facts**, and *
 Practice replies and scores are scripted; they test the exercise’s plumbing, not an LLM. Run the same cases live before drawing conclusions about prompting. With a small test set, describe observed results rather than claiming general model accuracy.
 
 For chain-of-thought-style prompting, teach explicit criterion checks and brief justifications. This is a teaching adaptation, not a reproduction of the original CoT method or access to private reasoning. ReAct-style loops make actions and observations visible after the tools lesson; the compact control-flow adaptation still needs allowed actions and a turn limit.
+
+Lab 01's optional Step 5 demonstrates reasoning models and tokens live (OpenRouter, needs `OPENROUTER_API_KEY` plus `MODE="live"`): a plain `gpt-3.5-turbo-0613` misses the R-count in "strawberry", a chain-of-thought prompt usually fixes it, and `qwen/qwen3-235b-a22b-thinking-2507` re-counts in a hidden `reasoning` field before answering — costing extra output tokens. It falls back to scripted answers in practice mode, so the token/reasoning explanation still lands without a key.
 
 For a formative submission, request one changed input, its result, and two sentences explaining whether the policy was followed and what a real architect would still investigate. Reward a useful comparison, not extra code.
 

@@ -21,7 +21,7 @@ Each lab adds one mechanism to the previous one and says so at the top: **So far
 | Lab | New mechanism | Student comparison |
 | --- | --- | --- |
 | **00 · From rules to LLM calls** | A Python rule with reasons, a reply normaliser, unguided model calls | Where does a model without the policy disagree with the rule? |
-| **01 · Prompting and small evaluations** | Guided prompt, JSON parser, five labelled cases, quality gate | Which cases does the guided prompt get right, and which reply breaks the format? |
+| **01 · Prompting and small evaluations** | Guided prompt, JSON parser, five labelled cases, quality gate, and a live plain-vs-reasoning contrast | Which cases does the guided prompt get right, which reply breaks the format, and why does a plain model miss the R's in strawberry? |
 | **02 · RAG: ground answers in retrieved knowledge** | Embeddings, a Chroma vector database, a distance threshold, citation checks | Which evidence supports the answer, and when should the system abstain? |
 
 **Lecture 2 · Chain, call tools, act (90 minutes)**
@@ -123,6 +123,8 @@ Three design questions from the brief are left for class discussion rather than 
 ## Keep reasoning and evaluation observable
 
 Prompt decomposition means checking explicit criteria and asking for a brief, verifiable justification. This is a teaching adaptation inspired by chain-of-thought prompting, not a reproduction of the original method or access to private model reasoning. ReAct-style action and observation comes after students have used tools. Its compact control-flow example illustrates the loop without implementing a full native function-calling agent.
+
+Lab 01's Step 5 shows what *reasoning models* do with that same idea. A plain model reads short familiar words as single tokens and so tends to miss a letter count (the "R's in strawberry" task); a chain-of-thought prompt spells the word out and usually fixes it; a reasoning model writes that same letter-by-letter count for itself in a `reasoning` field before answering, at the cost of extra output tokens and latency. It runs live on OpenRouter and falls back to scripted answers without a key, so the reasoning differences are explained in the narrative even in practice mode.
 
 Evaluate three things: adherence to the supplied policy, grounding in the case and retrieved evidence, and the clarity of one consequence or trade-off. The automatic checks cover only part of that assessment. Scripted practice scores demonstrate the evaluation code; only live runs provide evidence about model behavior, and five cases cannot establish general quality.
 
