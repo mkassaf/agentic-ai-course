@@ -51,6 +51,18 @@ ask = make_ask(mode="live", provider="deepseek", model="deepseek-v4-pro")  # ano
 
 The presets configure a small output budget and provider-specific reasoning settings. Model identifiers and accepted settings can change; verify current availability with student-equivalent access before teaching, and override the model and `extra_body` when your institution supplies different settings.
 
+### Choose DeepSeek or Gemini in any model lab
+
+Keep the same example code. In its setup cell, choose one provider and give Colab access to the matching secret:
+
+```python
+MODE = "live"
+PROVIDER = "deepseek"  # Colab Secret: DEEPSEEK_API_KEY
+ask = make_ask(mode=MODE, provider=PROVIDER)
+```
+
+Or use `PROVIDER = "gemini"` with `GEMINI_API_KEY`. You do not need a FreeInference key when using either directly. These presets use the providers' [OpenAI-compatible DeepSeek API](https://api-docs.deepseek.com/) and [Google compatibility endpoint](https://aistudio.google.com/docs/openai). Practice mode for both remains offline.
+
 Lab 06's council needs at least three model families in live mode, so its architects use all three providers: Qwen on FreeInference, DeepSeek, and Gemini. Save all three keys in Colab Secrets.
 
 ## Checkable reasoning and tokens (Lab 01)
