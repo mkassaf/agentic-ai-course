@@ -5,7 +5,7 @@
   "cells": [
     {
       "type": "markdown",
-      "source": "## Human feedback and memory: when is a retry safe?\n\n**So far:** the checkout exercise introduced resilience patterns. **New:** a human review loop and a memory of accepted advice. We revisit the lecture's distinction between an idempotent read and a non-idempotent payment charge.\n\nThe initial proposal is conservative: do not retry a timed-out Pricing lookup. A human approves a bounded retry because this lookup is idempotent and the failure is transient. The accepted lesson carries an explicit `idempotent=True` scope. A similar-looking Payments case must not receive it.\n\nShort-term notes carry the feedback through this review. A Chroma archive carries the accepted lesson across decisions. This demo uses in-memory storage, so restarting Python clears it; production persistence is a separate choice. Practice answers are scripted, and the two held-out cases demonstrate measurement rather than prove learning."
+      "source": "## Human feedback and memory: when is a retry safe?\n\n**So far:** the checkout exercise introduced resilience patterns. **New:** a human review loop and a memory of accepted advice. We revisit the example's distinction between an idempotent read and a non-idempotent payment charge.\n\nThe initial proposal is conservative: do not retry a timed-out Pricing lookup. A human approves a bounded retry because this lookup is idempotent and the failure is transient. The accepted lesson carries an explicit `idempotent=True` scope. A similar-looking Payments case must not receive it.\n\nShort-term notes carry the feedback through this review. A Chroma archive carries the accepted lesson across decisions. This demo uses in-memory storage, so restarting Python clears it; production persistence is a separate choice. Practice answers are scripted, and the two held-out cases demonstrate measurement rather than prove learning."
     },
     {
       "type": "markdown",
@@ -21,7 +21,7 @@
     },
     {
       "type": "markdown",
-      "source": "## Step 1 · A proposal and a stand-in council\n\nThis one-call proposer stands in for a complete council. The policy is a teaching adaptation of slide 39: never retry a non-idempotent action automatically; absent approved advice, choose the conservative option. Its output is a design recommendation, not an executed network request."
+      "source": "## Step 1 · A proposal and a stand-in council\n\nThis one-call proposer stands in for a complete council. The policy is a simplified teaching policy: never retry a non-idempotent action automatically; absent approved advice, choose the conservative option. Its output is a design recommendation, not an executed network request."
     },
     {
       "type": "code",
@@ -45,7 +45,7 @@
     },
     {
       "type": "markdown",
-      "source": "## Step 4 · Hold out two new cases\n\nNeither case gave feedback. Both can resemble the archived network failure. Their effect differs: repeating a Catalog read is idempotent, repeating the slide's Payments charge is not. `idempotent` is provided by the service contract; the model must not invent it."
+      "source": "## Step 4 · Hold out two new cases\n\nNeither case gave feedback. Both can resemble the archived network failure. Their effect differs: repeating a Catalog read is idempotent, repeating the Payments charge is not. `idempotent` is provided by the service contract; the model must not invent it."
     },
     {
       "type": "code",
@@ -61,7 +61,7 @@
     },
     {
       "type": "markdown",
-      "source": "## What you should see\n\nThe human rejects `do not retry` for the idempotent Pricing lookup, then accepts `retry`. Short-term notes are cleared after archiving. Catalog can recall the lesson; Payments receives none after filtering. Scripted scores change from 1/2 to 2/2. Live scores may differ.\n\n## Try it\n\n1. Remove the metadata filter. Why could a similar timeout now pass unsafe advice to Payments?\n2. Add a case whose idempotency is unknown. Which service owner or contract should establish that fact before a retry?\n3. Lower `max_distance` so no lesson is recalled. Does the score still improve?\n4. The slides say an outbox relay may publish twice. Why must a consumer deduplicate by event ID and commit that ID with the business effect?\n\n## Takeaway\n\nA memory needs applicability as well as similarity. Human feedback approved a bounded retry for one class of safe effect, not for every timeout. The agentic lesson is review, explicit state, archival retrieval, and held-out evaluation; the microservices lesson is idempotency and safe retry."
+      "source": "## What you should see\n\nThe human rejects `do not retry` for the idempotent Pricing lookup, then accepts `retry`. Short-term notes are cleared after archiving. Catalog can recall the lesson; Payments receives none after filtering. Scripted scores change from 1/2 to 2/2. Live scores may differ.\n\n## Try it\n\n1. Remove the metadata filter. Why could a similar timeout now pass unsafe advice to Payments?\n2. Add a case whose idempotency is unknown. Which service owner or contract should establish that fact before a retry?\n3. Lower `max_distance` so no lesson is recalled. Does the score still improve?\n4. An outbox relay may publish the same event twice after a retry. Why must a consumer deduplicate by event ID and commit that ID with the business effect?\n\n## Takeaway\n\nA memory needs applicability as well as similarity. Human feedback approved a bounded retry for one class of safe effect, not for every timeout. The agentic lesson is review, explicit state, archival retrieval, and held-out evaluation; the microservices lesson is idempotency and safe retry."
     }
   ],
   "review": {

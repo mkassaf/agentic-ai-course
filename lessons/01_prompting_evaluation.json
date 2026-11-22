@@ -5,7 +5,7 @@
   "cells": [
     {
       "type": "markdown",
-      "source": "## Give the model criteria, then test them\n**So far:** Lab 00 compared an unguided model with a readiness screen.\n\n**New:** a guided prompt, a JSON contract and a five-case evaluation. Review slide 21: `ops_ready` means automated CI/CD, monitoring, rapid provisioning and teams owning operations. Our simplified screen considers microservices only when `ops_ready` and `independent_deploys` are both true. It remains a screen, not a proof of architecture quality.\n\nThe last step uses a tiny event-delivery example to explain tokens, checkable prompting and reasoning-model budgets.\n\nThis screen addresses the stated independent-release goal; it does not exclude the independent-scaling motivations in the lecture."
+      "source": "## Give the model criteria, then test them\n**So far:** Lab 00 compared an unguided model with a readiness screen.\n\n**New:** a guided prompt, a JSON contract and a five-case evaluation. In this exercise, `ops_ready` means automated CI/CD, monitoring, rapid provisioning and teams owning operations. Our simplified screen considers microservices only when `ops_ready` and `independent_deploys` are both true. It remains a screen, not a proof of architecture quality.\n\nThe last step uses a tiny event-delivery example to explain tokens, checkable prompting and reasoning-model budgets.\n\nThis screen addresses the stated independent-release goal; it does not exclude the independent-scaling motivations in the lecture."
     },
     {
       "type": "markdown",
@@ -25,7 +25,7 @@
     },
     {
       "type": "markdown",
-      "source": "## Step 3 · Cover both facts and a realistic missing-prerequisite case\nThe last case has pipelines but no monitoring: it must still set `ops_ready=False`. A numerical team-size threshold is not a decision rule in these slides."
+      "source": "## Step 3 · Cover both facts and a realistic missing-prerequisite case\nThe last case has pipelines but no monitoring: it must still set `ops_ready=False`. A numerical team-size threshold is not a decision rule for this exercise."
     },
     {
       "type": "code",
@@ -41,7 +41,7 @@
     },
     {
       "type": "markdown",
-      "source": "## Step 5 · Tokens, checkable steps and reasoning budgets\nAn LLM processes tokens (pieces of text), not a database of event identities. Ask it to distinguish *deliveries* from *distinct events*, then check with Python. This reviews at-least-once delivery from DDD slide 52.\n\nA decomposition prompt asks for an explicit, short checkable result. It does not expose private internal reasoning, and it does not guarantee correctness. A reasoning model may spend additional output-budget tokens before producing its visible answer; support and usage fields vary by provider. Here both calls use the same configured model, so this is a prompting comparison, **not** an experiment comparing model families. Practice answers are fixtures."
+      "source": "## Step 5 · Tokens, checkable steps and reasoning budgets\nAn LLM processes tokens (pieces of text), not a database of event identities. Ask it to distinguish *deliveries* from *distinct events*, then check with Python. At-least-once delivery can repeat the same event, so consumers need to recognize duplicates.\n\nA decomposition prompt asks for an explicit, short checkable result. It does not expose private internal reasoning, and it does not guarantee correctness. A reasoning model may spend additional output-budget tokens before producing its visible answer; support and usage fields vary by provider. Here both calls use the same configured model, so this is a prompting comparison, **not** an experiment comparing model families. Practice answers are fixtures."
     },
     {
       "type": "code",

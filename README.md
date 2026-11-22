@@ -4,7 +4,7 @@ Prepared by **Mustafa Assaf**
 
 [Course website](https://mkassaf.github.io/agentic-ai-course/) · [GitHub repository](https://github.com/mkassaf/agentic-ai-course)
 
-Eighteen short Colab labs teach agentic systems while students revise **Microservices & Their Patterns** and **Microservices Lecture 2 - Condensed DDD**. Each lab names specific slides, asks two recall questions, applies the ideas in a small executable example, and ends with a change to try. The original decks remain class materials; they are not uploaded here.
+Eighteen short Colab labs teach agentic systems while students revise **Microservices & Their Patterns** and **Microservices Lecture 2 - Condensed DDD**. Each lab provides the relevant context, asks two questions, applies the ideas in a small executable example, and ends with a change to try.
 
 The examples use ShopEasy, the lectures' social app, and small checkout scenarios. They cover operational readiness, business boundaries, aggregates, private service data, CQRS, resilience, saga compensation, contracts, anti-corruption layers, and Kafka semantics. The old eight-person architecture rule and hotel-booking examples have been replaced. Scores, workloads, and scripted replies are explicitly teaching fixtures, not empirical results.
 
@@ -45,7 +45,6 @@ A passed format/citation check does not prove factual support or a good architec
 
 ## Teaching and revision guides
 
-- [Slide-to-lab revision map](docs/slide-map.md)
 - [Curriculum](docs/curriculum.md)
 - [Instructor guide](docs/instructor-guide.md)
 - [API setup](docs/api-setup.md)

@@ -148,7 +148,7 @@ const labs = [
     "title": "RAG: ground answers in retrieved knowledge",
     "subtitle": "RAG over microservices and DDD notes",
     "topics": "rag retrieval embeddings vectors vector database chroma similarity rules source architecture context retrieval-augmented generation microservices DDD ShopEasy lecture revision Database per service API composition vs CQRS Idempotent consumers and transactional outbox",
-    "idea": "Retrieve the relevant lecture note before answering a pattern question.",
+    "idea": "Retrieve the relevant architecture note before answering a pattern question.",
     "objectives": [
       "Retrieve the relevant lecture note before answering a pattern question.",
       "Ask an unrelated question; should the model answer without evidence?",
@@ -212,7 +212,7 @@ const labs = [
       ],
       "questions": [
         "Why is CQRS a better fit for searchable order history than a large in-memory API join?",
-        "Does a valid slide citation prove that an answer is supported?"
+        "Does citing a valid source ID prove that the source supports an answer?"
       ],
       "readings": [
         "Microservices & Their Patterns · slides 24, 27, 28, 30",
@@ -667,9 +667,9 @@ const labs = [
     "title": "Evaluation: a multi-agent system against a single model",
     "subtitle": "Evaluate pattern advice against single models",
     "topics": "evaluation baseline experiment llm judge calibration human ratings grounding cost latency council patterns microservices DDD ShopEasy lecture revision Choose data patterns from requirements Measure label agreement, citation validity, and trade-offs",
-    "idea": "Compare systems on the same slide-based cases and calibrate a narrow LLM judge.",
+    "idea": "Compare systems on the same architecture cases and calibrate a narrow LLM judge.",
     "objectives": [
-      "Compare systems on the same slide-based cases and calibrate a narrow LLM judge.",
+      "Compare systems on the same architecture cases and calibrate a narrow LLM judge.",
       "Change one answer and inspect correctness, valid citations, costs, and human/judge disagreement.",
       "Fixtures demonstrate the measurement code; live mode runs the judge, not a fresh council benchmark."
     ],
@@ -720,7 +720,7 @@ const labs = [
         "Measure label agreement, citation validity, and trade-offs"
       ],
       "questions": [
-        "Why is CQRS excessive for a small lookup by ID?",
+        "For a small order-details lookup by ID, why might a separate CQRS read model add unnecessary work?",
         "Which data pattern supports replaying a historical account balance?"
       ],
       "readings": [
@@ -1101,11 +1101,11 @@ const labs = [
     "idea": "Turn a checkout brief into measurable scenarios and comparable architecture messages.",
     "objectives": [
       "Turn a checkout brief into measurable scenarios and comparable architecture messages.",
-      "Identify which targets came from the slides and which are assumptions to confirm with a stakeholder.",
+      "Identify which targets are given facts and which are assumptions to confirm with a stakeholder.",
       "Check measurable scenarios, option labels, confidence, and trade-offs."
     ],
     "example": "Consider timeouts, payment safety, and graceful degradation for optional Recommendations.",
-    "exercise": "Identify which targets came from the slides and which are assumptions to confirm with a stakeholder.",
+    "exercise": "Identify which targets are given facts and which are assumptions to confirm with a stakeholder.",
     "checks": "Check measurable scenarios, option labels, confidence, and trade-offs.",
     "bridge": "Timeouts, retries, breakers, bulkheads, and fallback solve different failure problems.",
     "pattern": "Passive Goal Creator and a contract",
@@ -1421,7 +1421,6 @@ labs.forEach((lab, i) => {
   const pager = `<nav class="lab-pager" aria-label="Neighbouring labs">${prev ? `<a href="#lab-${prev.id}"><small>← Lab ${prev.id}</small>${esc(prev.title)}</a>` : '<span></span>'}${next ? `<a class="next" href="#lab-${next.id}"><small>Lab ${next.id} →</small>${esc(next.title)}</a>` : ''}</nav>`;
   detail.innerHTML = `<summary><span class="lab-number" aria-hidden="true"><span class="num">${number(i)}</span><span class="tick">✓</span></span><div><h3><span class="visually-hidden">Lab ${number(i)}: </span>${esc(lab.title)}</h3><p>${chips(lab.patterns)}<span class="lab-subtitle">${esc(lab.subtitle)}</span></p></div><span class="lab-time">${lab.steps} steps</span><span class="expand-icon" aria-hidden="true">+</span></summary>`
     + `<div class="lab-body"><div class="lab-lead"><p class="lab-intro">${esc(lab.idea)}</p>${notebookActions(lab)}</div>`
-    + `<p class="lesson-takeaway"><strong>Lecture review.</strong> ${(lab.review?.readings || []).map(esc).join('; ')} <a href="docs/slide-map.md">Full slide map ↗</a></p>`
     + `<section class="lab-context" aria-label="The idea in context"><div><h4>The idea in context</h4>${lab.background.map(text => `<p>${esc(text)}</p>`).join('')}</div>`
     + `<aside class="key-terms"><h4>Key terms</h4><dl>${lab.terms.map(([term, meaning]) => `<dt>${esc(term)}</dt><dd>${esc(meaning)}</dd>`).join('')}</dl></aside></section>`
     + `<h4 class="diagram-heading">How the lab works</h4><figure class="lab-diagram" data-diagram="${lab.id}"></figure>`

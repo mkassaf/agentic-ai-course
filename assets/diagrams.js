@@ -368,7 +368,7 @@ const DIAGRAMS = {
       },
       {
         "k": "code",
-        "t": "Nearest lecture notes",
+        "t": "Nearest architecture notes",
         "s": "Chroma"
       },
       {
@@ -379,7 +379,7 @@ const DIAGRAMS = {
       {
         "k": "model",
         "t": "Evidence-based reply",
-        "s": "cites [M28]"
+        "s": "cites [R3]"
       },
       {
         "k": "check",
@@ -515,7 +515,7 @@ const DIAGRAMS = {
       {
         "k": "data",
         "t": "Shared sources",
-        "s": "M27 · M28 · case"
+        "s": "R2 · R3 · case"
       },
       [
         {

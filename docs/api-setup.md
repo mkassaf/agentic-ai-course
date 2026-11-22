@@ -99,4 +99,4 @@ Automated verification runs practice and local protocol examples with no paid mo
 
 ## Lecture-aligned examples
 
-Labs 00–17 now revisit the supplied microservices and DDD decks; see the [slide map](slide-map.md). The A2A lab (13) uses a deterministic local payment adapter, so it no longer needs a model key. Lab 17 uses its own explicit `MODE="practice"` switch and requires a **TypeSafe** key only for optional live scoring. FreeInference credentials cannot be used as TypeSafe credentials. Lab 01's token/checkable-reasoning example uses the course provider; no extra OpenRouter account is required.
+Labs 00–17 use self-contained microservices and DDD scenarios. The A2A lab (13) uses a deterministic local payment adapter, so it no longer needs a model key. Lab 17 uses its own explicit `MODE="practice"` switch and requires a **TypeSafe** key only for optional live scoring. FreeInference credentials cannot be used as TypeSafe credentials. Lab 01's token/checkable-reasoning example uses the course provider; no extra OpenRouter account is required.

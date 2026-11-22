@@ -13,7 +13,7 @@
     },
     {
       "type": "markdown",
-      "source": "## Step 1 · Split the benchmark once\n\nEach operation supplies its idempotency contract and whether it is critical. The human labels follow the lecture's retry restriction. Six cases provide feedback; four remain held out. Never use their labels to update trust or choose weights.\n\nEach tuple contains a case name, whether the operation is idempotent, and whether it is critical. These are synthetic examples, not measured model answers."
+      "source": "## Step 1 · Split the benchmark once\n\nEach operation supplies its idempotency contract and whether it is critical. The human labels follow the example's retry restriction. Six cases provide feedback; four remain held out. Never use their labels to update trust or choose weights.\n\nEach tuple contains a case name, whether the operation is idempotent, and whether it is critical. These are synthetic examples, not measured model answers."
     },
     {
       "type": "code",

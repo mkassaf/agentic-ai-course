@@ -5,7 +5,7 @@
   "cells": [
     {
       "type": "markdown",
-      "source": "## Chain a small DDD design exercise\n**So far:** Lab 02 retrieved lecture evidence.\n\n**New:** prompt chaining with quality gates. Use ShopEasy's events to find business capabilities, propose bounded contexts, compare a business split with a technical-layer split, then write a three-line decision record.\n\nDDD helps identify candidate boundaries; it does not require deploying every candidate as a separate service immediately. Review low coupling, high cohesion and context-specific models in the slides."
+      "source": "## Chain a small DDD design exercise\n**So far:** Lab 02 retrieved lecture evidence.\n\n**New:** prompt chaining with quality gates. Use ShopEasy's events to find business capabilities, propose bounded contexts, compare a business split with a technical-layer split, then write a three-line decision record.\n\nDDD helps identify candidate boundaries; it does not require deploying every candidate as a separate service immediately. A useful boundary keeps related rules together, reduces coordination between services, and gives each context a consistent model."
     },
     {
       "type": "markdown",
@@ -45,7 +45,7 @@
     },
     {
       "type": "markdown",
-      "source": "## What you should see\nThe chain proposes Order, Inventory and Shipping contexts, compares both strategies, and records the business-capability split with its contract/data-ownership cost. Three model calls make intermediate results visible. Gates verify shape, not the truth of every architectural claim.\n\n## Try it\n1. Replace Order, Inventory, Shipping with UI, BusinessLogic, DataAccess. The list gate still passes: explain why the design may still be poor.\n2. Explain why `Product` has different fields in Catalog, Inventory and Shipping (DDD slides 72–73).\n3. Add Returns and Refunds from DDD slide 60. Which language, rules and data would you investigate before drawing another boundary?\n\n## Takeaway\nA chain makes intermediate modelling choices reviewable. Good JSON is necessary for automation; domain experts and change patterns still validate service candidates."
+      "source": "## What you should see\nThe chain proposes Order, Inventory and Shipping contexts, compares both strategies, and records the business-capability split with its contract/data-ownership cost. Three model calls make intermediate results visible. Gates verify shape, not the truth of every architectural claim.\n\n## Try it\n1. Replace Order, Inventory, Shipping with UI, BusinessLogic, DataAccess. The list gate still passes: explain why the design may still be poor.\n2. Explain why `Product` has different fields in Catalog, Inventory and Shipping when Catalog uses title and price, Inventory tracks quantity, and Shipping tracks package weight.\n3. A customer returns a damaged jacket; after inspection it is refunded and then restocked or scrapped. Which language, rules and data would you investigate before drawing another boundary?\n\n## Takeaway\nA chain makes intermediate modelling choices reviewable. Good JSON is necessary for automation; domain experts and change patterns still validate service candidates."
     }
   ],
   "review": {

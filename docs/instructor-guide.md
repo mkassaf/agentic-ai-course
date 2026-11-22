@@ -1,6 +1,6 @@
 # Instructor guide
 
-Teach the agentic mechanism and the microservices concept together. Open each lab's lecture-review block, ask students to predict an answer from the slides, then run the small example and change one fact. Use the [complete slide map](slide-map.md) to find the readings.
+Teach the agentic mechanism and the microservices concept together. Use the scenario in each lab to ask students to predict an answer, then run the small example and change one fact.
 
 ## Before class
 
@@ -23,7 +23,7 @@ Lecture 1 uses Labs 00–02; Lecture 2 uses 03–05; Lecture 3 uses 06–08. Lab
 ## Questions worth asking
 
 - **00–01:** Which readiness prerequisite is missing? Why are eight developers not a rule for adopting microservices? Why are duplicate deliveries not distinct business events?
-- **02:** Did the retrieved slide support the claim? What changes when no relevant note is found?
+- **02:** Did the retrieved note support the claim? What changes when no relevant note is found?
 - **03:** Where does ShopEasy's language change? Why is a UI/logic/data split a poor default service boundary?
 - **04:** Who may change Order's total? What distinguishes an entity from a value object in the full lecture model?
 - **05:** What was actually observed? Why do transient failure and idempotency both matter for retry?

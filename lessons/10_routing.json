@@ -13,7 +13,7 @@
     },
     {
       "type": "markdown",
-      "source": "## Step 1 · Inputs and human routes\n\nThese short notes are teaching scenarios based on slide 41, not measured service behaviour. The held-out route labels are used for evaluation, never included in the router's prompt."
+      "source": "## Step 1 · Inputs and human routes\n\nThese short notes are teaching scenarios created for the exercise, not measured service behaviour. The held-out route labels are used for evaluation, never included in the router's prompt."
     },
     {
       "type": "code",

@@ -31,23 +31,42 @@ DECKS = {
 }
 
 
+EXAMPLE_CONTEXT = {
+    "00": "A team considering independent releases needs automated delivery, monitoring, rapid provisioning, and people who can operate the services. A small application can start as a modular monolith.",
+    "01": "Our exercise marks operations ready only when CI/CD, monitoring, provisioning, and ownership are all in place. An event with the same eventId can be delivered more than once.",
+    "02": "API composition asks services for data and joins their responses. CQRS maintains a separate read model for queries, which can lag behind writes. A citation identifies a source; it does not prove the answer follows from it.",
+    "03": "A technical-layer split places UI, business logic, and data access in different services. A bounded context defines where one business model and language apply; its deployment boundary still needs review.",
+    "04": "An Order has a stable identity and contains order lines. Its root is responsible for keeping the total equal to the sum of its lines. Money is compared by amount and currency.",
+    "05": "A slow dependency can occupy callers while they wait. Retrying adds more requests. A repeated card charge can have a second financial effect when the operation is not idempotent.",
+    "06": "ShopEasy support needs to search orders, payments, and deliveries by customer name. API composition joins responses; CQRS provides a searchable read model that may lag behind writes.",
+    "07": "An agent review contains several messages about one decision. A trace ID groups the run; a message ID identifies one message. A source link records what a claim is based on.",
+    "08": "Pricing and Catalog perform read-only lookups, while Payments performs a card charge. A timed-out charge may already have succeeded, so repeating it blindly can charge twice.",
+    "09": "A small order-details lookup needs data for one ID; a support search must filter across many records. API composition handles small joins; CQRS adds a searchable read model. Event sourcing keeps an event history that can be replayed to recover past state.",
+    "10": "A Pricing lookup is a read. A Payments charge can change a customer's balance even if the response times out. A router itself can add model calls before a case reaches review.",
+    "11": "Orders owns its private data. Reporting can use an exposed API or published events. A broad search across services may benefit from a CQRS read model, while a small lookup can use API composition.",
+    "12": "Checkout creates an order, verifies the customer, reserves stock, and requests payment. A failed authorization is not a completed charge; completed writes may need compensating actions while other services can observe intermediate states.",
+    "13": "A payment provider and ShopEasy may use different field names and representations. An anti-corruption layer translates between them; A2A describes how agents discover and exchange messages.",
+    "14": "Payment reads the total field in an OrderPlaced event. Renaming or removing that field breaks its existing contract. A new optional field can be added without requiring existing consumers to use it.",
+    "15": "Checkout depends on critical Inventory and Payments services and optional Recommendations. Their latency and failure effects differ; a payment charge is not idempotent. The example's targets are assumptions to validate.",
+    "16": "A price lookup is a read, but a card charge changes money and might already have succeeded after a timeout. Feedback cases update trust; separate test cases measure results without influencing the update.",
+    "17": "A task queue distributes work among competing workers. A retained event log lets separate subscriber groups read events independently. A record key groups related records; eventId identifies a fact for deduplication.",
+}
+
+
 def review_note(lesson):
     """Keep the Colab revision questions traceable to the supplied lecture decks."""
     review = lesson["review"]
-    readings = []
     for source in review["sources"]:
-        title, count = DECKS[source["deck"]]
-        slides = source["slides"]
-        if not slides or any(type(n) is not int or not 1 <= n <= count for n in slides):
-            raise ValueError(f"Invalid slide reference in {lesson['slug']}")
-        readings.append(f"- **{title}**, slides {', '.join(map(str, slides))}.")
+        _, count = DECKS[source["deck"]]
+        if not source["slides"] or any(type(n) is not int or not 1 <= n <= count for n in source["slides"]):
+            raise ValueError(f"Invalid teaching-source reference in {lesson['slug']}")
     questions = "\n".join(f"{i}. {q}" for i, q in enumerate(review["questions"], 1))
-    return ("## Review your microservices lectures\n\n" + "\n".join(readings)
-            + "\n\n**Recall:** " + "; ".join(review["concepts"]) + "."
-            + "\n\nBefore running the example:\n\n" + questions
-            + "\n\nSlide numbers count from the title slide, including appendices. "
-              "The small scenarios and code are teaching adaptations, not production services. "
-              "Use the lecture decks supplied in class; they are not uploaded with this course.")
+    return ("## Think about the example\n\n"
+            + EXAMPLE_CONTEXT[lesson["slug"][:2]] + "\n\n"
+            + "**Concepts:** " + "; ".join(review["concepts"]) + "."
+            + "\n\nUse the scenario above to consider these questions before running the code:\n\n"
+            + questions)
+
 
 
 def source_cell(kind, source):

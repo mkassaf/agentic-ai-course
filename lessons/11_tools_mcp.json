@@ -16,7 +16,7 @@
     },
     {
       "type": "markdown",
-      "source": "## Step 1 · Keep the data behind its owner\n\nOnly the Orders server owns `ORDERS`. `get_order` returns a copy of the fields this interface exposes; callers do not receive a database connection or a reference they can mutate. This mirrors database-per-service, including the slide's warning about reporting access to private tables."
+      "source": "## Step 1 · Keep the data behind its owner\n\nOnly the Orders server owns `ORDERS`. `get_order` returns a copy of the fields this interface exposes; callers do not receive a database connection or a reference they can mutate. This mirrors database-per-service, so Reporting cannot read Order's private tables directly."
     },
     {
       "type": "code",

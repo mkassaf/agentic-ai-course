@@ -1,6 +1,6 @@
 # Curriculum
 
-The course has two explicit outcomes for every lab: build an agentic mechanism and explain a related microservices/DDD decision from the supplied lectures. The [slide map](slide-map.md) lists the exact readings. Every notebook contains two recall questions before the code.
+The course has two explicit outcomes for every lab: build an agentic mechanism and explain a related microservices/DDD decision from the supplied lectures. Every notebook provides context and two questions before the code.
 
 ## Three introductory lectures
 
@@ -38,4 +38,4 @@ Start the project by adapting one notebook with a changed scenario and a justifi
 
 ## Assess both outcomes
 
-Ask for one changed input, the observed action or answer, one relevant lecture slide, and a short explanation of the architecture trade-off. Reward a detected unsupported claim or a negative learning result. An exact output match alone does not establish sound architecture.
+Ask for one changed input, the observed action or answer, the relevant architecture concept, and a short explanation of the architecture trade-off. Reward a detected unsupported claim or a negative learning result. An exact output match alone does not establish sound architecture.
