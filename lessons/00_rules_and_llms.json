@@ -5,7 +5,7 @@
   "cells": [
     {
       "type": "markdown",
-      "source": "## One set of questions, two ways to answer\nShopEasy's services communicate over a network. A call may fail temporarily, one slow dependency may consume shared resources, and different clients may need different APIs.\n\nFirst, answer short multiple-choice questions using explicit Python rules. Then make one simple LLM call before asking the model the **same questions**, without giving it those rules, and comparing its answers. The model is not an agent yet: it makes one independent call per question and uses no tools.\n\nThese are simplified teaching rules. Real designs require more context, and automatic retries need timeouts, a limit, and backoff with jitter."
+      "source": "## One set of questions, two ways to answer\n**Goal:** Compare rules with an LLM while applying software architecture concepts: retries, idempotency, bulkheads, API gateways, and BFFs.\n\nShopEasy's services communicate over a network. A call may fail temporarily, one slow dependency may consume shared resources, and different clients may need different APIs.\n\nFirst, answer short multiple-choice questions using explicit Python rules. Then make one simple LLM call before asking the model the **same questions**, without giving it those rules, and comparing its answers. The model is not an agent yet: it makes one independent call per question and uses no tools.\n\nThese are simplified teaching rules. Real designs require more context, and automatic retries need timeouts, a limit, and backoff with jitter."
     },
     {
       "type": "markdown",

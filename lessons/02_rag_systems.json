@@ -5,7 +5,7 @@
   "cells": [
     {
       "type": "markdown",
-      "source": "## Retrieve lecture evidence before answering\n**So far:** Lab 01 put a short readiness rule directly in the prompt.\n\n**New:** retrieval-augmented generation (RAG). We store short architecture notes, embed them, and retrieve the note that may answer a question. Check the answer against the retrieved note.\n\nThe local `all-MiniLM-L6-v2` model turns text into 384-number vectors. Chroma stores and searches those vectors on CPU; the first run downloads the model. No model key is needed for retrieval; generation uses the course client."
+      "source": "## Retrieve architecture evidence before answering\n**Goal:** Use RAG to retrieve and apply software architecture knowledge when answering a question.\n\n**So far:** Lab 01 put a short readiness rule directly in the prompt.\n\n**New:** retrieval-augmented generation (RAG). We store short architecture notes, embed them, and retrieve the note that may answer a question. Check the answer against the retrieved note.\n\nThe local `all-MiniLM-L6-v2` model turns text into 384-number vectors. Chroma stores and searches those vectors on CPU; the first run downloads the model. No model key is needed for retrieval; generation uses the course client."
     },
     {
       "type": "markdown",
