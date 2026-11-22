@@ -9,7 +9,7 @@ const labs = [
     "idea": "Answer practical microservices questions using explicit rules and an LLM.",
     "objectives": [
       "Apply simple rules for retries, bulkheads, gateways, and BFFs.",
-      "Compare the rules and an LLM on the same multiple-choice questions.",
+      "Make one LLM call, then compare its answers with rules on the same questions.",
       "Explain why agreement is useful to inspect but does not prove a design is correct."
     ],
     "example": "ShopEasy faces a timed-out payment, a slow dependency, and different client API needs.",
@@ -17,7 +17,7 @@ const labs = [
     "checks": "Compare the answer letters and examine any disagreement.",
     "bridge": "A timed-out payment might already have succeeded; server-supported idempotency makes a retry safer.",
     "track": "lecture-1",
-    "steps": 3,
+    "steps": 4,
     "patterns": [],
     "background": [
       "A Python rule checks explicit facts; an LLM reads a natural-language question and returns a response. Both answers need to be reviewed in context.",
