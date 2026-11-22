@@ -33,7 +33,7 @@ DECKS = {
 
 EXAMPLE_CONTEXT = {
     "00": "A retry repeats a failed request; a timeout can leave the result uncertain. Bulkheads separate resources, an API gateway handles shared edge concerns, and a BFF adapts an API to a client.",
-    "01": "Our exercise marks operations ready only when CI/CD, monitoring, provisioning, and ownership are all in place. An event with the same eventId can be delivered more than once.",
+    "01": "An API gateway can route requests and apply common policies. A backend for frontend (BFF) can tailor an API to one client, such as a mobile app. A system may use both.",
     "02": "API composition asks services for data and joins their responses. CQRS maintains a separate read model for queries, which can lag behind writes. A citation identifies a source; it does not prove the answer follows from it.",
     "03": "A technical-layer split places UI, business logic, and data access in different services. A bounded context defines where one business model and language apply; its deployment boundary still needs review.",
     "04": "An Order has a stable identity and contains order lines. Its root is responsible for keeping the total equal to the sum of its lines. Money is compared by amount and currency.",
@@ -88,7 +88,23 @@ def setup_for(slug, revision):
         module, pip_spec = direct_sdk
         source += (f"\nif not find_spec({module!r}):\n"
                    f"    %pip install -q {pip_spec!r}")
-    if slug not in NO_MODEL_LABS:
+    if slug == "01_prompting_evaluation":
+        source += ('\nMODE = "practice"  # change to "live" for real model calls\n'
+                   'PROVIDER = "deepseek"  # or "gemini" or "freeinference" for Steps 1–3\n'
+                   'if MODE == "live" and find_spec("transformers") is None:\n'
+                   '    %pip install -q "transformers>=4.45,<5" torch\n'
+                   'from coursekit.runtime import Client, secret\n'
+                   'from coursekit.notebook import PROVIDERS\n'
+                   'settings = PROVIDERS[PROVIDER]\n'
+                   'key = secret(settings["secret_name"]) if MODE == "live" else ""\n'
+                   'plain = Client(mode=MODE, model=settings["model"], base_url=settings["base_url"],\n'
+                   '               api_key=key, max_calls=12, extra_body=settings.get("extra_body"))\n'
+                   'thinking = None\n'
+                   'if PROVIDER == "deepseek":\n'
+                   '    thinking = Client(mode=MODE, model=settings["model"], base_url=settings["base_url"],\n'
+                   '                      api_key=key, max_calls=12, max_tokens=4096, timeout=120,\n'
+                   '                      extra_body={"thinking": {"type": "enabled"}, "reasoning_effort": "low"})')
+    elif slug not in NO_MODEL_LABS:
         source += ('\nfrom coursekit import make_ask\nMODE = "practice"\n'
                    'PROVIDER = "freeinference"  # or "gemini" or "deepseek"\n'
                    'ask = make_ask(mode=MODE, provider=PROVIDER)')
@@ -101,7 +117,13 @@ def build(lesson, revision, diagrams, site_lab):
     intro = (f'# Lab {number} · {lesson["title"]}\n\n'
              f'**Prepared by Mustafa Assaf** · {lesson["section"]} · 15–20 minute lab')
     setup_note = '## Setup\nRun this cell once to load the course helpers, then run the steps below in order.'
-    if slug not in NO_MODEL_LABS:
+    if slug == "01_prompting_evaluation":
+        setup_note += (' Practice mode uses scripted answers without a key. For live mode, save '
+                       '`DEEPSEEK_API_KEY` in Colab Secrets, keep `PROVIDER="deepseek"`, set '
+                       '`MODE="live"`, and rerun this setup cell. Live Step 4 downloads a small '
+                       'local model; Step 5 uses DeepSeek thinking mode. Other providers work in '
+                       'Steps 1–3; Step 5 requires DeepSeek. Each client stops after 12 calls.')
+    elif slug not in NO_MODEL_LABS:
         setup_note += (' Practice answers are scripted. For a live model, choose `PROVIDER` '
                        '(`"freeinference"`, `"gemini"`, or `"deepseek"`), save its key in Colab Secrets '
                        '(`FREEINFERENCE_API_KEY`, `GEMINI_API_KEY`, or `DEEPSEEK_API_KEY`), and change `MODE` to '

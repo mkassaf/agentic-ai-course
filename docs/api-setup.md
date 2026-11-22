@@ -2,7 +2,7 @@
 
 Model-based notebooks can use **practice** responses or a **live** model. Practice mode returns the explicit `example` text without a model request. Live mode sends the prompt to the selected service. The MCP lab and deterministic A2A adapter need no model key.
 
-The initial configuration uses **FreeInference**, but the teaching adapter is provider-neutral.
+Most model labs initially use **FreeInference**; Lab 01 defaults to **DeepSeek**. The teaching adapter supports multiple providers.
 
 ## Initial Colab setup
 
@@ -17,7 +17,7 @@ PROVIDER = "freeinference"  # or "gemini" or "deepseek"
 ask = make_ask(mode=MODE, provider=PROVIDER)
 ```
 
-The defaults are FreeInference (`https://freeinference.org/v1`), model `qwen3.6-35b`, and secret name `FREEINFERENCE_API_KEY`; see *Providers and the council* below for Gemini and DeepSeek. If no Colab secret is available, the helper uses a hidden input prompt. Check current access and quotas in the [FreeInference documentation](https://doc.freeinference.org/).
+Most labs default to FreeInference (`https://freeinference.org/v1`), model `qwen3.6-35b`, and secret `FREEINFERENCE_API_KEY`. Lab 01 defaults to DeepSeek; see *Prompting and reasoning* below. If no Colab secret is available, the helper uses a hidden input prompt. Check current access and quotas in the [FreeInference documentation](https://doc.freeinference.org/).
 
 ## Use another compatible service
 
@@ -40,7 +40,7 @@ Services with deployment-specific URLs, native Gemini/Messages APIs, SSO-only au
 
 | Provider | Default model (family) | Colab Secret | Notes |
 | --- | --- | --- | --- |
-| `freeinference` | `qwen3.6-35b` (Qwen) | `FREEINFERENCE_API_KEY` | The default. The free tier takes one request at a time. |
+| `freeinference` | `qwen3.6-35b` (Qwen) | `FREEINFERENCE_API_KEY` | The default in most labs. The free tier takes one request at a time. |
 | `gemini` | `gemini-3.5-flash` (Gemini) | `GEMINI_API_KEY` | Uses Google's OpenAI-compatible endpoint, with `reasoning_effort: "minimal"`. |
 | `deepseek` | `deepseek-flash` (DeepSeek) | `DEEPSEEK_API_KEY` | Sends `thinking: disabled`. |
 
@@ -53,7 +53,7 @@ The presets configure a small output budget and provider-specific reasoning sett
 
 ### Choose DeepSeek or Gemini in any model lab
 
-Keep the same example code. In its setup cell, choose one provider and give Colab access to the matching secret:
+In a model lab’s setup cell, choose one provider and give Colab access to the matching secret. Most labs use the following setup; Lab 01 sets up separate clients for its reasoning comparison:
 
 ```python
 MODE = "live"
@@ -65,9 +65,9 @@ Or use `PROVIDER = "gemini"` with `GEMINI_API_KEY`. You do not need a FreeInfere
 
 Lab 06's council needs at least three model families in live mode, so its architects use all three providers: Qwen on FreeInference, DeepSeek, and Gemini. Save all three keys in Colab Secrets.
 
-## Checkable reasoning and tokens (Lab 01)
+## Prompting and reasoning (Lab 01)
 
-The final step compares a short prompt with explicit eventId deduplication instructions using the same course provider. It makes the answer checkable against Python, rather than claiming to observe private model reasoning or guaranteeing one model fails a familiar word puzzle. Token budgets and reasoning-model behavior are explained without a separate account.
+Lab 01 defaults to DeepSeek and starts in scripted practice mode. Live mode uses `DEEPSEEK_API_KEY`; its earlier-model comparison downloads the small SmolLM2 model from Hugging Face and runs it on CPU. The final step calls `deepseek-flash` with thinking disabled and enabled using the same direct questions. The modes may differ in latency and token use; neither is guaranteed correct. The older model differs in age, size and training, so its comparison is not a controlled test of thinking mode. The old `deepseek-chat` and `deepseek-reasoner` names are retired.
 
 ## Optional TypeSafe scores (Lab 17)
 
@@ -99,4 +99,4 @@ Automated verification runs practice and local protocol examples with no paid mo
 
 ## Lecture-aligned examples
 
-Labs 00–17 use self-contained microservices and DDD scenarios. The A2A lab (13) uses a deterministic local payment adapter, so it no longer needs a model key. Lab 17 uses its own explicit `MODE="practice"` switch and requires a **TypeSafe** key only for optional live scoring. FreeInference credentials cannot be used as TypeSafe credentials. Lab 01's token/checkable-reasoning example uses the course provider; no extra OpenRouter account is required.
+Labs 00–17 use self-contained microservices and DDD scenarios. The A2A lab (13) uses a deterministic local payment adapter, so it no longer needs a model key. Lab 17 uses its own explicit `MODE="practice"` switch and requires a **TypeSafe** key only for optional live scoring. FreeInference credentials cannot be used as TypeSafe credentials. Lab 01 uses DeepSeek for its thinking-mode comparison; no OpenRouter account is required.

@@ -74,41 +74,45 @@ const labs = [
     "id": "01",
     "file": "01_prompting_evaluation",
     "title": "Prompting and small evaluations",
-    "subtitle": "Prompting and evaluation with service-readiness cases",
-    "topics": "prompting cot criteria few shot json evaluation testing tokens reasoning microservices DDD ShopEasy lecture revision Operational prerequisites At-least-once delivery and event identity Criteria-based architecture decisions",
-    "idea": "Supply the readiness criteria, a worked example, and an output contract, then score test cases.",
+    "subtitle": "System and user prompts, memory, validation, and reasoning",
+    "topics": "system user messages prompting memory validation json reasoning thinking chain of thought strawberry decimal architecture gateway bff",
+    "idea": "Compare system and user prompts, carry a previous response, and validate a structured answer.",
     "objectives": [
-      "Supply the readiness criteria, a worked example, and an output contract, then score test cases.",
-      "Change a readiness fact or add a duplicate event; inspect both the label and explanation.",
-      "Practice checks the scoring code; live accuracy and token use are observations."
+      "Distinguish system instructions from the user question.",
+      "Pass a previous response into a follow-up and validate JSON.",
+      "Compare an older model with guided prompts and DeepSeek thinking modes."
     ],
-    "example": "Guide the architecture prompt and inspect duplicate event IDs as a small checkable reasoning task.",
-    "exercise": "Change a readiness fact or add a duplicate event; inspect both the label and explanation.",
-    "checks": "Practice checks the scoring code; live accuracy and token use are observations.",
-    "bridge": "A short justification is verifiable evidence, not access to private model reasoning.",
+    "example": "Ask about API gateways and mobile BFFs, then test two small reasoning questions.",
+    "exercise": "Change a system prompt, omit previous context, and inspect a wrong JSON decision.",
+    "checks": "Check the reply format and decision; verify reasoning answers with Python.",
+    "bridge": "Thinking mode can help but is not guaranteed to be correct; compare actual results.",
     "track": "lecture-1",
     "steps": 5,
     "patterns": [],
     "background": [
-      "Prompting supplies missing domain context. Evaluation separates malformed replies from wrong labels and tests representative combinations.",
-      "A short justification is verifiable evidence, not access to private model reasoning."
+      "A system message guides the assistant; a user message requests a task. A follow-up can include a previous answer as temporary context.",
+      "Parse and validate replies before using them. An older model and DeepSeek thinking modes can be compared on small, checkable examples."
     ],
     "terms": [
       [
-        "Few-shot prompting",
-        "Including one or more worked examples in the prompt, so the model sees what a good answer looks like."
+        "System prompt",
+        "Instructions that guide the assistant’s task and response."
       ],
       [
-        "Structured output",
-        "A reply in a fixed format, such as JSON, that code can parse."
+        "User prompt",
+        "The specific question or request sent by the user."
       ],
       [
-        "Evaluation set",
-        "Labelled cases with known answers, used to score a prompt or a system."
+        "Temporary context",
+        "Information, such as a previous answer, sent again in a later request."
       ],
       [
-        "Quality gate",
-        "A check that stops the run when the score falls below a threshold."
+        "Validation",
+        "Checking that a response has the expected format and meets a specific condition."
+      ],
+      [
+        "Thinking mode",
+        "A model setting that enables additional internal reasoning before the final answer."
       ]
     ],
     "review": {
@@ -116,31 +120,22 @@ const labs = [
         {
           "deck": "microservices",
           "slides": [
-            19,
-            20,
-            21
-          ]
-        },
-        {
-          "deck": "ddd",
-          "slides": [
-            51,
-            52
+            33,
+            35
           ]
         }
       ],
       "concepts": [
-        "Operational prerequisites",
-        "At-least-once delivery and event identity",
-        "Criteria-based architecture decisions"
+        "API gateway",
+        "Backend for frontend (BFF)",
+        "Client-specific APIs"
       ],
       "questions": [
-        "Why does CI/CD without monitoring fail the readiness screen?",
-        "Why do three deliveries not necessarily represent three distinct business events?"
+        "What shared needs can an API gateway address?",
+        "Why might mobile and web clients benefit from different BFFs?"
       ],
       "readings": [
-        "Microservices & Their Patterns · slides 19, 20, 21",
-        "Microservices Lecture 2 - Condensed DDD · slides 51, 52"
+        "Microservices & Their Patterns · slides 33, 35"
       ]
     }
   },

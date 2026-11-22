@@ -322,37 +322,11 @@ const DIAGRAMS = {
   },
   "01": {
     "stages": [
-      {
-        "k": "data",
-        "t": "Labelled case",
-        "s": "5 readiness tests"
-      },
-      {
-        "k": "code",
-        "t": "Guided prompt",
-        "s": "checklist + example"
-      },
-      {
-        "k": "model",
-        "t": "Model",
-        "s": "JSON reply"
-      },
-      {
-        "k": "check",
-        "t": "Parse",
-        "s": "parse_reply()",
-        "out": "bad format → invalid"
-      },
-      {
-        "k": "check",
-        "t": "Score",
-        "s": "pass · fail · invalid"
-      },
-      {
-        "k": "gate",
-        "t": "≥ 80%",
-        "out": "below → stop"
-      }
+      {"k": "data", "t": "Architecture question", "s": "gateway or BFF"},
+      {"k": "model", "t": "Prompt", "s": "system + user"},
+      {"k": "code", "t": "Remember", "s": "pass prior answer"},
+      {"k": "check", "t": "Validate", "s": "JSON + decision"},
+      {"k": "model", "t": "Compare", "s": "older + thinking modes"}
     ]
   },
   "02": {
