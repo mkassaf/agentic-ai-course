@@ -5,127 +5,695 @@
 //         in = label on the arrow that enters it, out = a side exit (for example a failure path).
 // loops: arrows back from stage `from` to stage `to`, with a label.
 const DIAGRAMS = {
-  '00': {stages: [
-    {k: 'data', t: '4 projects', s: 'every fact combination'},
-    [{k: 'code', t: 'Apply the rule', s: 'decide()'}, {k: 'model', t: 'Ask a model', s: 'ask() + to_label()'}],
-    {k: 'check', t: 'Compare', s: 'agreement count'}]},
-  '01': {stages: [
-    {k: 'data', t: 'Labelled case', s: '5 tests'},
-    {k: 'code', t: 'Guided prompt', s: 'policy + example'},
-    {k: 'model', t: 'Model', s: 'JSON reply'},
-    {k: 'check', t: 'Parse', s: 'parse_reply()', out: 'bad format → invalid'},
-    {k: 'check', t: 'Score', s: 'pass · fail · invalid'},
-    {k: 'gate', t: '≥ 80%', out: 'below → stop'}]},
-  '02': {stages: [
-    {k: 'data', t: 'Question'},
-    {k: 'code', t: 'Embed', s: 'MiniLM vectors'},
-    {k: 'code', t: 'Nearest policies', s: 'Chroma'},
-    {k: 'gate', t: 'close?', out: 'none → abstain'},
-    {k: 'model', t: 'Grounded answer', s: 'cites [R1]'},
-    {k: 'check', t: 'Citation check', s: 'cited ⊆ retrieved'}]},
-  '03': {stages: [
-    {k: 'data', t: 'Brief'},
-    {k: 'model', t: 'Requirements', s: '3 labels'}, {k: 'gate', t: 'gate', out: 'fail → stop'},
-    {k: 'model', t: 'Options', s: '2 or 3'}, {k: 'gate', t: 'gate'},
-    {k: 'model', t: 'Trade-offs', s: '+ / − table'}, {k: 'gate', t: 'gate'},
-    {k: 'model', t: 'Decision record', s: 'Context · Decision · Consequence'}, {k: 'gate', t: 'gate'}]},
-  '04': {stages: [
-    {k: 'data', t: 'Request'},
-    {k: 'model', t: 'Pick a tool', s: '{"tool", "args"}'},
-    {k: 'check', t: 'call_tool()', s: 'name · types', out: 'bad → error as data'},
-    {k: 'human', t: 'User confirms', s: 'write tools only'},
-    [{k: 'code', t: 'search_hotels()', s: 'reads live data'}, {k: 'code', t: 'book_room()', s: 'changes data'}],
-    {k: 'model', t: 'Answer', s: 'from the result'}]},
-  '05': {stages: [
-    {k: 'data', t: 'Goal'},
-    {k: 'model', t: 'Next action', s: 'JSON'},
-    {k: 'check', t: 'Guards', s: 'known tool · facts read', out: 'finish → check decision'},
-    {k: 'code', t: 'Run the tool', s: 'list / get_project'},
-    {k: 'data', t: 'Observation', s: 'added to history'}],
-    loops: [{from: 4, to: 1, t: 'repeat · at most 5 turns'}]},
-  '06': {stages: [
-    {k: 'data', t: 'Shared sources', s: 'R1 · F1–F3'},
-    [{k: 'model', t: 'Minimalist', s: 'Qwen'}, {k: 'model', t: 'Safeguard', s: 'DeepSeek'}, {k: 'model', t: 'Modernizer', s: 'Gemini'}],
-    {k: 'gate', t: 'grounded?'},
-    {k: 'model', t: 'Challenge + revise', s: 'one round', in: 'no source'},
-    {k: 'check', t: 'Chair counts', s: '⅔ of grounded votes'},
-    [{k: 'data', t: 'Decision', s: '+ dissent kept'}, {k: 'human', t: 'Escalate', s: 'no majority'}]]},
-  '07': {stages: [
-    [{k: 'model', t: 'Minimalist', s: 'model agent'}, {k: 'model', t: 'Modernizer', s: 'model agent'}, {k: 'code', t: 'Rulebook', s: 'added in one line'}],
-    {k: 'check', t: 'Schema check', s: 'typed Message', out: 'broken → rejected'},
-    {k: 'code', t: 'Message bus', s: 'publish()'},
-    [{k: 'data', t: 'Live log', s: 'time · level · line'}, {k: 'data', t: 'council.log', s: 'one JSON per line'}, {k: 'data', t: 'LangSmith', s: 'trace tree (optional)'}],
-    {k: 'check', t: 'Chair', s: 'majority or escalate'},
-    {k: 'data', t: 'Evidence trail', s: 'trace() from council.log'}]},
-  '08': {stages: [
-    {k: 'data', t: 'Council proposal', s: 'microservices 2–1'},
-    {k: 'human', t: 'Human review', s: 'verdict + reason'},
-    {k: 'model', t: 'Council revises', s: 'reads short-term notes', in: 'reject'},
-    {k: 'code', t: 'Long-term memory', s: 'lesson in Chroma', in: 'accept'},
-    {k: 'code', t: 'Recall', s: 'similar new cases'},
-    {k: 'check', t: 'Held-out score', s: 'before vs after'}],
-    loops: [{from: 2, to: 1, t: 'at most 2 reviews'}]},
-  '09': {stages: [
-    {k: 'data', t: 'Recorded runs', s: '4 systems × 2 cases'},
-    {k: 'check', t: 'Correct · grounded', s: 'calls · seconds'},
-    {k: 'model', t: 'LLM judge', s: 'names a cost?'},
-    {k: 'human', t: 'Calibrate', s: 'agree with human ≥ 75%'},
-    {k: 'check', t: 'Council vs best', s: 'wins, and at what cost'}]},
-  '10': {stages: [
-    {k: 'data', t: 'Case', s: 'facts + note'},
-    {k: 'model', t: 'Router', s: 'route + reason'},
-    {k: 'gate', t: 'valid?', out: 'no → council'},
-    [{k: 'code', t: 'Rule', s: '0 calls'}, {k: 'model', t: 'Council', s: '5 calls'}],
-    {k: 'check', t: 'Compare', s: 'vs human routes'}]},
-  '11': {stages: [
-    {k: 'code', t: 'MCP server', s: '2 registered tools'},
-    {k: 'code', t: 'list_tools', s: 'names + schemas'},
-    {k: 'code', t: 'get_project', s: 'read'},
-    {k: 'code', t: 'Apply the policy', s: 'plain Python'},
-    {k: 'code', t: 'save_decision', s: 'write', out: 'bad input → is_error'},
-    {k: 'check', t: 'State check', s: 'rejected calls change nothing'}]},
-  '12': {stages: [
-    {k: 'data', t: 'Skill catalog', s: 'names + descriptions'},
-    {k: 'model', t: 'Pick a skill', s: 'name only'},
-    {k: 'code', t: 'Load instructions', s: 'SKILL.md body'},
-    {k: 'model', t: 'Write the ADR', s: 'per case'},
-    {k: 'check', t: 'Check the ADR', s: 'adr_problems()'}]},
-  '13': {stages: [
-    {k: 'data', t: 'Project'},
-    {k: 'model', t: 'Propose', s: 'label only'},
-    {k: 'code', t: 'Reviewer agent', s: 'over A2A: card + message'},
-    {k: 'gate', t: 'PASS?'},
-    {k: 'data', t: 'Accepted'}],
-    loops: [{from: 3, to: 1, t: 'FAIL · one revision with feedback'}]},
-  '14': {stages: [
-    {k: 'data', t: 'START'},
-    {k: 'model', t: 'choose', s: 'node'},
-    {k: 'check', t: 'check', s: 'node'},
-    {k: 'gate', t: 'route'},
-    {k: 'data', t: 'END', in: 'done'}],
-    loops: [{from: 3, to: 1, t: 'retry · at most 2 attempts'}]},
-  '15': {stages: [
-    {k: 'data', t: 'Brief', s: 'Booking service'},
-    {k: 'model', t: 'Chair frames', s: '3 ISO 25010 scenarios'},
-    {k: 'gate', t: 'has numbers?', out: 'no → stop'},
-    {k: 'model', t: '4 architects', s: 'one contract'},
-    {k: 'check', t: 'Contract check', s: 'option · marks · confidence', out: 'broken → rejected'},
-    {k: 'check', t: 'Aggregate', s: 'votes vs confidence'}]},
-  '16': {stages: [
-    {k: 'data', t: 'Benchmark', s: '10 cases'},
-    {k: 'code', t: 'Split once', s: '6 feedback · 4 test'},
-    {k: 'human', t: 'Feedback case', s: 'one per round'},
-    {k: 'code', t: 'Update trust', s: 'per architect'},
-    {k: 'check', t: 'Weighted vote', s: 'test cases only'},
-    {k: 'data', t: 'Learning curve'}],
-    loops: [{from: 4, to: 2, t: 'next round'}]},
-  '17': {stages: [
-    {k: 'data', t: 'Two options', s: 'monolith · microservices'},
-    [{k: 'code', t: 'Score criteria', s: '0–4 per option'}, {k: 'model', t: 'JEV scores', s: 'Score primitive'}],
-    {k: 'code', t: 'Weights', s: 'the team’s priorities'},
-    {k: 'code', t: 'Weighted total', s: 'Σ score × weight'},
-    {k: 'data', t: 'Winner', s: 'higher total wins'}],
-    loops: [{from: 1, to: 3, t: 'reweight, never re-judge'}]},
+  "10": {
+    "stages": [
+      {
+        "k": "data",
+        "t": "Case",
+        "s": "facts + note"
+      },
+      {
+        "k": "model",
+        "t": "Router",
+        "s": "route + reason"
+      },
+      {
+        "k": "gate",
+        "t": "valid?",
+        "out": "no → council"
+      },
+      [
+        {
+          "k": "code",
+          "t": "Safe rule",
+          "s": "0 model calls"
+        },
+        {
+          "k": "human",
+          "t": "Review",
+          "s": "uncertain effects"
+        }
+      ],
+      {
+        "k": "check",
+        "t": "Compare",
+        "s": "vs human routes"
+      }
+    ]
+  },
+  "11": {
+    "stages": [
+      {
+        "k": "code",
+        "t": "MCP server",
+        "s": "2 registered tools"
+      },
+      {
+        "k": "code",
+        "t": "list_tools",
+        "s": "names + schemas"
+      },
+      {
+        "k": "code",
+        "t": "get_order",
+        "s": "read"
+      },
+      {
+        "k": "code",
+        "t": "Choose read pattern",
+        "s": "plain Python"
+      },
+      {
+        "k": "code",
+        "t": "save_decision",
+        "s": "write",
+        "out": "bad input → is_error"
+      },
+      {
+        "k": "check",
+        "t": "State check",
+        "s": "rejected calls change nothing"
+      }
+    ]
+  },
+  "12": {
+    "stages": [
+      {
+        "k": "data",
+        "t": "Skill catalog",
+        "s": "names + descriptions"
+      },
+      {
+        "k": "model",
+        "t": "Pick a skill",
+        "s": "name only"
+      },
+      {
+        "k": "code",
+        "t": "Load instructions",
+        "s": "SKILL.md body"
+      },
+      {
+        "k": "model",
+        "t": "Review saga",
+        "s": "per case"
+      },
+      {
+        "k": "check",
+        "t": "Check the ADR",
+        "s": "format + compensation order"
+      }
+    ],
+    "loops": [
+      {
+        "from": 4,
+        "to": 3,
+        "t": "one repair, then stop"
+      }
+    ]
+  },
+  "13": {
+    "stages": [
+      {
+        "k": "data",
+        "t": "Provider payload",
+        "s": "synthetic payment"
+      },
+      {
+        "k": "code",
+        "t": "Discover Agent Card",
+        "s": "official A2A SDK"
+      },
+      {
+        "k": "code",
+        "t": "Payment adapter",
+        "s": "validate and translate"
+      },
+      {
+        "k": "gate",
+        "t": "valid?",
+        "out": "bad → error"
+      },
+      {
+        "k": "data",
+        "t": "Internal Payment",
+        "s": "Money value + order ID"
+      }
+    ]
+  },
+  "14": {
+    "stages": [
+      {
+        "k": "data",
+        "t": "START",
+        "s": "OrderPlaced contract"
+      },
+      {
+        "k": "model",
+        "t": "choose",
+        "s": "node"
+      },
+      {
+        "k": "check",
+        "t": "check",
+        "s": "keep old names + types"
+      },
+      {
+        "k": "gate",
+        "t": "route"
+      },
+      {
+        "k": "data",
+        "t": "END",
+        "in": "done"
+      }
+    ],
+    "loops": [
+      {
+        "from": 3,
+        "to": 1,
+        "t": "retry · at most 2 attempts"
+      }
+    ]
+  },
+  "15": {
+    "stages": [
+      {
+        "k": "data",
+        "t": "Brief",
+        "s": "ShopEasy checkout"
+      },
+      {
+        "k": "model",
+        "t": "Chair frames",
+        "s": "3 ISO 25010 scenarios"
+      },
+      {
+        "k": "gate",
+        "t": "has numbers?",
+        "out": "no → stop"
+      },
+      {
+        "k": "model",
+        "t": "4 architects",
+        "s": "one contract"
+      },
+      {
+        "k": "check",
+        "t": "Contract check",
+        "s": "option · marks · confidence",
+        "out": "broken → rejected"
+      },
+      {
+        "k": "check",
+        "t": "Aggregate",
+        "s": "votes vs confidence"
+      }
+    ]
+  },
+  "16": {
+    "stages": [
+      {
+        "k": "data",
+        "t": "Benchmark",
+        "s": "retry decisions"
+      },
+      {
+        "k": "code",
+        "t": "Split once",
+        "s": "6 feedback · 4 test"
+      },
+      {
+        "k": "human",
+        "t": "Feedback case",
+        "s": "one per round"
+      },
+      {
+        "k": "code",
+        "t": "Update trust",
+        "s": "per architect"
+      },
+      {
+        "k": "check",
+        "t": "Weighted vote",
+        "s": "test cases only"
+      },
+      {
+        "k": "data",
+        "t": "Learning curve"
+      }
+    ],
+    "loops": [
+      {
+        "from": 4,
+        "to": 2,
+        "t": "next round"
+      }
+    ]
+  },
+  "17": {
+    "stages": [
+      {
+        "k": "data",
+        "t": "Two options",
+        "s": "task queue · event log"
+      },
+      [
+        {
+          "k": "code",
+          "t": "Score criteria",
+          "s": "0–4 per option"
+        },
+        {
+          "k": "model",
+          "t": "JEV scores",
+          "s": "Score primitive"
+        }
+      ],
+      {
+        "k": "code",
+        "t": "Weights",
+        "s": "the team’s priorities"
+      },
+      {
+        "k": "code",
+        "t": "Weighted total",
+        "s": "Σ score × weight"
+      },
+      {
+        "k": "data",
+        "t": "Winner",
+        "s": "higher total wins"
+      }
+    ],
+    "loops": [
+      {
+        "from": 1,
+        "to": 3,
+        "t": "reweight, never re-judge"
+      }
+    ]
+  },
+  "00": {
+    "stages": [
+      {
+        "k": "data",
+        "t": "4 readiness cases",
+        "s": "ops + independent releases"
+      },
+      [
+        {
+          "k": "code",
+          "t": "Apply the rule",
+          "s": "decide()"
+        },
+        {
+          "k": "model",
+          "t": "Ask a model",
+          "s": "ask() + to_label()"
+        }
+      ],
+      {
+        "k": "check",
+        "t": "Compare",
+        "s": "agreement count"
+      }
+    ]
+  },
+  "01": {
+    "stages": [
+      {
+        "k": "data",
+        "t": "Labelled case",
+        "s": "5 readiness tests"
+      },
+      {
+        "k": "code",
+        "t": "Guided prompt",
+        "s": "checklist + example"
+      },
+      {
+        "k": "model",
+        "t": "Model",
+        "s": "JSON reply"
+      },
+      {
+        "k": "check",
+        "t": "Parse",
+        "s": "parse_reply()",
+        "out": "bad format → invalid"
+      },
+      {
+        "k": "check",
+        "t": "Score",
+        "s": "pass · fail · invalid"
+      },
+      {
+        "k": "gate",
+        "t": "≥ 80%",
+        "out": "below → stop"
+      }
+    ]
+  },
+  "02": {
+    "stages": [
+      {
+        "k": "data",
+        "t": "Question"
+      },
+      {
+        "k": "code",
+        "t": "Embed",
+        "s": "MiniLM vectors"
+      },
+      {
+        "k": "code",
+        "t": "Nearest lecture notes",
+        "s": "Chroma"
+      },
+      {
+        "k": "gate",
+        "t": "close?",
+        "out": "none → abstain"
+      },
+      {
+        "k": "model",
+        "t": "Evidence-based reply",
+        "s": "cites [M28]"
+      },
+      {
+        "k": "check",
+        "t": "Citation check",
+        "s": "cited ⊆ retrieved"
+      }
+    ]
+  },
+  "03": {
+    "stages": [
+      {
+        "k": "data",
+        "t": "Brief"
+      },
+      {
+        "k": "model",
+        "t": "Business capabilities",
+        "s": "3 labels"
+      },
+      {
+        "k": "gate",
+        "t": "gate",
+        "out": "fail → stop"
+      },
+      {
+        "k": "model",
+        "t": "Boundary options",
+        "s": "2 or 3"
+      },
+      {
+        "k": "gate",
+        "t": "gate"
+      },
+      {
+        "k": "model",
+        "t": "Trade-offs",
+        "s": "+ / − table"
+      },
+      {
+        "k": "gate",
+        "t": "gate"
+      },
+      {
+        "k": "model",
+        "t": "Decision record",
+        "s": "Context · Decision · Consequence"
+      },
+      {
+        "k": "gate",
+        "t": "gate"
+      }
+    ]
+  },
+  "04": {
+    "stages": [
+      {
+        "k": "data",
+        "t": "Request"
+      },
+      {
+        "k": "model",
+        "t": "Pick a tool",
+        "s": "{\"tool\", \"args\"}"
+      },
+      {
+        "k": "check",
+        "t": "call_tool()",
+        "s": "name · types",
+        "out": "bad → error as data"
+      },
+      {
+        "k": "human",
+        "t": "User confirms",
+        "s": "write tools only"
+      },
+      [
+        {
+          "k": "code",
+          "t": "read_order()",
+          "s": "snapshot only"
+        },
+        {
+          "k": "code",
+          "t": "add_item()",
+          "s": "root protects total"
+        }
+      ],
+      {
+        "k": "model",
+        "t": "Answer",
+        "s": "from the result"
+      }
+    ]
+  },
+  "05": {
+    "stages": [
+      {
+        "k": "data",
+        "t": "Goal"
+      },
+      {
+        "k": "model",
+        "t": "Next action",
+        "s": "JSON"
+      },
+      {
+        "k": "check",
+        "t": "Guards",
+        "s": "known tool · facts read",
+        "out": "finish → check decision"
+      },
+      {
+        "k": "code",
+        "t": "Run the tool",
+        "s": "read target metrics"
+      },
+      {
+        "k": "data",
+        "t": "Observation",
+        "s": "added to history"
+      }
+    ],
+    "loops": [
+      {
+        "from": 4,
+        "to": 1,
+        "t": "repeat · at most 5 turns"
+      }
+    ]
+  },
+  "06": {
+    "stages": [
+      {
+        "k": "data",
+        "t": "Shared sources",
+        "s": "M27 · M28 · case"
+      },
+      [
+        {
+          "k": "model",
+          "t": "Minimalist",
+          "s": "Qwen"
+        },
+        {
+          "k": "model",
+          "t": "Safeguard",
+          "s": "DeepSeek"
+        },
+        {
+          "k": "model",
+          "t": "Modernizer",
+          "s": "Gemini"
+        }
+      ],
+      {
+        "k": "gate",
+        "t": "valid citations?"
+      },
+      {
+        "k": "model",
+        "t": "Challenge + revise",
+        "s": "one round",
+        "in": "no source"
+      },
+      {
+        "k": "check",
+        "t": "Chair counts",
+        "s": "⅔ of registered peers"
+      },
+      [
+        {
+          "k": "data",
+          "t": "Decision",
+          "s": "+ dissent kept"
+        },
+        {
+          "k": "human",
+          "t": "Escalate",
+          "s": "no majority"
+        }
+      ]
+    ]
+  },
+  "07": {
+    "stages": [
+      [
+        {
+          "k": "model",
+          "t": "Minimalist",
+          "s": "model agent"
+        },
+        {
+          "k": "model",
+          "t": "Modernizer",
+          "s": "model agent"
+        },
+        {
+          "k": "code",
+          "t": "Rulebook",
+          "s": "added in one line"
+        }
+      ],
+      {
+        "k": "check",
+        "t": "Schema check",
+        "s": "typed Message",
+        "out": "broken → rejected"
+      },
+      {
+        "k": "code",
+        "t": "Message bus",
+        "s": "publish + trace_id"
+      },
+      [
+        {
+          "k": "data",
+          "t": "Live log",
+          "s": "time · level · line"
+        },
+        {
+          "k": "data",
+          "t": "council.log",
+          "s": "one JSON per line"
+        },
+        {
+          "k": "data",
+          "t": "LangSmith",
+          "s": "trace tree (optional)"
+        }
+      ],
+      {
+        "k": "check",
+        "t": "Chair",
+        "s": "majority or escalate"
+      },
+      {
+        "k": "data",
+        "t": "Evidence trail",
+        "s": "trace() from council.log"
+      }
+    ]
+  },
+  "08": {
+    "stages": [
+      {
+        "k": "data",
+        "t": "Council proposal",
+        "s": "retry or do not retry"
+      },
+      {
+        "k": "human",
+        "t": "Human review",
+        "s": "verdict + reason"
+      },
+      {
+        "k": "model",
+        "t": "Council revises",
+        "s": "reads short-term notes",
+        "in": "reject"
+      },
+      {
+        "k": "code",
+        "t": "Long-term memory",
+        "s": "lesson + explicit scope",
+        "in": "accept"
+      },
+      {
+        "k": "code",
+        "t": "Recall",
+        "s": "similar AND applicable"
+      },
+      {
+        "k": "check",
+        "t": "Held-out score",
+        "s": "before vs after"
+      }
+    ],
+    "loops": [
+      {
+        "from": 2,
+        "to": 1,
+        "t": "at most 2 reviews"
+      }
+    ]
+  },
+  "09": {
+    "stages": [
+      {
+        "k": "data",
+        "t": "Synthetic run fixtures",
+        "s": "4 systems × 2 cases"
+      },
+      {
+        "k": "check",
+        "t": "Correct · citation IDs",
+        "s": "calls · seconds"
+      },
+      {
+        "k": "model",
+        "t": "LLM judge",
+        "s": "names a cost?"
+      },
+      {
+        "k": "human",
+        "t": "Calibrate",
+        "s": "agree with human ≥ 75%"
+      },
+      {
+        "k": "check",
+        "t": "Council vs best",
+        "s": "wins, and at what cost"
+      }
+    ]
+  }
 };
 
 const DIAGRAM_KINDS = {

@@ -4,25 +4,24 @@ const labs = [
     "id": "00",
     "file": "00_rules_and_llms",
     "title": "From rules to LLM calls",
-    "subtitle": "A Python rule on four projects, then a model's guesses",
-    "topics": "rules llm prompt architecture monolith microservices baseline",
-    "idea": "Write the policy as a function that explains its answer, then see where a model that never saw the policy disagrees.",
+    "subtitle": "Microservice readiness: rules versus an unguided LLM",
+    "topics": "rules llm prompt architecture monolith microservices baseline microservices DDD ShopEasy lecture revision Independent deployment and scaling Microservice premium Operational prerequisites",
+    "idea": "Apply the lecture readiness checklist before considering independent service releases.",
     "objectives": [
-      "Write a rule that returns a decision and a reason.",
-      "Turn free-text model replies into labels.",
-      "Count how often a model agrees with the rule."
+      "Apply the lecture readiness checklist before considering independent service releases.",
+      "What operational prerequisite is missing? Change readiness and predict the choice.",
+      "Compare exact Python screening with an unguided model; disagreement is observable, not a failure."
     ],
-    "example": "Run the policy on four projects that cover every combination of the two facts, then ask a model about the same projects.",
-    "exercise": "Add an 8-person project with independent deploys, then test the boundary by changing >= to >.",
-    "checks": "Only the Payments platform gets microservices. The scripted model agrees on 2 of 4 projects and gets both mixed cases wrong.",
-    "bridge": "A disagreement shows what the model is missing: the policy itself.",
+    "example": "ShopEasy pilot and Social feeds cover the readiness and independent-release combinations.",
+    "exercise": "What operational prerequisite is missing? Change readiness and predict the choice.",
+    "checks": "Compare exact Python screening with an unguided model; disagreement is observable, not a failure.",
+    "bridge": "CI/CD, monitoring, provisioning, and operational ownership cost real effort.",
     "track": "lecture-1",
     "steps": 4,
     "patterns": [],
     "background": [
-      "For decades, software made decisions with rules that people wrote by hand: if this, then that. The expert systems of the 1970s and 1980s stored hundreds of such rules, for example to suggest treatments for infections or to configure computer orders. Rules are exact, fast, and easy to audit. But every case must be foreseen, and someone must write and maintain every rule.",
-      "Machine learning changed where a decision comes from: instead of writing the rule, we show a model many examples, and it learns the pattern. Large language models (LLMs) go further. Trained on a vast amount of text, they can answer questions that nobody wrote a rule for, in plain language. The price is that their answers are plausible, not guaranteed, and an LLM does not know your organisation's policy unless you tell it.",
-      "This course keeps both. The rule is a reference that we can check a model against, and the model handles what a rule cannot express. Lab 00 puts them side by side on one question."
+      "An LLM responds from its prompt and training; a Python rule applies the stated condition exactly. Comparing them makes missing context visible.",
+      "CI/CD, monitoring, provisioning, and operational ownership cost real effort."
     ],
     "terms": [
       [
@@ -41,31 +40,56 @@ const labs = [
         "Baseline",
         "A simple reference result that a more advanced system must beat."
       ]
-    ]
+    ],
+    "review": {
+      "sources": [
+        {
+          "deck": "microservices",
+          "slides": [
+            13,
+            18,
+            19,
+            20,
+            21
+          ]
+        }
+      ],
+      "concepts": [
+        "Independent deployment and scaling",
+        "Microservice premium",
+        "Operational prerequisites"
+      ],
+      "questions": [
+        "Which four prerequisites must be checked before choosing microservices?",
+        "Why does needing independent releases not, by itself, justify microservices?"
+      ],
+      "readings": [
+        "Microservices & Their Patterns · slides 13, 18, 19, 20, 21"
+      ]
+    }
   },
   {
     "id": "01",
     "file": "01_prompting_evaluation",
     "title": "Prompting and small evaluations",
-    "subtitle": "A guided prompt, a strict parser, a quality gate — and a reasoning-model contrast",
-    "topics": "prompting cot criteria few shot json evaluation testing tokens reasoning",
-    "idea": "Give the model explicit criteria and a worked example, reject badly formatted replies, score the prompt on labelled cases — then see why a plain model misses a letter count that chain-of-thought and a reasoning model get right.",
+    "subtitle": "Prompting and evaluation with service-readiness cases",
+    "topics": "prompting cot criteria few shot json evaluation testing tokens reasoning microservices DDD ShopEasy lecture revision Operational prerequisites At-least-once delivery and event identity Criteria-based architecture decisions",
+    "idea": "Supply the readiness criteria, a worked example, and an output contract, then score test cases.",
     "objectives": [
-      "Write a precise, structured prompt.",
-      "Validate model output before trusting it.",
-      "Score a prompt on a labelled test set.",
-      "Contrast a plain model with a reasoning model over a token-sensitive task."
+      "Supply the readiness criteria, a worked example, and an output contract, then score test cases.",
+      "Change a readiness fact or add a duplicate event; inspect both the label and explanation.",
+      "Practice checks the scoring code; live accuracy and token use are observations."
     ],
-    "example": "Build a four-part guided prompt, parse its JSON reply, and score it on five cases; then compare 'how many R's in strawberry?' across a plain model, a chain-of-thought prompt, and a reasoning model.",
-    "exercise": "Fix the scripted mistake, break the format with an unknown label, and in Step 5 try a different word or a smaller output budget.",
-    "checks": "Four of five scripted replies pass (80%), which just meets the gate; the Step 5 contrast typically runs 2 / 3 / 3.",
-    "bridge": "Use checkable criteria and brief justifications; some failures come from how the model reads tokens, and reasoning costs tokens and latency.",
+    "example": "Guide the architecture prompt and inspect duplicate event IDs as a small checkable reasoning task.",
+    "exercise": "Change a readiness fact or add a duplicate event; inspect both the label and explanation.",
+    "checks": "Practice checks the scoring code; live accuracy and token use are observations.",
+    "bridge": "A short justification is verifiable evidence, not access to private model reasoning.",
     "track": "lecture-1",
     "steps": 5,
     "patterns": [],
     "background": [
-      "Early work with LLMs was mostly trial and error: change the wording, read one answer, change it again. Two habits turned this into engineering. First, prompts became structured: clear instructions, the relevant policy, a worked example (few-shot prompting), and an exact output format. Second, the output became data: a parser turns a reply into a value that code can check, and a small labelled test set turns \"it looks right\" into a score.",
-      "A model's answers vary, so one good answer proves little. A test set with edge cases, such as the boundary of exactly 8 people, shows where a prompt breaks, and a quality gate stops a change that makes things worse. Every later lab keeps this habit: never trust output that you have not checked."
+      "Prompting supplies missing domain context. Evaluation separates malformed replies from wrong labels and tests representative combinations.",
+      "A short justification is verifiable evidence, not access to private model reasoning."
     ],
     "terms": [
       [
@@ -84,24 +108,56 @@ const labs = [
         "Quality gate",
         "A check that stops the run when the score falls below a threshold."
       ]
-    ]
+    ],
+    "review": {
+      "sources": [
+        {
+          "deck": "microservices",
+          "slides": [
+            19,
+            20,
+            21
+          ]
+        },
+        {
+          "deck": "ddd",
+          "slides": [
+            51,
+            52
+          ]
+        }
+      ],
+      "concepts": [
+        "Operational prerequisites",
+        "At-least-once delivery and event identity",
+        "Criteria-based architecture decisions"
+      ],
+      "questions": [
+        "Why does CI/CD without monitoring fail the readiness screen?",
+        "Why do three deliveries not necessarily represent three distinct business events?"
+      ],
+      "readings": [
+        "Microservices & Their Patterns · slides 19, 20, 21",
+        "Microservices Lecture 2 - Condensed DDD · slides 51, 52"
+      ]
+    }
   },
   {
     "id": "02",
     "file": "02_rag_systems",
     "title": "RAG: ground answers in retrieved knowledge",
-    "subtitle": "Embeddings, a vector database, and grounded answers",
-    "topics": "rag retrieval embeddings vectors vector database chroma similarity rules source architecture context retrieval-augmented generation",
-    "idea": "Turn policies into embedding vectors, store them in a vector database, retrieve by meaning, and check that the answer cites its evidence.",
+    "subtitle": "RAG over microservices and DDD notes",
+    "topics": "rag retrieval embeddings vectors vector database chroma similarity rules source architecture context retrieval-augmented generation microservices DDD ShopEasy lecture revision Database per service API composition vs CQRS Idempotent consumers and transactional outbox",
+    "idea": "Retrieve the relevant lecture note before answering a pattern question.",
     "objectives": [
-      "Explain embeddings and compare two with cosine similarity.",
-      "Store and query vectors in a vector database.",
-      "Abstain when no evidence is close, and check citations."
+      "Retrieve the relevant lecture note before answering a pattern question.",
+      "Ask an unrelated question; should the model answer without evidence?",
+      "Inspect retrieval, citation validity, and whether the cited passage actually supports the answer."
     ],
-    "example": "Embed four policies with all-MiniLM-L6-v2, store them in Chroma, and retrieve R1 for a reworded question that word matching misses.",
-    "exercise": "Add a cloud-region question, tighten and loosen the distance threshold, and break a citation.",
-    "checks": "The reworded question retrieves R1, the billing question R2, and the lunch question nothing. Both answers are grounded.",
-    "bridge": "The same steps scale up: a larger embedding model, a persistent vector database, and many more documents.",
+    "example": "Ask about private service data, order history, or repeated events and cite the returned source.",
+    "exercise": "Ask an unrelated question; should the model answer without evidence?",
+    "checks": "Inspect retrieval, citation validity, and whether the cited passage actually supports the answer.",
+    "bridge": "Citing a valid source ID does not by itself prove factual support.",
     "track": "lecture-1",
     "pattern": "Retrieval-Augmented Generation",
     "steps": 5,
@@ -109,8 +165,8 @@ const labs = [
       "Retrieval-Augmented Generation"
     ],
     "background": [
-      "An LLM's knowledge is fixed when it is trained, and it never saw your private documents. Pasting every document into every prompt does not scale: a prompt has a size limit (the context window), long prompts cost more, and the model can miss the line that matters. Retrieval-augmented generation (RAG), described by Lewis and colleagues in 2020, splits the work: a retriever finds the few passages that matter, and the model answers from them.",
-      "Modern retrieval uses embeddings: lists of numbers that capture meaning, so \"how many engineers\" can match \"8+ people\" without sharing a word. A vector database stores these vectors and finds the nearest ones quickly. RAG also adds new ways to fail, so we check them: a question that retrieves nothing relevant should not be answered, and an answer must cite only the sources it was given."
+      "Retrieval-augmented generation puts selected external evidence into a prompt. Embeddings find semantic neighbours; neighbours still need relevance checks.",
+      "Citing a valid source ID does not by itself prove factual support."
     ],
     "terms": [
       [
@@ -129,24 +185,57 @@ const labs = [
         "Grounded answer",
         "An answer supported by, and citing, the retrieved sources."
       ]
-    ]
+    ],
+    "review": {
+      "sources": [
+        {
+          "deck": "microservices",
+          "slides": [
+            24,
+            27,
+            28,
+            30
+          ]
+        },
+        {
+          "deck": "ddd",
+          "slides": [
+            52,
+            55
+          ]
+        }
+      ],
+      "concepts": [
+        "Database per service",
+        "API composition vs CQRS",
+        "Idempotent consumers and transactional outbox"
+      ],
+      "questions": [
+        "Why is CQRS a better fit for searchable order history than a large in-memory API join?",
+        "Does a valid slide citation prove that an answer is supported?"
+      ],
+      "readings": [
+        "Microservices & Their Patterns · slides 24, 27, 28, 30",
+        "Microservices Lecture 2 - Condensed DDD · slides 52, 55"
+      ]
+    }
   },
   {
     "id": "03",
     "file": "03_prompt_chaining",
     "title": "Prompt chaining with quality gates",
-    "subtitle": "Requirements, options, trade-offs, and a record, with a gate after each step",
-    "topics": "prompt chaining workflow gate requirements options trade-offs adr patterns council single-path planning",
-    "idea": "Split one decision into small prompts; each reply feeds the next prompt, and a gate in plain Python stops a bad reply before it spreads.",
+    "subtitle": "Prompt chaining for ShopEasy boundaries",
+    "topics": "prompt chaining workflow gate requirements options trade-offs adr patterns council single-path planning microservices DDD ShopEasy lecture revision Event storming Bounded contexts and ubiquitous language Business capability vs technical-layer decomposition",
+    "idea": "Turn events and business responsibilities into candidate bounded contexts and a short ADR.",
     "objectives": [
-      "Decompose a decision into a chain of prompts.",
-      "Write a gate that checks one step's reply.",
-      "Pass each step only what it needs."
+      "Turn events and business responsibilities into candidate bounded contexts and a short ADR.",
+      "Place Returns and Refunds; explain the language and invariants behind your boundary.",
+      "Check each intermediate structure and manually inspect cohesion, coupling, and ownership."
     ],
-    "example": "Chain four prompts for the Payments platform, whose squads want independent releases while one engineer runs operations.",
-    "exercise": "Break the requirements list, drop a trade-off mark, and make the decision name an option that was never proposed.",
-    "checks": "Every gate passes, and the record chooses microservices while naming the cost for the one operations engineer.",
-    "bridge": "Gates check the shape of each step, not whether the decision is wise; Lab 06 adds architects who disagree.",
+    "example": "Group ShopEasy behaviour by business capability instead of UI, logic, and database layers.",
+    "exercise": "Place Returns and Refunds; explain the language and invariants behind your boundary.",
+    "checks": "Check each intermediate structure and manually inspect cohesion, coupling, and ownership.",
+    "bridge": "A bounded context is a model boundary; validate it before choosing deployment boundaries.",
     "track": "lecture-2",
     "pattern": "Single-Path Planning",
     "steps": 4,
@@ -154,8 +243,8 @@ const labs = [
       "Single-Path Planning"
     ],
     "background": [
-      "A single prompt that asks for a whole decision hides its reasoning. When the answer is wrong, you cannot tell which part failed. Software engineers handle large problems by decomposition: split the work into steps with clear inputs and outputs. Prompt chaining does the same with an LLM: each prompt does one small job, and its output becomes the input of the next prompt.",
-      "A chain is a workflow: our code fixes the steps, and the model only fills them in. That makes it predictable, cheap to debug, and easy to test, because a gate can check every intermediate result. Anthropic's guide \"Building effective agents\" recommends starting with simple workflows like this and adding autonomy only when it is needed. Labs 04 and 05 add that autonomy."
+      "A fixed prompt chain exposes intermediate results. Gates can catch a malformed handoff while leaving domain judgement for review.",
+      "A bounded context is a model boundary; validate it before choosing deployment boundaries."
     ],
     "terms": [
       [
@@ -174,7 +263,40 @@ const labs = [
         "Decision record (ADR)",
         "A short note of an architecture decision: its context, the decision, and its consequence."
       ]
-    ]
+    ],
+    "review": {
+      "sources": [
+        {
+          "deck": "ddd",
+          "slides": [
+            9,
+            10,
+            11,
+            17,
+            18,
+            21,
+            26,
+            32,
+            60,
+            70,
+            72,
+            73
+          ]
+        }
+      ],
+      "concepts": [
+        "Event storming",
+        "Bounded contexts and ubiquitous language",
+        "Business capability vs technical-layer decomposition"
+      ],
+      "questions": [
+        "Why can a technical-layer split create a distributed monolith?",
+        "Why is a bounded context a service candidate rather than an automatic deployment decision?"
+      ],
+      "readings": [
+        "Microservices Lecture 2 - Condensed DDD · slides 9, 10, 11, 17, 18, 21, 26, 32, 60, 70, 72, 73"
+      ]
+    }
   },
   {
     "id": "04",
@@ -182,25 +304,25 @@ const labs = [
     "track": "lecture-2",
     "pattern": "One-Step Tool Agent",
     "title": "Tool calling: let the model read and change live data",
-    "subtitle": "A hotel search tool and a booking tool, step by step",
-    "topics": "tools tool calling function calling hotel search booking read write confirmation live data one-step tool agent",
-    "idea": "A model knows only its training and its prompt; tools let it read live data and change it, while our code checks every request.",
+    "subtitle": "Tool calling through an Order aggregate",
+    "topics": "tools tool calling function calling Order aggregate invariant read write confirmation live data one-step tool agent microservices DDD ShopEasy lecture revision Aggregate root Entity vs value object Consistency boundary and invariant",
+    "idea": "Read current Order state and make a validated change through its public root.",
     "objectives": [
-      "Explain why a model needs tools for live data.",
-      "Describe tools and check every tool request.",
-      "Separate read tools from write tools that need confirmation."
+      "Read current Order state and make a validated change through its public root.",
+      "Try an invalid quantity and compare state before and after the rejected call.",
+      "Validate tool names and arguments, require confirmation for writes, and check the invariant."
     ],
-    "example": "A hotel booking system: the model guesses whether Harbor View has a room, then searches the live data and books the Alfama Inn after the user confirms.",
-    "exercise": "Close a hotel, request an unknown tool, send a wrong argument type, and add a cancel tool.",
-    "checks": "The guess is wrong; the search finds the Alfama Inn; the booking waits for confirmation, then leaves 2 rooms.",
-    "bridge": "Lab 05 lets the model call tools again and again, choosing each next step from what it has seen.",
+    "example": "A model asks to add an item; the root checks the input and keeps total equal to the sum of its lines.",
+    "exercise": "Try an invalid quantity and compare state before and after the rejected call.",
+    "checks": "Validate tool names and arguments, require confirmation for writes, and check the invariant.",
+    "bridge": "Tools perform actions; the model cannot bypass the aggregate root to edit totals.",
     "steps": 5,
     "patterns": [
       "One-Step Tool Agent"
     ],
     "background": [
-      "A language model only produces text. To be useful in a real system, it must read current data and act: check a booking system, query a database, send a request. Tool use, also called function calling, gives it this ability in a controlled way. Most model APIs added it around 2023. The model writes a structured request that names a tool and its arguments, and the program decides whether to run it.",
-      "This division of work is the key design idea. The model chooses; our code executes and stays responsible. So the program checks every request, returns errors that the model can read, and asks a person before any action that changes data. An LLM with tools is the \"augmented LLM\" that agents are built from."
+      "Tool calling connects model-selected requests to ordinary code. The host validates requests and retains authority over state changes.",
+      "Tools perform actions; the model cannot bypass the aggregate root to edit totals."
     ],
     "terms": [
       [
@@ -219,24 +341,51 @@ const labs = [
         "Confirmation",
         "A person's approval before a tool changes anything."
       ]
-    ]
+    ],
+    "review": {
+      "sources": [
+        {
+          "deck": "ddd",
+          "slides": [
+            29,
+            67,
+            68,
+            75,
+            76,
+            83
+          ]
+        }
+      ],
+      "concepts": [
+        "Aggregate root",
+        "Entity vs value object",
+        "Consistency boundary and invariant"
+      ],
+      "questions": [
+        "Why must outside code change an Order through the aggregate root rather than set its total?",
+        "What distinguishes the identity of Order from the value of Money, and which details does this tiny model omit?"
+      ],
+      "readings": [
+        "Microservices Lecture 2 - Condensed DDD · slides 29, 67, 68, 75, 76, 83"
+      ]
+    }
   },
   {
     "id": "05",
     "file": "05_react_agent",
     "title": "ReAct agents: reason, act, observe",
-    "subtitle": "A guarded ReAct loop with a history",
-    "topics": "agent foundations patterns react action observation loop chaining routing one-step tool agent in a react loop",
-    "idea": "The model chooses each action and sees every observation so far; our code owns the tools, the guards, and the turn limit.",
+    "subtitle": "ReAct for checkout resilience",
+    "topics": "agent foundations patterns react action observation loop chaining routing one-step tool agent in a react loop microservices DDD ShopEasy lecture revision Cascading failure Circuit breaker vs retry Idempotency and graceful degradation",
+    "idea": "Inspect a service before choosing a resilience response, using a bounded action loop.",
     "objectives": [
-      "Follow a model-selected sequence of actions.",
-      "Explain each guard and the turn limit.",
-      "Check the agent's final decision."
+      "Inspect a service before choosing a resilience response, using a bounded action loop.",
+      "Try finishing before a successful read, or inspect a non-idempotent payment call.",
+      "Inspect action, observation, accumulated history, and the stopping guard."
     ],
-    "example": "The goal names “our wiki project”, so the agent must list the projects, read the right one, and then decide.",
-    "exercise": "Make the agent finish too early, recover from a wrong project name, and change the goal.",
-    "checks": "Three turns: list_projects, get_project, finish. The decision matches the policy after two tool calls.",
-    "bridge": "The model chooses the steps, but code owns the tools, the guards, and the turn limit. Self-study Lab 11 serves tools through MCP.",
+    "example": "Read Inventory latency and idempotency facts before recommending a circuit breaker or a safe retry.",
+    "exercise": "Try finishing before a successful read, or inspect a non-idempotent payment call.",
+    "checks": "Inspect action, observation, accumulated history, and the stopping guard.",
+    "bridge": "An agent loop selects its next step from observations; it still needs a bound and allowed tools.",
     "track": "lecture-2",
     "pattern": "One-Step Tool Agent in a ReAct loop",
     "steps": 4,
@@ -244,8 +393,8 @@ const labs = [
       "One-Step Tool Agent"
     ],
     "background": [
-      "In Lab 04 the model chose one tool for one request. Many tasks need several steps, in an order that depends on what each step finds: look up the exact name, then read the facts, then decide. ReAct (Yao and colleagues, 2022) interleaves reasoning and acting: the model picks an action, the program runs it, and the result, the observation, goes back to the model for its next choice. This loop is what most people mean by an agent.",
-      "Autonomy brings new risks: an agent can loop forever, act on a guess, or call something it should not. So the program keeps control of the loop: a turn limit, a fixed list of tools, and rules such as \"read the facts before you finish\". The agent decides what to do; the code decides what is allowed."
+      "ReAct-style control flow alternates model actions with tool observations. The example exposes those exchanges without deploying a checkout system.",
+      "An agent loop selects its next step from observations; it still needs a bound and allowed tools."
     ],
     "terms": [
       [
@@ -264,24 +413,49 @@ const labs = [
         "Guard",
         "A rule in code that the agent cannot override, such as a turn limit."
       ]
-    ]
+    ],
+    "review": {
+      "sources": [
+        {
+          "deck": "microservices",
+          "slides": [
+            38,
+            39,
+            40,
+            41
+          ]
+        }
+      ],
+      "concepts": [
+        "Cascading failure",
+        "Circuit breaker vs retry",
+        "Idempotency and graceful degradation"
+      ],
+      "questions": [
+        "Why can retries make a slow dependency worse?",
+        "Why must the non-idempotent Payments charge not be blindly retried?"
+      ],
+      "readings": [
+        "Microservices & Their Patterns · slides 38, 39, 40, 41"
+      ]
+    }
   },
   {
     "id": "06",
     "file": "06_multi_agent_debate",
     "title": "Multi-agent debate: propose, challenge, agree",
-    "subtitle": "Independent proposals on three model families, challenges, and a chair",
-    "topics": "multi-agent council debate parallel proposals critique revision consensus voting dissent chair coordinator grounding model families patterns debate-based cooperation",
-    "idea": "Three architects on three model families propose alone and in parallel; a chair challenges unsupported claims, counts grounded votes, keeps the dissent, and escalates a deadlock.",
+    "subtitle": "Multi-agent debate over CQRS and API composition",
+    "topics": "multi-agent council debate parallel proposals critique revision consensus voting dissent chair coordinator grounding model families patterns debate-based cooperation microservices DDD ShopEasy lecture revision API composition versus CQRS Eventual consistency and read-model cost",
+    "idea": "Give peers the same source notes and ask them to defend a read-pattern choice.",
     "objectives": [
-      "Collect independent proposals in parallel.",
-      "Turn disagreement into sourced claims.",
-      "Apply a stopping rule, record dissent, and handle a deadlock."
+      "Give peers the same source notes and ask them to defend a read-pattern choice.",
+      "Remove a citation or change the query workload and inspect challenges and dissent.",
+      "Check independent proposals, bounded revision, valid citations, a quorum, and escalation."
     ],
-    "example": "Two architects choose microservices and one the modular monolith; the claim without a source is challenged and revised before the vote.",
-    "exercise": "Cause a deadlock, cite a made-up source, and compare one model family with three in live mode.",
-    "checks": "Six messages over three rounds; microservices wins 2 to 1, and the Safeguard's dissent citing F3 is kept.",
-    "bridge": "Live mode uses three model families, each with its own key: Qwen on FreeInference, DeepSeek, and Gemini.",
+    "example": "Three architects compare ShopEasy support search with small order-by-ID lookups.",
+    "exercise": "Remove a citation or change the query workload and inspect challenges and dissent.",
+    "checks": "Check independent proposals, bounded revision, valid citations, a quorum, and escalation.",
+    "bridge": "CQRS supports search but adds a read model and consistency lag; composition has different costs.",
     "track": "lecture-3",
     "pattern": "Debate-Based Cooperation",
     "steps": 5,
@@ -290,8 +464,8 @@ const labs = [
       "Voting-Based Cooperation"
     ],
     "background": [
-      "A single model has one set of blind spots and can be confidently wrong. People handle hard decisions with review boards and panels, and multi-agent systems borrow that idea. Research on multiagent debate (Du and colleagues, 2023) found that letting several model instances argue and revise their answers can improve factual accuracy and reasoning.",
-      "Debate helps only when the views are independent and the rules are fair. Models tend to agree with what they have just read, a tendency called sycophancy, so the architects propose alone before they see each other's answers. Different model families make different mistakes. A chair with fixed rules demands sources, limits the rounds, counts the votes, keeps the dissent, and hands the decision to a person when there is no majority."
+      "Parallel proposals preserve independent views. A coded chair limits discussion and aggregates proposals; agreement is not proof of correctness.",
+      "CQRS supports search but adds a read model and consistency lag; composition has different costs."
     ],
     "terms": [
       [
@@ -310,24 +484,47 @@ const labs = [
         "Escalation",
         "Handing the decision to a person when the agents cannot agree."
       ]
-    ]
+    ],
+    "review": {
+      "sources": [
+        {
+          "deck": "microservices",
+          "slides": [
+            27,
+            28,
+            30
+          ]
+        }
+      ],
+      "concepts": [
+        "API composition versus CQRS",
+        "Eventual consistency and read-model cost"
+      ],
+      "questions": [
+        "Why is a customer-name search different from a lookup by order ID?",
+        "Which cost of CQRS must the council record?"
+      ],
+      "readings": [
+        "Microservices & Their Patterns · slides 27, 28, 30"
+      ]
+    }
   },
   {
     "id": "07",
     "file": "07_observe_trace_swap",
     "title": "Observability, tracing, and swappable agents",
-    "subtitle": "A typed message, logs you can watch and search, a LangSmith trace, and an agent added in one line",
-    "topics": "observability logging logs log file json lines traceability swappable message bus registry schema dataclass provenance langsmith tracing trace spans",
-    "idea": "Log every message twice, as a live line and as a JSON record in a log file, make every message cite its basis, and find agents in a registry, so the council can be watched, traced, and changed.",
+    "subtitle": "Observable decisions and microservice correlation IDs",
+    "topics": "observability logging logs log file json lines traceability swappable message bus registry schema dataclass provenance langsmith tracing trace spans microservices DDD ShopEasy lecture revision Correlation IDs across service boundaries Structured logs and immutable event facts",
+    "idea": "Log structured agent messages with correlation IDs and trace a decision to its inputs.",
     "objectives": [
-      "Define a typed, read-only message that cites its sources.",
-      "Make a council observable with logs, a live stream and a JSON log file, and with a LangSmith trace.",
-      "Trace a decision back to its evidence from the log file, and add an agent without changing the council's code."
+      "Log structured agent messages with correlation IDs and trace a decision to its inputs.",
+      "Add an agent through the registry and follow its cited messages in the log.",
+      "Inspect the live log, persisted records, and the decision evidence trail."
     ],
-    "example": "Two architects disagree and the chair logs an escalation warning; a rule-based agent joins with one line; council.log rebuilds the evidence trail, and LangSmith shows each run as a tree of timed steps.",
-    "exercise": "Cite a missing source, count warnings from the log file, make the decision cite the dissent, and give one architect its own model.",
-    "checks": "Run 1 logs an escalation warning at 1 vote of 2; run 2 decides microservices 2 of 3, and the trace of m6 from the log file reaches R1 and F1.",
-    "bridge": "The logs make the council observable, the citations in them make it traceable, and the registry makes its agents swappable.",
+    "example": "Use the lecture tracing idea to connect ShopEasy pattern recommendations and their evidence.",
+    "exercise": "Add an agent through the registry and follow its cited messages in the log.",
+    "checks": "Inspect the live log, persisted records, and the decision evidence trail.",
+    "bridge": "Agent-run traces and microservice request traces share correlation principles but are different systems.",
     "track": "lecture-3",
     "steps": 5,
     "patterns": [
@@ -335,8 +532,8 @@ const labs = [
       "Registry & Adapter"
     ],
     "background": [
-      "As soon as several agents work together, a new question appears: what is the system actually doing? With one model call you can read the reply. With a council, a decision comes out of many messages between many agents, and a wrong decision is hard to explain unless every step was recorded. Software engineering met the same problem with distributed systems, and answered it with observability: logs, metrics, and traces that let you see a running system from the outside.",
-      "Three properties carry over to agents. A system is observable when you can watch it work while it runs. It is traceable when every output can be followed back to who produced it and what it was based on, which is also called provenance. It is swappable when a part can be added or replaced through a fixed interface, without rewriting the rest. Logs are the first tool for all of this: a live stream to watch, and a log file of structured records to search, count, and trace afterwards. A bus that logs every message, and a registry of agents, give all three properties. This is the event-driven design that many large systems use: components publish events, and anything interested subscribes. Tracing tools such as LangSmith add the execution view: each run as a tree of steps, with inputs, outputs, and timings."
+      "Observability makes a workflow inspectable during and after a run. A message bus owns logging; a registry lets implementations share one interface.",
+      "Agent-run traces and microservice request traces share correlation principles but are different systems."
     ],
     "terms": [
       [
@@ -355,24 +552,54 @@ const labs = [
         "Registry",
         "A lookup table of agents by name, so the system never hard-codes who takes part."
       ]
-    ]
+    ],
+    "review": {
+      "sources": [
+        {
+          "deck": "microservices",
+          "slides": [
+            46,
+            48
+          ]
+        },
+        {
+          "deck": "ddd",
+          "slides": [
+            30,
+            31
+          ]
+        }
+      ],
+      "concepts": [
+        "Correlation IDs across service boundaries",
+        "Structured logs and immutable event facts"
+      ],
+      "questions": [
+        "What is the difference between a trace ID and a message ID?",
+        "Why does an event or agent message need both identity and provenance?"
+      ],
+      "readings": [
+        "Microservices & Their Patterns · slides 46, 48",
+        "Microservices Lecture 2 - Condensed DDD · slides 30, 31"
+      ]
+    }
   },
   {
     "id": "08",
     "file": "08_human_feedback_memory",
     "title": "Human-in-the-loop and agent memory",
-    "subtitle": "Human review, short- and long-term memory, and a held-out evaluation",
-    "topics": "human in the loop feedback memory vector database chroma lessons evaluation held-out learning patterns council human in the loop and archival memory short-term memory long-term memory scratchpad",
-    "idea": "The human architect reviews each proposal and keeps the final say; the accepted decision and its reasons become a memory that later cases recall.",
+    "subtitle": "Human feedback and scoped memory for safe retries",
+    "topics": "human in the loop feedback memory vector database chroma lessons evaluation held-out learning patterns council human in the loop and archival memory short-term memory long-term memory scratchpad microservices DDD ShopEasy lecture revision Idempotent reads versus non-idempotent charges Bounded retries and deduplicated effects",
+    "idea": "Store the reason for human feedback and retrieve it only for cases within its approved scope.",
     "objectives": [
-      "Keep a human's final authority in a bounded review loop.",
-      "Store lessons with a human-approved scope, then retrieve applicable ones.",
-      "Measure improvement on held-out cases only."
+      "Store the reason for human feedback and retrieve it only for cases within its approved scope.",
+      "Change idempotency and compare semantic matches with applicable memories.",
+      "Report before/after held-out scores even when memory does not improve them."
     ],
-    "example": "The human rejects microservices for its operating cost; the lesson later changes the Logistics tracker's decision but not the Search platform's.",
-    "exercise": "Accept or reject every proposal, tighten the recall distance, and add a case where the lesson should not apply.",
-    "checks": "Practice: the revision is accepted; held-out scores are 1 of 2 before and 2 of 2 after memory. Live scores are measured, not guaranteed.",
-    "bridge": "Similar text does not mean a lesson applies; the project needs 20 or more held-out scenarios and repeated live runs.",
+    "example": "A retry lesson for idempotent reads must not be reused blindly for a non-idempotent payment charge.",
+    "exercise": "Change idempotency and compare semantic matches with applicable memories.",
+    "checks": "Report before/after held-out scores even when memory does not improve them.",
+    "bridge": "Similarity is not applicability. Check known scope conditions before inserting a lesson into a prompt.",
     "track": "lecture-3",
     "pattern": "Human in the Loop and Archival Memory",
     "steps": 5,
@@ -382,8 +609,8 @@ const labs = [
       "Archival Memory"
     ],
     "background": [
-      "Some decisions are too costly to automate fully, and someone must be accountable for them. Human-in-the-loop design places an approval point where the risk is high, and records the reasons. Those reasons are valuable: they hold knowledge that no written policy contains, such as \"one operations engineer cannot run a service per squad\".",
-      "An LLM remembers nothing between calls; every call starts fresh. An agent's memory is therefore something the program builds. Short-term memory carries notes through one task, inside the prompt. Long-term memory keeps lessons across tasks, often in a vector database, and recalls them by similarity, as in the Generative Agents and Reflexion research. A similar case is not always a relevant one, so a lesson keeps its facts, reason, and human-approved scope. This lab filters by the operations-team size before adding a recalled lesson to the prompt, and measures the score change on cases that never gave feedback."
+      "Human review can correct the current proposal and supply a scoped lesson for later ones. Retrieval needs both relevance and applicability checks.",
+      "Similarity is not applicability. Check known scope conditions before inserting a lesson into a prompt."
     ],
     "terms": [
       [
@@ -402,30 +629,60 @@ const labs = [
         "Held-out case",
         "A test case that was never used for feedback, so it measures learning, not memorisation."
       ]
-    ]
+    ],
+    "review": {
+      "sources": [
+        {
+          "deck": "microservices",
+          "slides": [
+            39,
+            41
+          ]
+        },
+        {
+          "deck": "ddd",
+          "slides": [
+            52,
+            55
+          ]
+        }
+      ],
+      "concepts": [
+        "Idempotent reads versus non-idempotent charges",
+        "Bounded retries and deduplicated effects"
+      ],
+      "questions": [
+        "Why must a timeout not automatically trigger another payment charge?",
+        "Why does semantic similarity alone not establish that a stored lesson applies?"
+      ],
+      "readings": [
+        "Microservices & Their Patterns · slides 39, 41",
+        "Microservices Lecture 2 - Condensed DDD · slides 52, 55"
+      ]
+    }
   },
   {
     "id": "09",
     "file": "09_multi_agent_evaluation",
     "title": "Evaluation: a multi-agent system against a single model",
-    "subtitle": "A baseline comparison with a calibrated LLM judge",
-    "topics": "evaluation baseline experiment llm judge calibration human ratings grounding cost latency council patterns",
-    "idea": "Compare the council with each of its models alone on the same scenarios, by correctness, grounding, a judged trade-off measure, and cost; trust the LLM judge only after it agrees with human ratings.",
+    "subtitle": "Evaluate pattern advice against single models",
+    "topics": "evaluation baseline experiment llm judge calibration human ratings grounding cost latency council patterns microservices DDD ShopEasy lecture revision Choose data patterns from requirements Measure label agreement, citation validity, and trade-offs",
+    "idea": "Compare systems on the same slide-based cases and calibrate a narrow LLM judge.",
     "objectives": [
-      "Compare a system with the strongest baseline.",
-      "Use an LLM judge with a narrow rubric.",
-      "Calibrate the judge against human ratings."
+      "Compare systems on the same slide-based cases and calibrate a narrow LLM judge.",
+      "Change one answer and inspect correctness, valid citations, costs, and human/judge disagreement.",
+      "Fixtures demonstrate the measurement code; live mode runs the judge, not a fresh council benchmark."
     ],
-    "example": "Four systems answer two held-out scenarios; the judge rates whether each answer names a cost of its option.",
-    "exercise": "Raise the calibration threshold, make the council wrong once, and remove a run.",
-    "checks": "The judge agrees with the human on 3 of 4 answers. The council ties DeepSeek on correctness and beats it on grounding, at 5 times the calls.",
-    "bridge": "Two scenarios demonstrate the method; the project needs 20 or more, and an honest report even when the council does not win.",
+    "example": "Score small synthetic recommendations for read patterns and checkout reliability.",
+    "exercise": "Change one answer and inspect correctness, valid citations, costs, and human/judge disagreement.",
+    "checks": "Fixtures demonstrate the measurement code; live mode runs the judge, not a fresh council benchmark.",
+    "bridge": "Use actual run logs and repeated scenarios for the project experiment.",
     "track": "self-study",
     "steps": 5,
     "patterns": [],
     "background": [
-      "A council is more complex than one model and makes several times as many calls, so it must earn its place. The honest test is a controlled comparison: run the council and each single model on the same scenarios, and measure several things, including cost and time, not only correctness.",
-      "Some qualities, such as \"does the answer name a cost?\", need judgement. An LLM judge (Zheng and colleagues, 2023) uses a model to rate answers at scale, but judges have biases, for example towards longer answers or towards their own model family. So the judge is calibrated first: compared with a human's ratings on a sample, and trusted only if it agrees often enough."
+      "Evaluation needs consistent inputs, labelled criteria, and honest provenance. Synthetic answers and timings teach the method without claiming measured model performance.",
+      "Use actual run logs and repeated scenarios for the project experiment."
     ],
     "terms": [
       [
@@ -444,24 +701,49 @@ const labs = [
         "Calibration",
         "Checking the judge against human ratings before trusting it."
       ]
-    ]
+    ],
+    "review": {
+      "sources": [
+        {
+          "deck": "microservices",
+          "slides": [
+            25,
+            27,
+            28,
+            29,
+            30
+          ]
+        }
+      ],
+      "concepts": [
+        "Choose data patterns from requirements",
+        "Measure label agreement, citation validity, and trade-offs"
+      ],
+      "questions": [
+        "Why is CQRS excessive for a small lookup by ID?",
+        "Which data pattern supports replaying a historical account balance?"
+      ],
+      "readings": [
+        "Microservices & Their Patterns · slides 25, 27, 28, 29, 30"
+      ]
+    }
   },
   {
     "id": "10",
     "file": "10_routing",
     "title": "Routing: rules, models, and a safe fallback",
-    "subtitle": "A model router, a dispatch table, a safe fallback, and the cost of each mistake",
-    "topics": "routing router classifier dispatch handlers fallback cost few shot council patterns",
-    "idea": "A router reads each case and picks a handler: plain code for routine cases, the council for contested ones. Code owns the routes and falls back to the council when a reply is unusable.",
+    "subtitle": "Route clear cases and escalate ambiguous ones",
+    "topics": "routing router classifier dispatch handlers fallback cost few shot council patterns microservices DDD ShopEasy lecture revision Retry safety and fallback choices Different costs of routing errors",
+    "idea": "Dispatch simple pattern checks to rules and send contested architecture cases for review.",
     "objectives": [
-      "Route inputs with a model and a dispatch table.",
-      "Fall back safely on an unusable reply.",
-      "Count routing cost and weigh the two kinds of mistake."
+      "Dispatch simple pattern checks to rules and send contested architecture cases for review.",
+      "Alter criticality or idempotency and compare skipped reviews with unnecessary ones.",
+      "Compare routes with labelled examples and count routing overhead."
     ],
-    "example": "Six cases with a note the rule cannot read; the router sends the two cases with one operations engineer to the council.",
-    "exercise": "Skip a needed debate, send an unusable route, change a note, and compare a router with and without worked examples.",
-    "checks": "The router agrees with the human on 5 of 6 cases, skips no needed debate, and costs 21 calls against 30.",
-    "bridge": "Live, worked examples kept the router from skipping debates; a router that wastes too many debates costs more than none.",
+    "example": "Known safe retry conditions differ from uncertain checkout behaviour that needs a council or human.",
+    "exercise": "Alter criticality or idempotency and compare skipped reviews with unnecessary ones.",
+    "checks": "Compare routes with labelled examples and count routing overhead.",
+    "bridge": "A router spends calls too; an uncertain reply should not silently skip review.",
     "track": "self-study",
     "pattern": "Routing",
     "steps": 4,
@@ -469,8 +751,8 @@ const labs = [
       "Routing"
     ],
     "background": [
-      "Not every case deserves the most expensive treatment. Hospitals triage patients, and support desks route tickets. Routing applies the same idea to AI systems: a classifier, often a small model call, decides which handler fits each input, such as cheap rules for routine cases and a full council for contested ones.",
-      "A router makes mistakes, and they do not cost the same. Sending a routine case to the council wastes calls; sending a contested case to the rule skips a debate that was needed. A good design falls back to the careful path when the router's answer is unusable, counts the router's own calls, and measures both kinds of mistake separately."
+      "Routing chooses which workflow handles a case. A dispatch table and conservative fallback keep selection separate from execution.",
+      "A router spends calls too; an uncertain reply should not silently skip review."
     ],
     "terms": [
       [
@@ -489,24 +771,54 @@ const labs = [
         "Asymmetric errors",
         "Mistakes whose costs differ, so they are counted and weighed separately."
       ]
-    ]
+    ],
+    "review": {
+      "sources": [
+        {
+          "deck": "microservices",
+          "slides": [
+            38,
+            39,
+            41
+          ]
+        },
+        {
+          "deck": "ddd",
+          "slides": [
+            52
+          ]
+        }
+      ],
+      "concepts": [
+        "Retry safety and fallback choices",
+        "Different costs of routing errors"
+      ],
+      "questions": [
+        "Why is the Payments case more dangerous than a failed Pricing read?",
+        "Why can routing cost as much as sending every case to review?"
+      ],
+      "readings": [
+        "Microservices & Their Patterns · slides 38, 39, 41",
+        "Microservices Lecture 2 - Condensed DDD · slides 52"
+      ]
+    }
   },
   {
     "id": "11",
     "file": "11_tools_mcp",
     "title": "MCP: serve tools through a standard protocol",
-    "subtitle": "Read and write tools with validation and errors",
-    "topics": "tools mcp server client extract action agent foundations registry & adapter",
-    "idea": "A tool reads data or performs an allowed action; MCP publishes its name, description, and input schema to any client.",
+    "subtitle": "MCP tools respect service data ownership",
+    "topics": "tools mcp server client extract action agent foundations registry & adapter microservices DDD ShopEasy lecture revision Database per service API composition versus CQRS Tool schema and validation",
+    "idea": "Discover and call an Order-owned API through a real local MCP server.",
     "objectives": [
-      "Build MCP tools with typed arguments.",
-      "Discover tools and their schemas as a client.",
-      "Handle tool errors without changing state."
+      "Discover and call an Order-owned API through a real local MCP server.",
+      "Send bad arguments and verify that a rejected write leaves state unchanged.",
+      "Inspect tool descriptions, schemas, real SDK results, and error flags."
     ],
-    "example": "Serve get_project and save_decision through the real MCP SDK, run a fixed workflow over two projects, then send three bad calls.",
-    "exercise": "Add a project, add a list_projects tool, and send an argument of the wrong type.",
-    "checks": "Both decisions are saved. Each bad call returns is_error=True, and the saved state does not change.",
-    "bridge": "In a council, one MCP server can give every architect the same tools and sources.",
+    "example": "Read exposed Order facts and save a validated read-pattern decision without reaching into another database.",
+    "exercise": "Send bad arguments and verify that a rejected write leaves state unchanged.",
+    "checks": "Inspect tool descriptions, schemas, real SDK results, and error flags.",
+    "bridge": "Database per service means private ownership; public APIs and events expose selected facts.",
     "track": "self-study",
     "pattern": "Registry & Adapter",
     "steps": 5,
@@ -514,8 +826,8 @@ const labs = [
       "Registry & Adapter"
     ],
     "background": [
-      "In Lab 04 the tools lived inside our own program. As AI applications multiplied, every application wrote its own connection code for every tool and data source. The Model Context Protocol (MCP), released by Anthropic as an open standard in November 2024, gives this a common shape: a server publishes its tools with names, descriptions, and input schemas, and any MCP client can discover and call them.",
-      "A protocol separates what a tool offers from who calls it. The tool checks its own input and reports errors as data, so every client sees the same behaviour. In a council, one MCP server can give every architect the same sources and the same tools."
+      "MCP standardizes tool discovery and calls. The lab runs its server locally in process; it does not deploy business microservices.",
+      "Database per service means private ownership; public APIs and events expose selected facts."
     ],
     "terms": [
       [
@@ -534,24 +846,56 @@ const labs = [
         "Discovery",
         "Asking a server what it offers, instead of hard-coding it."
       ]
-    ]
+    ],
+    "review": {
+      "sources": [
+        {
+          "deck": "microservices",
+          "slides": [
+            24,
+            27,
+            28,
+            30
+          ]
+        },
+        {
+          "deck": "ddd",
+          "slides": [
+            32
+          ]
+        }
+      ],
+      "concepts": [
+        "Database per service",
+        "API composition versus CQRS",
+        "Tool schema and validation"
+      ],
+      "questions": [
+        "Why should reporting not read Orders tables directly?",
+        "What requirement makes CQRS preferable to API composition?"
+      ],
+      "readings": [
+        "Microservices & Their Patterns · slides 24, 27, 28, 30",
+        "Microservices Lecture 2 - Condensed DDD · slides 32"
+      ]
+    }
   },
   {
     "id": "12",
     "file": "12_agent_skills",
     "title": "Agent skills: reusable instructions on demand",
-    "subtitle": "Choose a skill from a catalog, then check its output",
-    "topics": "skills skill.md adr architecture decision record reusable skill library evolution",
-    "idea": "A skill packages a procedure with a name and a description; an agent chooses from the descriptions and loads only the chosen instructions.",
+    "subtitle": "Agent skills review Saga compensation",
+    "topics": "skills skill.md adr architecture decision record reusable skill library evolution microservices DDD ShopEasy lecture revision Saga compensation in reverse completion order Read-only steps need no undo No isolation and intermediate states Skill discovery and bounded repair",
+    "idea": "Select and load a saga-review skill, then check the proposed compensations.",
     "objectives": [
-      "Split a SKILL.md file into its header and body.",
-      "Explain progressive disclosure.",
-      "Check a skill's output format and allow one bounded repair."
+      "Choose a skill by its description.",
+      "Validate compensation order, not just prose format.",
+      "Inspect intermediate states and local transaction boundaries."
     ],
-    "example": "Pick the ADR skill from a three-skill catalog, then write and check decision records for two projects.",
-    "exercise": "Give an incident task, add a Risk line to an ADR, and write a fourth skill.",
-    "checks": "The ADR skill is chosen. Both records have Context, Decision, and Consequence, with a policy-consistent decision.",
-    "bridge": "Only the chosen skill's instructions enter the prompt, so the catalog can grow.",
+    "example": "For failed payment, release stock then reject the order; skip the read-only customer verification. Successful payment needs no compensation.",
+    "exercise": "Reverse the compensation order or propose refunding a failed authorization and inspect the checker.",
+    "checks": "The selected skill produces three-line ADRs with correctly ordered compensations or none, with at most one repair.",
+    "bridge": "Each saga step is a local transaction. Compensation is a business action, not automatic isolation.",
     "track": "self-study",
     "pattern": "Skill Library Evolution",
     "steps": 5,
@@ -559,89 +903,140 @@ const labs = [
       "Skill Library Evolution"
     ],
     "background": [
-      "Agents repeat procedures: write a decision record, summarise an incident, draft release notes. Copying these instructions into every prompt wastes context, and the copies drift apart. Agent Skills, an open format introduced by Anthropic in 2025, packages a procedure as a SKILL.md file with a name, a description, and the instructions.",
-      "The key idea is progressive disclosure. The agent first sees only the short descriptions of all its skills, picks one, and only then loads its full instructions. A library of many skills costs little until one is needed. A skill's output is still model output, so the program keeps checking it."
+      "Progressive disclosure shows skill descriptions first and loads instructions only when a task needs them. Host code validates the resulting proposal and bounds repairs.",
+      "A saga coordinates local transactions. In this reduced ShopEasy case, failed payment releases reserved stock before rejecting the earlier order; the read-only customer check needs no undo. The code proposes a plan, without executing real transactions."
     ],
     "terms": [
       [
         "Skill",
-        "A packaged procedure: a name, a description, and instructions."
+        "A named reusable procedure selected by its description."
       ],
       [
         "Progressive disclosure",
-        "Showing the model only short descriptions first, and the full instructions on demand."
+        "Load full instructions only after selecting a skill."
       ],
       [
-        "Catalog",
-        "The list of skill names and descriptions that the model chooses from."
-      ],
-      [
-        "Output checker",
-        "Code that verifies that a skill's result has the promised shape."
+        "Saga compensation",
+        "A business action that counteracts a completed local step."
       ]
-    ]
+    ],
+    "review": {
+      "sources": [
+        {
+          "deck": "microservices",
+          "slides": [
+            25,
+            26,
+            30
+          ]
+        },
+        {
+          "deck": "ddd",
+          "slides": [
+            54
+          ]
+        }
+      ],
+      "concepts": [
+        "Saga compensation in reverse completion order",
+        "Read-only steps need no undo",
+        "No isolation and intermediate states",
+        "Skill discovery and bounded repair"
+      ],
+      "questions": [
+        "Why is a failed card authorization not a completed charge to refund?",
+        "Which intermediate states can other services see before a saga finishes?"
+      ],
+      "readings": [
+        "Microservices & Their Patterns · slides 25, 26, 30",
+        "Microservices Lecture 2 - Condensed DDD · slides 54"
+      ]
+    }
   },
   {
     "id": "13",
     "file": "13_a2a_protocol",
     "title": "A2A: delegate work to another agent",
-    "subtitle": "A tiny hotel-desk agent over A2A, then review and revision",
-    "topics": "a2a agent card discovery message review architecture generator–critic loop agent card hotel desk",
-    "idea": "A2A lets one agent discover another through its Agent Card and exchange messages; the reviewer's feedback can drive a revision.",
+    "subtitle": "A2A and an anti-corruption layer",
+    "topics": "a2a agent card discovery message review architecture generator–critic loop agent card payment adapter microservices DDD ShopEasy lecture revision Anti-corruption layer Published internal contract Agent Card discovery",
+    "idea": "Send a message to a discoverable local agent that translates a provider model at the boundary.",
     "objectives": [
-      "Discover a reviewer agent and read its reply.",
-      "Use another agent's feedback to revise.",
-      "Bound a multi-agent exchange."
+      "Send a message to a discoverable local agent that translates a provider model at the boundary.",
+      "Change a provider field or currency and inspect validation at the translation boundary.",
+      "Inspect the Agent Card, real protocol exchange, internal output, and invalid-payload handling."
     ],
-    "example": "Our model proposes a decision for four projects. A reviewer agent rejects one proposal, and the revision passes.",
-    "exercise": "Add a second mistake, then make a revision wrong too.",
-    "checks": "All four projects pass, with one revision for the Internal wiki.",
-    "bridge": "The reviewer is deterministic and runs over real local A2A routes; practice mode needs no API key.",
+    "example": "Adapt a synthetic Stripe-style payment payload into the internal Payment and Money representation.",
+    "exercise": "Change a provider field or currency and inspect validation at the translation boundary.",
+    "checks": "Inspect the Agent Card, real protocol exchange, internal output, and invalid-payload handling.",
+    "bridge": "A2A is an agent protocol; an anti-corruption layer protects the domain model. One does not imply the other.",
     "track": "self-study",
-    "pattern": "Generator–Critic Loop",
-    "steps": 4,
+    "pattern": "Registry & Adapter",
+    "steps": 3,
     "patterns": [
-      "Generator–Critic Loop"
+      "Registry & Adapter"
     ],
     "background": [
-      "Tools are functions inside one program. Some capabilities are whole agents, built by other teams, in other languages, on other servers. The Agent2Agent (A2A) protocol, introduced by Google in April 2025 and now developed as an open project under the Linux Foundation, lets agents discover each other and exchange messages without sharing code.",
-      "Each agent publishes an Agent Card with its name, description, skills, and address. A client reads the card, then sends messages. This makes a reviewer agent a real second opinion: it runs separately, with its own logic, and its feedback can drive a revision. In short, MCP connects an agent to tools, and A2A connects agents to each other."
+      "Delegation exchanges a task through an agent interface. This deterministic local agent demonstrates translation without a live payment service or model key.",
+      "A2A is an agent protocol; an anti-corruption layer protects the domain model. One does not imply the other."
     ],
     "terms": [
       [
+        "Anti-corruption layer",
+        "Translation boundary that protects an internal domain model from a foreign one."
+      ],
+      [
         "Agent Card",
-        "A public description of an agent: what it does and where to reach it."
+        "Discoverable description of an agent and its capabilities."
       ],
       [
-        "Message",
-        "The unit of communication between two agents."
-      ],
-      [
-        "Generator and critic",
-        "One agent produces a draft; another reviews it against criteria."
-      ],
-      [
-        "Interoperability",
-        "Systems from different teams working together through a shared protocol."
+        "Money value",
+        "Amount and currency represented together in the internal model."
       ]
-    ]
+    ],
+    "review": {
+      "sources": [
+        {
+          "deck": "ddd",
+          "slides": [
+            26,
+            27,
+            28,
+            31,
+            66,
+            74
+          ]
+        }
+      ],
+      "concepts": [
+        "Anti-corruption layer",
+        "Published internal contract",
+        "Agent Card discovery"
+      ],
+      "questions": [
+        "Why should Order not depend on the payment provider's field names?",
+        "Which part is the A2A protocol, and which part is domain translation?"
+      ],
+      "readings": [
+        "Microservices Lecture 2 - Condensed DDD · slides 26, 27, 28, 31, 66, 74"
+      ]
+    }
   },
   {
     "id": "14",
     "file": "14_frameworks_langgraph",
     "title": "Agent frameworks: graphs with LangGraph",
-    "subtitle": "A LangGraph loop with a conditional retry",
-    "topics": "framework langgraph state nodes edges evaluate architecture generator–critic loop",
-    "idea": "A framework makes the steps, the shared state, and the decision to retry explicit.",
+    "subtitle": "LangGraph checks event-contract compatibility",
+    "topics": "framework langgraph state nodes edges evaluate architecture generator–critic loop microservices DDD ShopEasy lecture revision Additive event changes Published contract Bounded generator–critic repair",
+    "idea": "Use nodes, state, and a bounded retry to validate an OrderPlaced contract.",
     "objectives": [
-      "Define graph state and nodes.",
-      "Route with a conditional edge.",
-      "Keep generation separate from validation."
+      "Use nodes, state, and a bounded retry to validate an OrderPlaced contract.",
+      "Remove a required old field and watch the compatibility feedback trigger a retry.",
+      "Preserve existing field names and types and stop after the retry budget."
     ],
-    "example": "Run a choose-and-check graph on four projects. One project fails, gets feedback, and passes on its second attempt.",
-    "exercise": "Use up the attempts, allow a third attempt, and add a fifth project.",
-    "checks": "All four projects pass, the Internal wiki after two attempts, for five model calls in total.",
-    "bridge": "Passing a policy check is useful evidence, but not architecture quality. Try Lab 06's council as a graph.",
+    "example": "Compare adding an optional field with renaming the total field that Payment still reads.",
+    "exercise": "Remove a required old field and watch the compatibility feedback trigger a retry.",
+    "checks": "Preserve existing field names and types and stop after the retry budget.",
+    "bridge": "An additive event change protects consumers; a framework does not make a proposal compatible automatically.",
     "track": "self-study",
     "pattern": "Generator–Critic Loop",
     "steps": 4,
@@ -649,8 +1044,8 @@ const labs = [
       "Generator–Critic Loop"
     ],
     "background": [
-      "After a few labs, the same parts keep appearing: shared state, steps, an order between them, and a decision to loop back. Frameworks name these parts and handle the plumbing. LangGraph, from the team behind LangChain, models a workflow as a graph: nodes are steps, edges set their order, and a conditional edge chooses the next node from the state.",
-      "A framework does not make the model smarter. It makes the structure explicit: you can print the graph, test each node on its own, and see every retry. That pays off as a system grows. Building the loop in plain Python first shows what the framework does for you, and when you do not need one."
+      "A graph names workflow steps and conditional edges. Generation and checking remain distinct so failed proposals receive explicit feedback.",
+      "An additive event change protects consumers; a framework does not make a proposal compatible automatically."
     ],
     "terms": [
       [
@@ -669,33 +1064,58 @@ const labs = [
         "Conditional edge",
         "An edge that picks the next node from the state, which is how a graph loops."
       ]
-    ]
+    ],
+    "review": {
+      "sources": [
+        {
+          "deck": "ddd",
+          "slides": [
+            13,
+            30,
+            31,
+            32
+          ]
+        }
+      ],
+      "concepts": [
+        "Additive event changes",
+        "Published contract",
+        "Bounded generator–critic repair"
+      ],
+      "questions": [
+        "Why does renaming total break a consumer?",
+        "Why should a new event field be optional for existing consumers?"
+      ],
+      "readings": [
+        "Microservices Lecture 2 - Condensed DDD · slides 13, 30, 31, 32"
+      ]
+    }
   },
   {
     "id": "15",
     "file": "15_framing_contract",
     "track": "self-study",
     "title": "Problem framing and typed message contracts",
-    "subtitle": "Quality-attribute scenarios, a typed proposal, and swappable architects",
-    "topics": "framing quality attribute scenarios iso 25010 message contract schema confidence swappable agents chair passive goal creator and a contract",
-    "idea": "The chair frames a brief as measurable quality-attribute scenarios; every proposal must follow one contract, so any architect can be added or replaced.",
+    "subtitle": "Frame checkout qualities and typed proposals",
+    "topics": "framing quality attribute scenarios iso 25010 message contract schema confidence swappable agents chair passive goal creator and a contract microservices DDD ShopEasy lecture revision Dependency-specific resilience Non-idempotent payment safety Requirements versus assumed targets",
+    "idea": "Turn a checkout brief into measurable scenarios and comparable architecture messages.",
     "objectives": [
-      "Write measurable quality-attribute scenarios.",
-      "Enforce a message contract with confidence and trade-offs.",
-      "Add an architect without changing the council's code."
+      "Turn a checkout brief into measurable scenarios and comparable architecture messages.",
+      "Identify which targets came from the slides and which are assumptions to confirm with a stakeholder.",
+      "Check measurable scenarios, option labels, confidence, and trade-offs."
     ],
-    "example": "A Booking service with a Monday spike and an audit requirement; four architects answer, and one is rejected for breaking the contract.",
-    "exercise": "Fix the rejected reply, make votes and confidence disagree, add an architect, and break the frame.",
-    "checks": "Three scenarios pass the gate; the Auditor is rejected; votes 2 to 1 and confidence 1.3 to 0.9 agree.",
-    "bridge": "Self-reported confidence is information, not proof; Lab 16 learns whom to trust from outcomes.",
+    "example": "Consider timeouts, payment safety, and graceful degradation for optional Recommendations.",
+    "exercise": "Identify which targets came from the slides and which are assumptions to confirm with a stakeholder.",
+    "checks": "Check measurable scenarios, option labels, confidence, and trade-offs.",
+    "bridge": "Timeouts, retries, breakers, bulkheads, and fallback solve different failure problems.",
     "pattern": "Passive Goal Creator and a contract",
     "steps": 5,
     "patterns": [
       "Passive Goal Creator"
     ],
     "background": [
-      "Architects often disagree less about the answer than about what matters. Software architecture practice handles this with quality-attribute scenarios, described by Bass, Clements, and Kazman: each names a quality, a stimulus, a response, and a measurable target. The ISO/IEC 25010 quality model gives a shared vocabulary, so \"security\" means the same thing to everyone.",
-      "Agents need the same discipline in their messages. A message contract fixes what every proposal must contain, so the chair can check it with code and any architect can be replaced without changing the rest. It is the same idea as an API contract between services: agree on the interface, and the implementations can change freely."
+      "Framing gives participants the same question and quality goals. A typed contract makes replies comparable but cannot establish that a proposed target is appropriate.",
+      "Timeouts, retries, breakers, bulkheads, and fallback solve different failure problems."
     ],
     "terms": [
       [
@@ -714,33 +1134,65 @@ const labs = [
         "Self-reported confidence",
         "A model's own estimate of how sure it is; information, not proof."
       ]
-    ]
+    ],
+    "review": {
+      "sources": [
+        {
+          "deck": "microservices",
+          "slides": [
+            38,
+            39,
+            41
+          ]
+        },
+        {
+          "deck": "ddd",
+          "slides": [
+            13,
+            60
+          ]
+        }
+      ],
+      "concepts": [
+        "Dependency-specific resilience",
+        "Non-idempotent payment safety",
+        "Requirements versus assumed targets"
+      ],
+      "questions": [
+        "Why can the same timeout not fit every checkout dependency?",
+        "Can a well-formed proposal still recommend an unsafe payment retry?"
+      ],
+      "readings": [
+        "Microservices & Their Patterns · slides 38, 39, 41",
+        "Microservices Lecture 2 - Condensed DDD · slides 13, 60"
+      ]
+    }
   },
   {
     "id": "16",
     "file": "16_learning_curve_trust",
     "track": "self-study",
     "title": "Learning from feedback: learning curves and trust weights",
-    "subtitle": "A feedback/test split, trust-weighted votes, and a curve",
-    "topics": "evaluation experiment feedback test split held-out learning curve per-model trust weighted vote council voting-based cooperation",
-    "idea": "Learn from feedback cases only, weight each architect by how much better than chance it has been, and score the test cases after every round.",
+    "subtitle": "Learn trust weights from retry decisions",
+    "topics": "evaluation experiment feedback test split held-out learning curve per-model trust weighted vote council voting-based cooperation microservices DDD ShopEasy lecture revision Retry eligibility and idempotency Correlated reviewer errors Feedback/test separation",
+    "idea": "Keep feedback cases separate from test cases while updating weights on pattern recommendations.",
     "objectives": [
-      "Keep feedback and test cases apart.",
-      "Turn agreement with the human into vote weights.",
-      "Read a learning curve, including where it stalls."
+      "Keep feedback cases separate from test cases while updating weights on pattern recommendations.",
+      "Change the feedback order and inspect how a small sample affects the learning curve.",
+      "Use synthetic fixtures to test aggregation; never train trust on held-out labels."
     ],
-    "example": "Ten small cases and three recorded architects; plain majority gets 2 of 4 test cases, the trusted council 4 of 4 after five rounds.",
-    "exercise": "Reorder the feedback, weight by raw trust, and remove the best architect's slip.",
-    "checks": "The learning curve is [2, 2, 2, 2, 2, 4, 4], with two escalated ties at round 4.",
-    "bridge": "A curve that falls as well as rises is still evidence; plan your project's experiment with it.",
+    "example": "Use idempotent reads and non-idempotent charges to demonstrate safe versus unsafe retry advice.",
+    "exercise": "Change the feedback order and inspect how a small sample affects the learning curve.",
+    "checks": "Use synthetic fixtures to test aggregation; never train trust on held-out labels.",
+    "bridge": "Trust estimates on a tiny dataset are fragile; a rising demo curve is not evidence about real models.",
     "pattern": "Voting-Based Cooperation",
     "steps": 4,
     "patterns": [
       "Voting-Based Cooperation"
     ],
     "background": [
-      "A system that learns from feedback must show that it improves on new cases, not that it remembers old ones. Machine learning answered this long ago with a train/test split: learn from one set, score on another, and never mix them. A learning curve plots the score as feedback grows, which shows how fast the system learns and where it stalls.",
-      "Weighting voters by their record is an old idea too. The weighted majority algorithm (Littlestone and Warmuth, 1994) lowers an expert's weight each time it is wrong, so reliable experts come to dominate. Here, an architect that agrees with the human more often than chance gains influence, and one at chance level gets none."
+      "Feedback-weighted aggregation changes whom a council trusts. A fixed split and a visible curve make leakage and learning assumptions easier to inspect.",
+      "Trust estimates on a tiny dataset are fragile; a rising demo curve is not evidence about real models."
     ],
     "terms": [
       [
@@ -759,30 +1211,62 @@ const labs = [
         "Trust",
         "Here, how often an architect has agreed with the human on the feedback cases."
       ]
-    ]
+    ],
+    "review": {
+      "sources": [
+        {
+          "deck": "microservices",
+          "slides": [
+            39,
+            41
+          ]
+        },
+        {
+          "deck": "ddd",
+          "slides": [
+            51,
+            52,
+            55
+          ]
+        }
+      ],
+      "concepts": [
+        "Retry eligibility and idempotency",
+        "Correlated reviewer errors",
+        "Feedback/test separation"
+      ],
+      "questions": [
+        "Why is retrying a card charge different from retrying a price read?",
+        "Why must test labels stay out of trust updates?"
+      ],
+      "readings": [
+        "Microservices & Their Patterns · slides 39, 41",
+        "Microservices Lecture 2 - Condensed DDD · slides 51, 52, 55"
+      ]
+    }
   },
   {
     "id": "17",
     "file": "17_weighted_decision_jev",
     "track": "self-study",
     "title": "Decision models: a weighted decision matrix with a scoring model",
-    "subtitle": "Criteria weights in code, option scores from a System One model",
-    "topics": "decision matrix criteria weights scoring model typesafe jev system one score rubric composite judgement trade-off reweight",
-    "idea": "Scope each option on the same few criteria, weight the criteria explicitly, and let code keep the arithmetic — so a changed priority re-ranks the options without re-judging each one.",
+    "subtitle": "Weighted decisions for task queues and event logs",
+    "topics": "decision matrix criteria weights scoring model typesafe jev system one score rubric composite judgement trade-off reweight microservices DDD ShopEasy lecture revision task queues versus retained event logs independent consumer groups and replay partition key versus eventId consumer parallelism is capped by partitions",
+    "idea": "Explore how task distribution, replay, simplicity, and fan-out change a communication recommendation.",
     "objectives": [
-      "Contrast a vote and an average with an explicit weighted matrix.",
-      "Separate scores (facts) from weights (priorities) so a weight change never re-judges.",
-      "Feed a System One scoring model's scores into the same matrix."
+      "Separate illustrative scores from priorities.",
+      "Recall Kafka grouping, deduplication IDs, and per-group partition limits.",
+      "Keep hard requirements outside the weighted average."
     ],
-    "example": "A 3-person team scores modular monolith vs microservices on four criteria; weighting Operations picks one, weighting Delivery flips it, and JEV supplies the scores for the identical matrix.",
-    "exercise": "Add a Security criterion, pull low-confidence model scores toward the average, and find the one weight that flips the project's winner.",
-    "checks": "The plain average and the weighted matrices score 3.50/2.25, then 3.67/1.83, then 2.80/3.20 — the winner flips, with the scores untouched.",
-    "bridge": "Weights state your priorities; the model checks them against the facts. Decide the weights, not the winner.",
+    "example": "Compare a simple task queue with a retained event log; distinguish an order key from eventId and compute consumer-group parallelism.",
+    "exercise": "Make replay mandatory, change the Kafka key, or add a fifth consumer to four partitions.",
+    "checks": "Check the weighted arithmetic, key roles, and consumer count; optional TypeSafe judgements can differ.",
+    "bridge": "Preferences belong in weights; mandatory replay is an eligibility condition. Partition keys, event IDs, and consumer offsets solve different problems.",
     "steps": 5,
     "patterns": [],
     "background": [
-      "Choosing between two options usually ends in an argument because each side argues about a different criterion. A weighted decision matrix forces the disagreement into the open: everyone scores every option on the same criteria, then states how much each criterion matters. The winner is arithmetic, so a dispute about the winner becomes a dispute about a single weight — a much smaller, sharper argument.",
-      "A scoring model fits the same frame. TypeSafe JEV is a System One model: it answers typed questions with numbers and probabilities instead of free text, so a call returns a score position in a rubric and a confidence. Scores become data, and changing a weight no longer means re-asking the model."
+      "A weighted matrix exposes the assumptions behind a choice. Code combines the scores; an optional scoring model supplies judgements rather than implementing broker guarantees.",
+      "A task queue distributes deliveries among workers. A retained event log lets subscriber groups read and replay independently. Kafka groups are limited by partition count; eventId supports deduplication while a record key determines grouping under a stable partition mapping."
     ],
     "terms": [
       [
@@ -801,7 +1285,37 @@ const labs = [
         "System One model",
         "A model such as TypeSafe JEV that returns typed judgements and probabilities, not prose."
       ]
-    ]
+    ],
+    "review": {
+      "sources": [
+        {
+          "deck": "ddd",
+          "slides": [
+            44,
+            47,
+            48,
+            49,
+            50,
+            51,
+            52,
+            92
+          ]
+        }
+      ],
+      "concepts": [
+        "task queues versus retained event logs",
+        "independent consumer groups and replay",
+        "partition key versus eventId",
+        "consumer parallelism is capped by partitions"
+      ],
+      "questions": [
+        "Should competing workers process a task, or should each subscriber group read the same event?",
+        "Why do orderId as the Kafka key and eventId for deduplication solve different problems?"
+      ],
+      "readings": [
+        "Microservices Lecture 2 - Condensed DDD · slides 44, 47, 48, 49, 50, 51, 52, 92"
+      ]
+    }
   }
 ];
 
@@ -854,7 +1368,7 @@ const esc = text => String(text).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt
 const config = window.COURSE_CONFIG || {};
 const configured = typeof config.repo === 'string' && /^[A-Za-z0-9](?:[A-Za-z0-9-]{0,38})\/[A-Za-z0-9_.-]+$/.test(config.repo) && config.repo !== 'OWNER/REPO';
 const ref = typeof config.ref === 'string' ? config.ref : 'main';
-const STORAGE_KEY = 'agentic-ai-course-architecture-v3-progress';
+const STORAGE_KEY = 'agentic-ai-course-microservices-slides-v1-progress';
 const number = i => String(i).padStart(2, '0');
 let completed = [];
 try { const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'); if (Array.isArray(stored)) completed = stored.filter(x => labs.some(l => l.id === x)); } catch (_) { /* Browser storage is optional. */ }
@@ -902,11 +1416,12 @@ labs.forEach((lab, i) => {
   const detail = document.createElement('details');
   detail.className = 'lab';
   detail.id = `lab-${lab.id}`;
-  detail.dataset.search = `${lab.title} ${lab.subtitle} ${lab.topics} ${lab.patterns.join(' ')}`.toLowerCase();
+  detail.dataset.search = `${lab.title} ${lab.subtitle} ${lab.topics} ${lab.patterns.join(' ')} ${(lab.review?.concepts || []).join(' ')}`.toLowerCase();
   const prev = labs[i - 1], next = labs[i + 1];
   const pager = `<nav class="lab-pager" aria-label="Neighbouring labs">${prev ? `<a href="#lab-${prev.id}"><small>← Lab ${prev.id}</small>${esc(prev.title)}</a>` : '<span></span>'}${next ? `<a class="next" href="#lab-${next.id}"><small>Lab ${next.id} →</small>${esc(next.title)}</a>` : ''}</nav>`;
   detail.innerHTML = `<summary><span class="lab-number" aria-hidden="true"><span class="num">${number(i)}</span><span class="tick">✓</span></span><div><h3><span class="visually-hidden">Lab ${number(i)}: </span>${esc(lab.title)}</h3><p>${chips(lab.patterns)}<span class="lab-subtitle">${esc(lab.subtitle)}</span></p></div><span class="lab-time">${lab.steps} steps</span><span class="expand-icon" aria-hidden="true">+</span></summary>`
     + `<div class="lab-body"><div class="lab-lead"><p class="lab-intro">${esc(lab.idea)}</p>${notebookActions(lab)}</div>`
+    + `<p class="lesson-takeaway"><strong>Lecture review.</strong> ${(lab.review?.readings || []).map(esc).join('; ')} <a href="docs/slide-map.md">Full slide map ↗</a></p>`
     + `<section class="lab-context" aria-label="The idea in context"><div><h4>The idea in context</h4>${lab.background.map(text => `<p>${esc(text)}</p>`).join('')}</div>`
     + `<aside class="key-terms"><h4>Key terms</h4><dl>${lab.terms.map(([term, meaning]) => `<dt>${esc(term)}</dt><dd>${esc(meaning)}</dd>`).join('')}</dl></aside></section>`
     + `<h4 class="diagram-heading">How the lab works</h4><figure class="lab-diagram" data-diagram="${lab.id}"></figure>`

@@ -8,31 +8,31 @@
   "cells": [
     {
       "type": "markdown",
-      "source": "## Give the program tools through MCP\n\n**So far:** in Labs 04 and 05, the model called tools that were plain Python functions inside the notebook, and our own code described each tool and checked every call.\n\n**New:** the **Model Context Protocol (MCP)**. It moves the tools into a *server* that publishes them, so that any MCP client can discover and call them, with typed arguments and clear errors.\n\nWe build an MCP server with two tools. `get_project` *reads* the facts of one project. `save_decision` *changes state* by recording a decision, and it refuses bad input. The official MCP SDK connects the client and server inside this notebook, so no port, external service, or model key is needed."
+      "source": "## Give an agent the owning service's tools\n\n**New:** MCP publishes tool descriptions and argument schemas so a client can discover and call them. The microservices lesson is **database ownership**: reporting must not read another service's private tables. It asks the owner through an API or consumes published events instead.\n\nOur small Orders tool server exposes an owner-approved read and a validated decision recorder. The Python dictionary stands in for Orders' private storage. MCP is the agent-facing protocol here; it does not replace the business services' APIs or enforce data ownership by itself. No model key, database server, or deployment is needed."
     },
     {
       "type": "markdown",
-      "source": "## Pattern · Registry & Adapter\n\n*Multi-agent pattern from the [Architectural Patterns for Agentic AI](https://karthikv1392.github.io/agentic-patterns/) field guide.*\n\n| | |\n| --- | --- |\n| **Context** | Agent systems grow to include many tools and agents that evolve independently. |\n| **Problem** | Hard-coded calls couple the caller to every implementation, so each new capability becomes a system-wide change. |\n| **Solution** | Register capabilities with descriptions and schemas, let the caller discover them, and invoke every one through one uniform interface. |\n| **Use when** | Capabilities change often; agents and tools share a workflow; plug-in extensibility is needed. |\n| **Trade-off** | Highly extensible, but schemas, registration quality, and adapter errors become critical infrastructure. |\n| **Flow** | Catalogs → Coordinator → Adapter → Capability |\n| **Quality attributes** | Benefits: Interoperability, Modifiability, Maintainability, Adaptability. Liabilities: Reliability, Latency, Maintainability, Security, Performance. |\n| **In this lab** | The MCP server is the registry: `list_tools` returns each tool's name, description, and input schema, and `call_tool` is the one uniform interface for every tool. Errors come back as data, which addresses the pattern's reliability liability. |"
+      "source": "## Pattern · Registry & Adapter\n\nDiscover tools through a stable interface instead of importing each implementation. The trade-off is another protocol boundary to validate and observe. Here the MCP server adapts an Orders read operation and a decision write operation; the client discovers their schemas first."
     },
     {
       "type": "markdown",
-      "source": "## Step 1 · A server with a read tool\n\n`@server.tool(...)` registers a normal Python function as an MCP tool. The SDK reads the type hints (`name: str`) to build an input schema for clients. When a request cannot be served, the tool raises `ToolError` with a message for the caller. The SDK then sends back an error result instead of crashing."
+      "source": "## Step 1 · Keep the data behind its owner\n\nOnly the Orders server owns `ORDERS`. `get_order` returns a copy of the fields this interface exposes; callers do not receive a database connection or a reference they can mutate. This mirrors database-per-service, including the slide's warning about reporting access to private tables."
     },
     {
       "type": "code",
-      "source": "from mcp.server import MCPServer\nfrom mcp.server.mcpserver.exceptions import ToolError\n\nPROJECTS = {\n    \"Course portal\":     {\"team_size\": 3,  \"independent_deploys\": False},\n    \"Payments platform\": {\"team_size\": 12, \"independent_deploys\": True},\n}\nserver = MCPServer(\"architecture-tools\")\n\n@server.tool(description=\"Read the team size and deployment facts of one project.\")\ndef get_project(name: str) -> dict:\n    if name not in PROJECTS:\n        raise ToolError(f\"Unknown project {name!r}. Known projects: {sorted(PROJECTS)}\")\n    return PROJECTS[name]\n\nprint(get_project(\"Course portal\"))  # the decorator leaves a normal Python function"
+      "source": "from mcp.server import MCPServer\nfrom mcp.server.mcpserver.exceptions import ToolError\n\nORDERS = {\"101\": {\"status\": \"PENDING\", \"total\": 42},\n          \"102\": {\"status\": \"APPROVED\", \"total\": 72}}\nserver = MCPServer(\"orders-owner\")\n\n@server.tool(description=\"Read an order through its owner's interface, never through shared tables.\")\ndef get_order(order_id: str) -> dict:\n    if order_id not in ORDERS:\n        raise ToolError(f\"Unknown order {order_id!r}\")\n    return {\"order_id\": order_id, **ORDERS[order_id]}\n\nprint(get_order(\"101\"))"
     },
     {
       "type": "markdown",
-      "source": "## Step 2 · A write tool that validates its input\n\nA tool that changes state needs stricter checks than a tool that only reads. `save_decision` accepts only a known project and one of our two labels. It records the decision in the `decisions` dictionary, which stands in for a real database."
+      "source": "## Step 2 · A validated write tool\n\nThe dictionary `decisions` is only a classroom decision log. The allowed options review the data-pattern exercise: API composition fits a small lookup by ID; CQRS supports a separate searchable read model. The correct choice still depends on the requirements, not on MCP."
     },
     {
       "type": "code",
-      "source": "LABELS = (\"modular monolith\", \"microservices\")\ndecisions = {}  # the state that save_decision changes\n\n@server.tool(description=\"Record the architecture decision for one project.\")\ndef save_decision(project: str, choice: str) -> str:\n    if project not in PROJECTS:\n        raise ToolError(f\"Unknown project {project!r}\")\n    if choice not in LABELS:\n        raise ToolError(f\"choice must be one of {LABELS}\")\n    decisions[project] = choice\n    return f\"Saved {choice!r} for {project}\""
+      "source": "LABELS = (\"API composition\", \"CQRS\")\ndecisions = {}\n\n@server.tool(description=\"Record a proposed read pattern for a named requirement.\")\ndef save_decision(requirement: str, choice: str) -> str:\n    if requirement not in (\"order details by id\", \"search customer history\"):\n        raise ToolError(\"Unknown requirement\")\n    if choice not in LABELS:\n        raise ToolError(f\"choice must be one of {LABELS}\")\n    decisions[requirement] = choice\n    return f\"Saved {choice!r} for {requirement}\""
     },
     {
       "type": "markdown",
-      "source": "## Step 3 · Discover the tools as a client\n\nThe client does not read our Python code. It asks the server for its tools and gets back each tool's name, description, and input schema. It is the same information that Lab 04's `describe()` wrote by hand for the model. `await` is needed because MCP messages are asynchronous, and Colab notebooks accept `await` directly."
+      "source": "## Step 3 · Discover the schemas\n\nThe client learns tool names, descriptions, and arguments from the server. It does not inspect `ORDERS`. Colab accepts `await` at the top level; the official MCP SDK handles the local protocol exchange."
     },
     {
       "type": "code",
@@ -40,23 +40,51 @@
     },
     {
       "type": "markdown",
-      "source": "## Step 4 · Call the tools in a fixed workflow\n\nFor each project, our code reads the facts, applies the policy in Python, and saves the result. A dictionary result comes back as JSON text, so `json.loads` turns it into a dictionary again. The order of the calls is fixed by our code. In Lab 05, the model chose the order."
+      "source": "## Step 4 · Read, then record two pattern decisions\n\nThese are fixed client calls. A model could choose tools as in Lab 05, but this lab isolates the protocol and the boundary. CQRS also costs another read model and eventual consistency; API composition depends on its source services being available."
     },
     {
       "type": "code",
-      "source": "import json\n\nasync with Client(server) as client:\n    for name in PROJECTS:\n        result = await client.call_tool(\"get_project\", {\"name\": name})\n        facts = json.loads(result.content[0].text)\n        both = facts[\"team_size\"] >= 8 and facts[\"independent_deploys\"]\n        choice = \"microservices\" if both else \"modular monolith\"\n        saved = await client.call_tool(\"save_decision\", {\"project\": name, \"choice\": choice})\n        print(saved.content[0].text)\nprint(\"Server state:\", decisions)\nassert decisions == {\"Course portal\": \"modular monolith\", \"Payments platform\": \"microservices\"}"
+      "source": "import json\n\nasync with Client(server) as client:\n    result = await client.call_tool(\"get_order\", {\"order_id\": \"101\"})\n    print(\"Owner returned:\", json.loads(result.content[0].text))\n    for requirement, choice in [(\"order details by id\", \"API composition\"), (\"search customer history\", \"CQRS\")]:\n        saved = await client.call_tool(\"save_decision\", {\"requirement\": requirement, \"choice\": choice})\n        print(saved.content[0].text)\nprint(\"Decision log:\", decisions)\nassert decisions[\"search customer history\"] == \"CQRS\""
     },
     {
       "type": "markdown",
-      "source": "## Step 5 · See how tools report errors\n\nA client must handle failures. Each bad call below returns a result with `is_error=True` and a message, instead of raising an exception in the client. The SDK also checks arguments against the input schema, so a missing argument is rejected before our function runs. We print only the first line of each message. Rejected calls must not change the saved state."
+      "source": "## Step 5 · Reject broken calls without changing state\n\nA tool error comes back as data. A missing required argument fails schema validation before the tool runs. The last assertion checks the important effect: a rejected request cannot overwrite a valid decision."
     },
     {
       "type": "code",
-      "source": "bad_calls = [(\"get_project\", {\"name\": \"Billing\"}),\n             (\"save_decision\", {\"project\": \"Course portal\", \"choice\": \"serverless\"}),\n             (\"save_decision\", {\"project\": \"Course portal\"})]  # missing the choice argument\nasync with Client(server) as client:\n    for tool, arguments in bad_calls:\n        result = await client.call_tool(tool, arguments)\n        print(f\"is_error={result.is_error}: {result.content[0].text.splitlines()[0]}\")\nassert decisions[\"Course portal\"] == \"modular monolith\", \"A rejected call must not change state.\""
+      "source": "bad_calls = [(\"get_order\", {\"order_id\": \"999\"}),\n             (\"save_decision\", {\"requirement\": \"order details by id\", \"choice\": \"shared database\"}),\n             (\"save_decision\", {\"requirement\": \"order details by id\"})]\nasync with Client(server) as client:\n    for tool, arguments in bad_calls:\n        result = await client.call_tool(tool, arguments)\n        print(f\"is_error={result.is_error}: {result.content[0].text.splitlines()[0]}\")\n        assert result.is_error\nassert decisions[\"order details by id\"] == \"API composition\""
     },
     {
       "type": "markdown",
-      "source": "## What you should see\n\nStep 1 prints the Course portal's facts. Step 3 lists `get_project(name: string)` and `save_decision(project: string, choice: string)` with their descriptions. Step 4 prints two `Saved ...` lines and the server state with both decisions. Step 5 prints three lines that start with `is_error=True`. The server may also log each failure on a separate line. That log is the server's view of the same errors.\n\n## Try it\n\n1. Add `\"Internal wiki\": {\"team_size\": 9, \"independent_deploys\": False}` to `PROJECTS`. Run Steps 1 to 4 again, and update the final `assert` to include it.\n2. Add a third tool, `list_projects() -> list`, that returns `sorted(PROJECTS)`. Run Step 3 and find it in the listing.\n3. In Step 5, change `\"Billing\"` to the number `42`. Read how the SDK reports an argument of the wrong type.\n4. **Use it in your council.** Add a `get_sources` tool that returns the shared sources of Lab 06, so that every architect reads the same evidence through one MCP server.\n\n## Takeaway\n\nMCP separates *what a tool offers* (a name, a description, and a schema) from *who calls it*. Tools validate their own input, and errors come back as data that a client, or a model, can read and act on. In a council, one MCP server can give every architect the same tools and the same sources.\n\n## Read further\n\n- [Official SDK client guide](https://py.sdk.modelcontextprotocol.io/client/)\n- [MCP architecture](https://modelcontextprotocol.io/docs/learn/architecture)"
+      "source": "## What you should see\n\nThe Orders interface returns order 101 with total 42. Discovery lists two tools. The decision log contains API composition for a small ID lookup and CQRS for history search. Three bad calls return errors; the original decision stays intact.\n\n## Try it\n\n1. Add an order to `ORDERS`. Which component owns this change?\n2. Explain why giving the reporting team an SQL connection would bypass this boundary.\n3. Add `cancel_order(order_id)` as an owner operation, validating the order state first. It must not directly update a Payment or Inventory table.\n4. **Use it in your council.** Expose a read-only source lookup and a separately authorized decision write. Which data should each tool reveal?\n\n## Takeaway\n\nMCP gives an agent a discoverable tool boundary. Data ownership and validation remain application responsibilities. A successful protocol call is not proof that a chosen architecture pattern is appropriate."
     }
-  ]
+  ],
+  "review": {
+    "sources": [
+      {
+        "deck": "microservices",
+        "slides": [
+          24,
+          27,
+          28,
+          30
+        ]
+      },
+      {
+        "deck": "ddd",
+        "slides": [
+          32
+        ]
+      }
+    ],
+    "concepts": [
+      "Database per service",
+      "API composition versus CQRS",
+      "Tool schema and validation"
+    ],
+    "questions": [
+      "Why should reporting not read Orders tables directly?",
+      "What requirement makes CQRS preferable to API composition?"
+    ]
+  }
 }

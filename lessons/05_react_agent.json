@@ -5,47 +5,69 @@
   "cells": [
     {
       "type": "markdown",
-      "source": "## Let the model choose the next step\n\n**So far:** in Lab 04, the model chose one tool for one request, and our code checked and ran it.\n\n**New:** an *agent loop*. The model chooses an action, our code runs it, and the result (the *observation*) goes into the next prompt as part of the *history*. This act-then-observe cycle is the core of the ReAct pattern.\n\nOur code stays in control. It runs only known tools, refuses to finish before any project facts were read, and stops after five turns. The tools are plain Python functions, as in Lab 04, so the loop is easy to follow; self-study Lab 11 serves tools like these through MCP."
+      "source": "## Inspect a dependency before choosing its resilience policy\n**So far:** Lab 04 let a model select one tool and our code checked it.\n\n**New:** a bounded ReAct-style loop: choose an action, run an allowed tool, observe, then choose again. Review the checkout exercise and cascading failures from microservices slides 38–41.\n\nOur specific exercise configuration chooses a **circuit breaker** when repeated failures reach 50%; a bounded retry is considered only for transient failures on an idempotent call. The 50% threshold is illustrative, as in the slide's breaker configuration; production settings require workload evidence. The agent recommends a policy; it does not deploy infrastructure.\n\nThe metrics are simulated teaching inputs. Inventory's 5-second value is a peak, not a measured p99; the failure rates and the 50% decision threshold are exercise assumptions. A retry also requires a transient failure and a bounded policy; idempotency alone is insufficient."
     },
     {
       "type": "markdown",
-      "source": "## Pattern · One-Step Tool Agent\n\n*The same single-agent pattern as Lab 04, from the [Architectural Patterns for Agentic AI](https://karthikv1392.github.io/agentic-patterns/) field guide; see Lab 04 for the full card. Related: Incremental Tool Agent, Registry & Adapter (Lab 11).*\n\n| | |\n| --- | --- |\n| **What changes** | Lab 04 made one tool call per request. Here each turn is one One-Step Tool Agent call, and repeating it, with every observation in the history, makes a *ReAct* loop. |\n| **Flow** | Goal → Choose action → Tool → Observe → repeat, or Finish |\n| **New liability** | A loop can run forever, or finish before it has looked at anything. The turn limit and the finish guard address both, on top of Lab 04's checks of each request. |"
+      "source": "## Pattern · One-Step Tool Agent\n\n*The same single-agent pattern as Lab 04, from the [Architectural Patterns for Agentic AI](https://karthikv1392.github.io/agentic-patterns/) field guide; see Lab 04 for the full card. Related: Incremental Tool Agent, Registry & Adapter (Lab 11).*\n\n| | |\n| --- | --- |\n| **What changes** | Lab 04 made one tool call per request. Here each turn is one One-Step Tool Agent call, and repeating it, with every observation in the history, makes a *ReAct* loop. |\n| **Flow** | Goal → Choose action → Tool → Observe → repeat, or Finish |\n| **New liability** | A loop can run forever, or finish without successful metrics for the target. The turn limit and the finish guard address both, on top of Lab 04's checks of each request. |"
     },
     {
       "type": "markdown",
-      "source": "## Step 1 · The tools the agent may use\n\n`list_projects` returns the exact project names. `get_project` returns one project's facts, or an error message the model can read and recover from. `TOOLS` maps each action name to its function, so the loop can look up whatever the model asks for."
+      "source": "## Step 1 · Give the agent read-only observation tools\nUnknown names return errors. A successful metrics record contains the exact dependency name, so the finish guard can distinguish a real observation from a failed lookup."
     },
     {
       "type": "code",
-      "source": "import json\n\nPROJECTS = {\n    \"Course portal\":     {\"team_size\": 3,  \"independent_deploys\": False},\n    \"Payments platform\": {\"team_size\": 12, \"independent_deploys\": True},\n    \"Internal wiki\":     {\"team_size\": 9,  \"independent_deploys\": False},\n}\n\ndef list_projects(_):\n    return sorted(PROJECTS)\n\ndef get_project(name):\n    return PROJECTS.get(name, f\"Unknown project {name!r}. Call list_projects for exact names.\")\n\nTOOLS = {\"list_projects\": list_projects, \"get_project\": get_project}\nprint(TOOLS[\"get_project\"](\"wiki\"))"
+      "source": "import json\nMETRICS = {\n    \"Inventory\": {\"service\": \"Inventory\", \"failure_rate\": 0.7, \"peak_ms\": 5000, \"idempotent\": True, \"transient_failure\": True},\n    \"Payments\": {\"service\": \"Payments\", \"failure_rate\": 0.01, \"p99_ms\": 1500, \"idempotent\": False, \"transient_failure\": True},\n}\ndef list_dependencies(_):\n    return list(METRICS)\ndef read_metrics(name):\n    return METRICS.get(name, {\"error\": \"Unknown dependency; call list_dependencies for exact names.\"})\nTOOLS = {\"list_dependencies\": list_dependencies, \"read_metrics\": read_metrics}\nprint(read_metrics(\"stock\"))"
     },
     {
       "type": "markdown",
-      "source": "## Step 2 · Ask the model for its next action\n\nEach prompt holds the policy, the goal, the tools, and the whole history so far. The model replies with one JSON action: a tool and its input, or `finish` with the decision.\n\nThe goal says \"wiki\", not the exact name \"Internal wiki\", so the model has to look up the name first. In practice mode, `script` holds one scripted reply per turn. `next(script, \"\")` takes the next one, or an empty reply when the script runs out. A live model may wrap its JSON in extra text; then `json.loads` raises an error, which is the safe outcome. Lab 01's parser shows how to report such replies."
+      "source": "## Step 2 · Ask for an action using the whole history\nThe model receives the goal, tools and exercise policy. The scripted practice path lists dependencies, reads Inventory and recommends a breaker. The prompt asks for a short action, not a hidden reasoning trace."
     },
     {
       "type": "code",
-      "source": "POLICY = \"Choose microservices only if team_size >= 8 AND independent_deploys is true; otherwise modular monolith.\"\ngoal = \"Decide the architecture for our wiki project.\"\nscript = iter(['{\"action\": \"list_projects\", \"input\": \"\"}',\n               '{\"action\": \"get_project\", \"input\": \"Internal wiki\"}',\n               '{\"action\": \"finish\", \"input\": \"modular monolith\"}'])\n\ndef next_action(history):\n    \"\"\"Show the model the goal and everything observed so far; return its JSON action.\"\"\"\n    prompt = (f\"{POLICY}\\nGoal: {goal}\\n\"\n              \"Tools: list_projects (input ignored), get_project (input: exact project name)\\n\"\n              f\"History: {json.dumps(history)}\\n\"\n              'Reply with JSON only, no code fences: {\"action\": \"<tool name or finish>\", \"input\": \"<argument or decision>\"}')\n    return json.loads(ask(prompt, example=next(script, \"\")))"
+      "source": "target = \"Inventory\"\nPOLICY = (\"For this exercise: failure_rate >= 0.5 -> circuit breaker; otherwise idempotent AND transient_failure -> bounded retry; \"\n          \"otherwise no automatic retry. Never infer metrics: read the target's record first.\")\nscript = iter(['{\"action\":\"list_dependencies\",\"input\":\"\"}',\n               '{\"action\":\"read_metrics\",\"input\":\"Inventory\"}',\n               '{\"action\":\"finish\",\"input\":\"circuit breaker\"}'])\ndef next_action(history):\n    prompt = (f\"{POLICY}\\nGoal: recommend a resilience policy for {target}.\\n\"\n              \"Tools: list_dependencies (input ignored), read_metrics (input: exact service name).\\n\"\n              f\"History: {json.dumps(history)}\\n\"\n              'JSON only: {\"action\":\"tool name or finish\",\"input\":\"service name or policy label\"}')\n    step = json.loads(ask(prompt, example=next(script, \"\")))\n    if not isinstance(step, dict) or not all(isinstance(step.get(k), str) for k in (\"action\", \"input\")):\n        raise ValueError(\"Expected an action object with string action and input.\")\n    return step"
     },
     {
       "type": "markdown",
-      "source": "## Step 3 · Run the loop with guards\n\nEach turn either finishes or runs one tool and records what it observed. Three guards keep the agent safe:\n\n- An unknown action does not crash the loop. It becomes an observation that tells the model what went wrong.\n- `finish` is refused until a `get_project` call has read real facts.\n- `range(1, 6)` allows at most five turns, so the loop always ends."
+      "source": "## Step 3 · Guard the loop\nA failed lookup must not count as having read metrics. Finishing is allowed only after a successful metrics observation for the target dependency. Unknown tools become observations, and five turns bound the workflow."
     },
     {
       "type": "code",
-      "source": "history, decision = [], None\nfor turn in range(1, 6):\n    step = next_action(history)\n    action, value = step[\"action\"], step[\"input\"]\n    print(f\"Turn {turn}: {action}({value!r})\")\n    if action == \"finish\":\n        if not any(h[\"action\"] == \"get_project\" for h in history):\n            raise ValueError(\"The model tried to finish before reading any project facts.\")\n        decision = value.strip().lower()\n        break\n    tool = TOOLS.get(action)\n    observation = tool(value) if tool else f\"Unknown action {action!r}. Use one of {list(TOOLS)}.\"\n    history.append({\"action\": action, \"input\": value, \"observation\": observation})\n    print(\"        observed:\", observation)\nassert decision is not None, \"The turn limit was reached before the model finished.\""
+      "source": "history, decision, observed = [], None, False\nfor turn in range(1, 6):\n    step = next_action(history)\n    action, value = step[\"action\"], step[\"input\"]\n    print(\"Turn\", turn, action, value)\n    if action == \"finish\":\n        if not observed:\n            raise ValueError(\"Read the target's metrics successfully before finishing.\")\n        decision = value.strip().lower()\n        break\n    tool = TOOLS.get(action)\n    observation = tool(value) if tool else {\"error\": \"Unknown action; use an allowed tool.\"}\n    observed |= (action == \"read_metrics\" and isinstance(observation, dict)\n                 and observation.get(\"service\") == target and \"failure_rate\" in observation)\n    history.append({\"action\": action, \"input\": value, \"observation\": observation})\n    print(\"Observed:\", observation)\nassert decision is not None, \"Turn budget exhausted; escalate instead of guessing.\""
     },
     {
       "type": "markdown",
-      "source": "## Step 4 · Check the agent's decision\n\nThe agent's answer is still only a claim. Like a test in Lab 01, the check knows which project the goal means, and applies the policy to that project's facts. Counting the tool calls shows the cost of the run."
+      "source": "## Step 4 · Check the recommendation and its limits\nThe independent checker uses the real target record. Choosing a breaker does not remove the need for timeouts, isolation and an appropriate fallback."
     },
     {
       "type": "code",
-      "source": "facts = PROJECTS[\"Internal wiki\"]  # the project the goal refers to\nexpected = \"microservices\" if facts[\"team_size\"] >= 8 and facts[\"independent_deploys\"] else \"modular monolith\"\nprint(f\"Agent decided: {decision} | policy expects: {expected} | tool calls: {len(history)}\")\nassert decision == expected, \"The agent's decision breaks the policy.\""
+      "source": "facts = METRICS[target]\nexpected = (\"circuit breaker\" if facts[\"failure_rate\"] >= 0.5 else\n            \"bounded retry\" if facts[\"idempotent\"] and facts[\"transient_failure\"] else \"no automatic retry\")\nprint(\"Recommendation:\", decision, \"| exercise expects:\", expected, \"| tool calls:\", len(history))\nassert decision == expected, \"Recommendation fails the exercise policy.\"\nprint(\"Payments is non-idempotent: blindly retrying its charge can duplicate the business effect.\")"
     },
     {
       "type": "markdown",
-      "source": "## What you should see\n\nStep 1 prints the error message for the unknown name `wiki`. Step 3 shows three turns: `list_projects`, then `get_project('Internal wiki')` with its facts, then `finish('modular monolith')`. Step 4 prints `Agent decided: modular monolith | policy expects: modular monolith | tool calls: 2`.\n\n## Try it\n\n1. Make the agent skip the lookup: delete the first two scripted replies, leaving only `finish`. Run Steps 2 and 3. The finish guard stops the run.\n2. Make the agent guess a name: change the second scripted reply's input to `\"wiki\"`. Its observation is now an error message. Add a fourth scripted reply that calls `get_project` with `\"Internal wiki\"` before `finish`, and the agent recovers.\n3. Change the goal to the payments project, and update the script and the project name in Step 4. What should the decision be?\n4. In live mode, how many turns does a real model take for the original goal?\n\n## Takeaway\n\nAn agent is a loop: decide, act, observe, repeat. The model chooses the steps, but our code owns the tools, the guards, and the turn limit, and it checks the result at the end. Lecture 3 starts with Lab 06, which puts three architects, each driven by its own model, into one council.\n\n## Read further\n\n- [ReAct](https://arxiv.org/abs/2210.03629)\n- [Workflows and agentic patterns](https://www.anthropic.com/research/building-effective-agents)"
+      "source": "## What you should see\nThe unknown-name lookup prints an error. The loop lists dependencies, reads Inventory's real metrics, then chooses `circuit breaker`. A failed lookup or another service's metrics cannot unlock `finish`.\n\n## Try it\n1. Replace the Inventory lookup with `stock`, then try to finish. The guard must reject it.\n2. Change the target to Payments and update the practice actions. Its expected answer is `no automatic retry`.\n3. Change Inventory's failure rate to 0.1 and update the practice answer to `bounded retry`. Explain why idempotency matters.\n4. Pick a timeout, breaker and fallback for the slide's optional Recommendations dependency. Which user-visible feature degrades?\n\n## Takeaway\nAn agent selects steps from observations, while code controls available actions, successful reads, budgets and final checks. Resilience patterns address different failure modes; indiscriminate retries can amplify an outage or duplicate a charge."
     }
-  ]
+  ],
+  "review": {
+    "sources": [
+      {
+        "deck": "microservices",
+        "slides": [
+          38,
+          39,
+          40,
+          41
+        ]
+      }
+    ],
+    "concepts": [
+      "Cascading failure",
+      "Circuit breaker vs retry",
+      "Idempotency and graceful degradation"
+    ],
+    "questions": [
+      "Why can retries make a slow dependency worse?",
+      "Why must the non-idempotent Payments charge not be blindly retried?"
+    ]
+  }
 }

@@ -5,55 +5,84 @@
   "cells": [
     {
       "type": "markdown",
-      "source": "## Retrieve the policy by meaning, not by matching words\n\n**So far:** in Lab 01 we pasted the policy into every prompt.\n\n**New:** retrieval-augmented generation (RAG) with **embeddings** and a **vector database**. We keep several policies in a store, find the ones that match the question, and give only that evidence to the model.\n\n- An *embedding model* turns a text into a list of numbers, a *vector*. Texts with a similar meaning get vectors that point in a similar direction, even when they share no words.\n- A *vector database* stores those vectors and quickly finds the ones nearest to the vector of a question.\n\nWe use the small `all-MiniLM-L6-v2` embedding model, which runs on the CPU, and the **Chroma** vector database in memory. Neither needs an API key. The first run downloads the model (about 80 MB) and shows a progress bar."
+      "source": "## Retrieve lecture evidence before answering\n**So far:** Lab 01 put a short readiness rule directly in the prompt.\n\n**New:** retrieval-augmented generation (RAG). We store short original summaries of the lecture's data patterns, embed them and retrieve the relevant slide note. Students then check the answer against the named slide.\n\nThe local `all-MiniLM-L6-v2` model turns text into 384-number vectors. Chroma stores and searches those vectors on CPU; the first run downloads the model. No model key is needed for retrieval; generation uses the course client."
     },
     {
       "type": "markdown",
-      "source": "## Pattern · Retrieval-Augmented Generation\n\n*Single-agent pattern from the [Architectural Patterns for Agentic AI](https://karthikv1392.github.io/agentic-patterns/) field guide.*\n\n| | |\n| --- | --- |\n| **Context** | Useful answers often depend on private, recent, or domain-specific material that the model's weights do not reliably hold. |\n| **Problem** | Without evidence, a model may hallucinate, miss local facts, or answer from outdated knowledge. |\n| **Solution** | Search a knowledge base for relevant pieces, place them beside the question, and instruct the model to ground its answer in them. |\n| **Use when** | Answers depend on a document collection; citations or provenance matter; knowledge changes independently of the model. |\n| **Trade-off** | Answer quality now depends on retrieval quality, chunking, and the context budget. |\n| **Flow** | Question → Retrieve → Augment → Grounded answer |\n| **Quality attributes** | Benefits: Reliability, Data freshness, Modifiability, Cost, Privacy. Liabilities: Latency, Maintainability, Reliability, Data freshness. |\n| **In this lab** | Embeddings and a Chroma vector database retrieve the policies, a distance threshold makes the system abstain when nothing is close, and a citation check verifies that the answer is grounded. |"
+      "source": "## Pattern · Retrieval-Augmented Generation\n\n*Single-agent pattern from the [Architectural Patterns for Agentic AI](https://karthikv1392.github.io/agentic-patterns/) field guide.*\n\n| | |\n| --- | --- |\n| **Context** | Useful answers often depend on private, recent, or domain-specific material that the model's weights do not reliably hold. |\n| **Problem** | Without evidence, a model may hallucinate, miss local facts, or answer from outdated knowledge. |\n| **Solution** | Search a knowledge base for relevant pieces, place them beside the question, and instruct the model to ground its answer in them. |\n| **Use when** | Answers depend on a document collection; citations or provenance matter; knowledge changes independently of the model. |\n| **Trade-off** | Answer quality now depends on retrieval quality, chunking, and the context budget. |\n| **Flow** | Question → Retrieve → Augment → Grounded answer |\n| **Quality attributes** | Benefits: Reliability, Data freshness, Modifiability, Cost, Privacy. Liabilities: Latency, Maintainability, Reliability, Data freshness. |\n| **In this lab** | Embeddings and Chroma retrieve lecture notes with slide IDs. A threshold supports abstention. Code checks citation validity; students inspect whether the source actually supports the claim. |"
     },
     {
       "type": "markdown",
-      "source": "## Step 1 · Store a few policies, and see where word matching fails\n\nOnly R1 is about our architecture question. The other policies are there so that retrieval has something to reject.\n\nThe question below is clearly about R1, but it is worded differently. `words` turns a text into a *set* of lower-case words, and `&` keeps the words that two sets share. Word matching sees only \"services\" and \"the\", and every policy contains \"the\"."
+      "source": "## Step 1 · Store slide notes with provenance\nThese summaries distinguish database ownership, small lookup composition, searchable read models, duplicate events and atomic publication intent. They do not reproduce the full decks."
     },
     {
       "type": "code",
-      "source": "policies = {\n    \"R1\": \"Choose microservices only when the team has 8+ people and services must deploy independently; \"\n          \"otherwise choose a modular monolith.\",\n    \"R2\": \"Each module owns its tables. One module never reads the tables of another module.\",\n    \"R3\": \"Deploy to the eu-west region unless a customer contract names another region.\",\n    \"R4\": \"Public APIs keep the old version running for 6 months after a breaking change.\",\n}\n\ndef words(text):\n    \"\"\"The lower-case words in a text, without punctuation.\"\"\"\n    return {word.strip(\".,;:?!\").lower() for word in text.split()}\n\nquestion = \"How many engineers do we need before splitting the system into separate services?\"\nfor pid, text in policies.items():\n    print(pid, \"shares\", sorted(words(question) & words(text)))"
+      "source": "notes = {\n    \"M24\": \"Database per service: each service owns private data; other services use APIs or events, not its tables.\",\n    \"M27\": \"API composition joins a few services in the caller for a small lookup by id; large searches are a poor fit.\",\n    \"M28\": \"CQRS maintains a separate read model for searchable order history; the view can lag behind writes.\",\n    \"D52\": \"At-least-once delivery can repeat an event; store the processed eventId and the business effect in the same local DB transaction.\",\n    \"D55\": \"Transactional outbox commits business state and publication intent in one local transaction; relay retries may duplicate.\",\n}\nquestion = \"Support needs searchable order history across services. Which data pattern fits, and what is its cost?\"\nfor sid, text in notes.items():\n    print(sid, text)"
     },
     {
       "type": "markdown",
-      "source": "## Step 2 · Turn text into vectors\n\n`embed` takes a list of texts and returns one vector per text. Each vector has 384 numbers. On their own the numbers mean nothing to us; what matters is how two vectors compare.\n\n*Cosine similarity* measures the angle between two vectors. A value near 1 means the texts point the same way, so they have a similar meaning. A value near 0 means they are unrelated."
+      "source": "## Step 2 · Compare semantic vectors\nCosine similarity compares the directions of two vectors. It is a retrieval heuristic, not proof that a note answers the question."
     },
     {
       "type": "code",
-      "source": "import numpy as np\nfrom chromadb.utils.embedding_functions import DefaultEmbeddingFunction\n\nembed = DefaultEmbeddingFunction()  # all-MiniLM-L6-v2, runs locally on the CPU\nq_vec, r1_vec, r3_vec = embed([question, policies[\"R1\"], policies[\"R3\"]])\nprint(\"Each text becomes\", len(q_vec), \"numbers. The first four:\", np.round(q_vec[:4], 3))\n\ndef cosine(a, b):\n    \"\"\"Near 1.0: similar meaning. Near 0: unrelated.\"\"\"\n    return float(np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b)))\n\nprint(\"question vs R1 (architecture):\", round(cosine(q_vec, r1_vec), 2))\nprint(\"question vs R3 (deploy region):\", round(cosine(q_vec, r3_vec), 2))"
+      "source": "import numpy as np\nfrom chromadb.utils.embedding_functions import DefaultEmbeddingFunction\nembed = DefaultEmbeddingFunction()\nq_vec, query_note, ownership_note = embed([question, notes[\"M28\"], notes[\"M24\"]])\ndef cosine(a, b):\n    return float(np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b)))\nprint(\"Vector size:\", len(q_vec))\nprint(\"Question vs CQRS:\", round(cosine(q_vec, query_note), 2))\nprint(\"Question vs ownership:\", round(cosine(q_vec, ownership_note), 2))"
     },
     {
       "type": "markdown",
-      "source": "## Step 3 · Put the vectors in a vector database\n\nA Chroma *collection* is like a table of documents. We give it the embedding function, so Chroma embeds each policy when we add it and embeds each question when we query. `upsert` inserts a policy, or updates it if the id already exists, so you can run this cell again safely.\n\n`query` returns the nearest policies with their *cosine distance*, which is 1 minus the cosine similarity. A **smaller distance means a closer match**. The results come back as lists inside a list, because one query can ask several questions at once. `[0]` picks the answers for our one question."
+      "source": "## Step 3 · Search a vector collection\nA smaller cosine distance means a nearer match. We retain the slide ID as the source identifier. This is an in-memory teaching store, not persistent course infrastructure."
     },
     {
       "type": "code",
-      "source": "import chromadb\nfrom chromadb.config import Settings\n\ndb = chromadb.Client(Settings(anonymized_telemetry=False))  # in memory: nothing is saved to disk\ncollection = db.get_or_create_collection(\"policies\", embedding_function=embed,\n                                         configuration={\"hnsw\": {\"space\": \"cosine\"}})\ncollection.upsert(ids=list(policies), documents=list(policies.values()))\n\nfound = collection.query(query_texts=[question], n_results=4)\nfor pid, distance in zip(found[\"ids\"][0], found[\"distances\"][0]):\n    print(f\"{pid}  distance {distance:.2f}\")"
+      "source": "import chromadb\nfrom chromadb.config import Settings\ncollection = chromadb.Client(Settings(anonymized_telemetry=False)).get_or_create_collection(\n    \"lecture-notes\", embedding_function=embed, configuration={\"hnsw\": {\"space\": \"cosine\"}})\ncollection.upsert(ids=list(notes), documents=list(notes.values()))\nfound = collection.query(query_texts=[question], n_results=3)\nfor sid, distance in zip(found[\"ids\"][0], found[\"distances\"][0]):\n    print(sid, round(distance, 2))"
     },
     {
       "type": "markdown",
-      "source": "## Step 4 · Keep only the close matches\n\nThe database always returns the nearest policies, even for a question that none of them answers. `retrieve` keeps the top two, then drops any policy farther away than `max_distance`. The result is a dictionary from policy id to distance, best first. The lunch question shows why the threshold matters."
+      "source": "## Step 4 · Retrieve or abstain\nThe threshold is a small classroom heuristic that must be tuned on real questions. Unrelated questions should not reach the generator. Inspect distances before trusting it."
     },
     {
       "type": "code",
-      "source": "def retrieve(question, max_distance=0.7, top_k=2):\n    \"\"\"The nearest policies as {id: distance}, best first. Distant ones are dropped.\"\"\"\n    found = collection.query(query_texts=[question], n_results=top_k)\n    pairs = zip(found[\"ids\"][0], found[\"distances\"][0])\n    return {pid: round(distance, 2) for pid, distance in pairs if distance <= max_distance}\n\nquestions = [\n    question,\n    \"Can the billing module read the tables of the orders module?\",\n    \"What should the team eat for lunch on Friday?\",\n]\nfor q in questions:\n    print(f\"{str(retrieve(q)):<14} {q}\")"
+      "source": "def retrieve(question, max_distance=0.7):\n    found = collection.query(query_texts=[question], n_results=1)\n    return {sid: notes[sid] for sid, d in zip(found[\"ids\"][0], found[\"distances\"][0]) if d <= max_distance}\nquestions = [question, \"May Reporting read the private tables owned by Order?\", \"What should we eat for lunch?\"]\nfor q in questions:\n    print(list(retrieve(q)), q)"
     },
     {
       "type": "markdown",
-      "source": "## Step 5 · Answer from the evidence and check the citations\n\nThe prompt holds only the retrieved policies, each labelled with its id, and the model must cite an id like `[R1]`. Our code runs two checks around the model call:\n\n- When nothing was retrieved, the model is **not called**. The program abstains instead of letting the model guess.\n- `re.findall(r\"R\\d+\", answer)` finds the cited ids. An answer is *grounded* when it cites at least one id and every cited id was retrieved. In Python, `cited <= set(hits)` asks \"is `cited` a subset of the retrieved ids?\"."
+      "source": "## Step 5 · Answer with a citation, then check support\nThe code checks **citation validity**: a cited ID must have been retrieved. That alone does not prove the source supports the claim. Students must inspect that semantic support and the stated trade-off."
     },
     {
       "type": "code",
-      "source": "import re\n\nscripted = [\"At 8 or more people, and only if the services must deploy independently [R1].\",\n            \"No. Each module owns its tables, so billing must ask the orders module [R2].\",\n            \"\"]  # the lunch question never reaches the model\nverdicts = []  # one True/False per answered question\nfor q, example in zip(questions, scripted):\n    hits = retrieve(q)\n    if not hits:\n        print(f\"Q: {q}\\nA: No matching policy, so the model is not called.\\n\")\n        continue\n    evidence = \"\\n\".join(f\"[{pid}] {policies[pid]}\" for pid in hits)\n    prompt = f\"Answer using only these policies:\\n{evidence}\\n\\nQuestion: {q}\\nAnswer in one sentence and cite the policy id.\"\n    answer = ask(prompt, example=example)\n    cited = set(re.findall(r\"R\\d+\", answer))\n    verdicts.append(bool(cited) and cited <= set(hits))\n    print(f\"Q: {q}\\nA: {answer}\\nCited {sorted(cited)}, retrieved {list(hits)}, grounded: {verdicts[-1]}\\n\")\nassert all(verdicts), \"Each answer should cite only the policies it was given.\""
+      "source": "import re\nscripted = [\"Use a CQRS read model for searchable history; it may lag behind writes [M28].\",\n            \"No: Order owns its private data; Reporting must use an API or events [M24].\", \"\"]\nvalid = []\nfor q, example in zip(questions, scripted):\n    hits = retrieve(q)\n    if not hits:\n        print(\"No matching lecture note; no model call:\", q)\n        continue\n    evidence = \"\\n\".join(f\"[{sid}] {text}\" for sid, text in hits.items())\n    answer = ask(f\"Use only these notes:\\n{evidence}\\nQuestion: {q}\\nReply briefly and cite the slide ID.\", example=example)\n    cited = set(re.findall(r\"[MD]\\d+\", answer))\n    valid.append(bool(cited) and cited <= set(hits))\n    print(answer, \"| citation valid:\", valid[-1])\nassert all(valid), \"Cite only retrieved source IDs.\""
     },
     {
       "type": "markdown",
-      "source": "## What you should see\n\nStep 1 shows that the question shares only \"services\" and \"the\" with R1, and \"the\" with every other policy. In Step 2, the question is much more similar to R1 than to R3. In Step 3, R1 is nearest at a distance of about 0.52, and the other policies are about 0.8 or farther.\n\nIn Step 4, the engineering question retrieves `R1`, the billing question retrieves `R2`, and the lunch question retrieves nothing, because its nearest policy is about 0.83 away. In Step 5, both answers are `grounded: True`, and the lunch question is never sent to the model. Distances can differ slightly in the last decimal place between computers.\n\n## Try it\n\n1. Add the question `\"Which cloud region should host our servers?\"` to `questions`, and add a scripted reply that cites `[R3]` to `scripted`. Check with `words` how few words it shares with R3, then run Steps 4 and 5.\n2. Change `max_distance` to `0.4` and run Steps 4 and 5. Now nothing is retrieved, so nothing is answered. Then try `0.9`: the lunch question retrieves R1 and reaches the model. Its empty scripted reply cites nothing, so the final check fails.\n3. Change the first scripted reply to cite `[R4]`. R4 was never retrieved, so the answer is not grounded and the final check fails.\n\n## Takeaway\n\nEmbeddings let retrieval match meaning instead of exact words, and a vector database finds the nearest evidence quickly. The database always returns *something*, so the distance threshold decides when to abstain. Test the retriever as carefully as the prompt, because it decides what the model sees. Lab 03 starts Lecture 2: it splits a harder decision into a chain of checked prompts.\n\n## Read further\n\n- [The original RAG paper](https://arxiv.org/abs/2005.11401)\n- [Sentence-BERT, the idea behind sentence embeddings](https://arxiv.org/abs/1908.10084)\n- [The all-MiniLM-L6-v2 model card](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2)\n- [Chroma documentation](https://docs.trychroma.com/)"
+      "source": "## What you should see\nSearchable history retrieves M28; private-table access retrieves M24. The lunch question abstains. Answers cite their retrieved slides. Distances can vary with package/model versions.\n\n## Try it\n1. Ask the small order-details lookup from slide 30C. Compare M27 (API composition) with M28 (CQRS).\n2. Ask about an order committed just before its producer crashes. Inspect D55, and explain why an outbox is not a global transaction.\n3. Put an incorrect answer beside a valid citation. Why does the code accept the citation while a human should reject the answer?\n\n## Takeaway\nRetrieval selects evidence; generation uses it; citation validity and factual support are different checks."
     }
-  ]
+  ],
+  "review": {
+    "sources": [
+      {
+        "deck": "microservices",
+        "slides": [
+          24,
+          27,
+          28,
+          30
+        ]
+      },
+      {
+        "deck": "ddd",
+        "slides": [
+          52,
+          55
+        ]
+      }
+    ],
+    "concepts": [
+      "Database per service",
+      "API composition vs CQRS",
+      "Idempotent consumers and transactional outbox"
+    ],
+    "questions": [
+      "Why is CQRS a better fit for searchable order history than a large in-memory API join?",
+      "Does a valid slide citation prove that an answer is supported?"
+    ]
+  }
 }

@@ -22,9 +22,32 @@ EXTRAS = {
 DIRECT_SDKS = {
     "17_weighted_decision_jev": ("typesafe_sdk", "typesafe-sdk==0.7.2"),
 }
-NO_MODEL_LABS = {"11_tools_mcp", "16_learning_curve_trust", "17_weighted_decision_jev"}  # these labs never call ask()
+NO_MODEL_LABS = {"11_tools_mcp", "13_a2a_protocol", "16_learning_curve_trust", "17_weighted_decision_jev"}  # these labs never call ask()
 # Diagrams are exported by scripts/export_diagrams.js and served by the course site (GitHub Pages).
 DIAGRAM_URL = "https://mkassaf.github.io/agentic-ai-course/assets/diagrams/{number}.svg"
+DECKS = {
+    "microservices": ("Microservices & Their Patterns", 53),
+    "ddd": ("Microservices Lecture 2 - Condensed DDD", 92),
+}
+
+
+def review_note(lesson):
+    """Keep the Colab revision questions traceable to the supplied lecture decks."""
+    review = lesson["review"]
+    readings = []
+    for source in review["sources"]:
+        title, count = DECKS[source["deck"]]
+        slides = source["slides"]
+        if not slides or any(type(n) is not int or not 1 <= n <= count for n in slides):
+            raise ValueError(f"Invalid slide reference in {lesson['slug']}")
+        readings.append(f"- **{title}**, slides {', '.join(map(str, slides))}.")
+    questions = "\n".join(f"{i}. {q}" for i, q in enumerate(review["questions"], 1))
+    return ("## Review your microservices lectures\n\n" + "\n".join(readings)
+            + "\n\n**Recall:** " + "; ".join(review["concepts"]) + "."
+            + "\n\nBefore running the example:\n\n" + questions
+            + "\n\nSlide numbers count from the title slide, including appendices. "
+              "The small scenarios and code are teaching adaptations, not production services. "
+              "Use the lecture decks supplied in class; they are not uploaded with this course.")
 
 
 def source_cell(kind, source):
@@ -64,6 +87,8 @@ def build(lesson, revision, diagrams, site_lab):
                        '(`"freeinference"`, `"gemini"`, or `"deepseek"`), save its key in Colab Secrets '
                        '(`FREEINFERENCE_API_KEY`, `GEMINI_API_KEY`, or `DEEPSEEK_API_KEY`), and change `MODE` to '
                        '`"live"`. `ask` stops after 12 calls; run this cell again to reset the count.')
+    elif slug == '17_weighted_decision_jev':
+        setup_note += ' Practice scores need no key. Optional live scoring uses TYPESAFE_API_KEY and explicit live mode in the lab.'
     else:
         setup_note += ' This lab needs no model key.'
     # The lesson's first cell states the idea, so learners read it before the setup boilerplate.
@@ -80,6 +105,7 @@ def build(lesson, revision, diagrams, site_lab):
     context = ("## The idea in context\n\n" + "\n\n".join(site_lab["background"])
                + f"\n\n| Key term | Meaning |\n| --- | --- |\n{terms}")
     cells = [source_cell("markdown", intro), source_cell("markdown", overview["source"] + picture),
+             source_cell("markdown", review_note(lesson)),
              source_cell("markdown", context), *patterns,
              source_cell("markdown", setup_note), source_cell("code", setup_for(slug, revision))]
     cells[-1].metadata["tags"] = ["setup"]
@@ -114,6 +140,23 @@ def main():
         if lesson["slug"] != slug:
             raise ValueError(f"Lesson/file slug mismatch: {slug}")
         build(lesson, revision, diagrams, site_labs[slug])
+    rows = []
+    for slug in config["labs"]:
+        lesson = json.loads((ROOT / "lessons" / (slug + ".json")).read_text())
+        review = lesson["review"]
+        readings = "; ".join(f"{DECKS[s['deck']][0]}: {', '.join(map(str, s['slides']))}"
+                             for s in review["sources"])
+        rows.append(f"| {slug[:2]} · {lesson['title']} | {'; '.join(review['concepts'])} | {readings} |")
+    (ROOT / "docs" / "slide-map.md").write_text(
+        "# Microservices lecture review map\n\n"
+        "Each Colab lab has two goals: build one agentic mechanism and revisit a concrete "
+        "microservices or DDD decision from the supplied lectures. Its opening review names the "
+        "slides and asks two recall questions; its code, checks, and exercises apply those ideas.\n\n"
+        "Slide numbers include each deck's title slide and appendices. The PowerPoint files remain "
+        "class materials and are not redistributed here. The examples are small adaptations; "
+        "scripted replies, scores, workloads, and timing fixtures are not empirical results.\n\n"
+        "| Lab / agentic mechanism | Microservices / DDD revision | Lecture slides |\n"
+        "| --- | --- | --- |\n" + "\n".join(rows) + "\n")
 
 
 if __name__ == "__main__":

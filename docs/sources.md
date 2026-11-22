@@ -1,4 +1,12 @@
-# Learning resources and technical references
+# Lecture sources for the worked examples
+
+The course now uses the supplied **Microservices & Their Patterns** (53 slides) and **Microservices Lecture 2 - Condensed DDD** (92 slides). Both decks name Mustafa Assaf and Prof. Henry Muccini. They remain class materials and are not redistributed in this repository. [The revision map](slide-map.md) records exact slide numbers per lab.
+
+Short source IDs in notebook examples use **M** for Microservices & Their Patterns and **D** for the DDD deck, followed by slide number. Source notes are paraphrased for the exercise. Scenario IDs (such as C1) identify invented case facts, not lecture claims. Thresholds, example scores and timings are explicitly illustrative unless a slide supplies them.
+
+## Agentic API and pattern references
+
+### More learning resources
 
 ## More hands-on learning
 
@@ -7,8 +15,6 @@
 
 Follow each repository's README for its own setup and run instructions.
 
-## Technical references
-
 These primary sources support the course concepts and interfaces. The notebooks keep the main examples small; use these pages for detail and further exercises. Architecture labels and thresholds are fictional teaching fixtures, not recommendations derived from these sources.
 
 | Topic | Reference | Use in the course |
@@ -16,13 +22,11 @@ These primary sources support the course concepts and interfaces. The notebooks 
 | Model API messages | [Chat Completions overview](https://developers.openai.com/api/reference/chat-completions/overview) and [request reference](https://developers.openai.com/api/reference/resources/chat/subresources/completions/methods/create) | Message input, response extraction, and the compatible transport |
 | Initial model service | [FreeInference documentation](https://doc.freeinference.org/) | Base URL, current model access, service-specific behavior |
 | Prompt decomposition | [Wei et al., Chain-of-Thought Prompting (2022)](https://arxiv.org/abs/2201.11903) | Background for decomposition; the classroom adaptation uses explicit criteria and brief justifications rather than reproducing the original CoT method |
-| Tokenization and why letter counts fail | [OpenAI tokenizer](https://platform.openai.com/tokenizer), [tiktoken](https://github.com/openai/tiktoken) | Why a model reads a short familiar word as one or few tokens and misses its letters; background for Lab 01's strawberry demo and its token explanation |
-| Reasoning models | [OpenRouter models](https://openrouter.ai/models) (e.g. `qwen/qwen3-235b-a22b-thinking-2507`) | Lab 01's live contrast: a reasoning model writes a count in a `reasoning` field before answering, charged as output tokens |
-| RAG | [Lewis et al., Retrieval-Augmented Generation (2020)](https://arxiv.org/abs/2005.11401) | Retrieval supplies evidence before generation; the classroom store holds four policies |
+| RAG | [Lewis et al., Retrieval-Augmented Generation (2020)](https://arxiv.org/abs/2005.11401) | Retrieval supplies evidence before generation; the classroom store holds short microservices and DDD source notes |
 | Embeddings and vector search | [Reimers & Gurevych, Sentence-BERT (2019)](https://arxiv.org/abs/1908.10084), the [all-MiniLM-L6-v2 model card](https://huggingface.co/sentence-transformers/all-MiniLM-L6-v2), and [Chroma documentation](https://docs.trychroma.com/) | Sentence embeddings, cosine similarity, and an in-memory vector database |
 | Agent actions | [Yao et al., ReAct (2022)](https://arxiv.org/abs/2210.03629) | Actions and observations in a loop; the course does not expose private model reasoning |
 | Pattern names and descriptions | [Architectural Patterns for Agentic AI field guide](https://karthikv1392.github.io/agentic-patterns/) by Karthik Vaidhyanathan | The names, categories, flows, trade-offs, and quality attributes on each lab's pattern card |
-| Workflows and patterns | [Anthropic, Building effective agents](https://www.anthropic.com/research/building-effective-agents) | Chaining (Lab 03), tools (Lab 04), parallelization and orchestration (Lab 06), routing (Lab 10), and evaluator–optimizer loops (Labs 13–14) |
+| Workflows and patterns | [Anthropic, Building effective agents](https://www.anthropic.com/research/building-effective-agents) | Chaining (Lab 03), tools (Lab 04), parallelization and orchestration (Lab 06), routing (Lab 10), and contract-check-and-revise loops (Lab 14) |
 | Multi-agent debate | [Du et al., Improving Factuality and Reasoning through Multiagent Debate (2023)](https://arxiv.org/abs/2305.14325) | Several models propose, read each other's answers, and converge; the council adds sources, a chair, and dissent |
 | Independent opinions | [Sharma et al., Towards Understanding Sycophancy in Language Models (2023)](https://arxiv.org/abs/2310.13548) | Why architects propose alone before they read each other |
 | Feedback and memory | [Shinn et al., Reflexion (2023)](https://arxiv.org/abs/2303.11366) and [Park et al., Generative Agents (2023)](https://arxiv.org/abs/2304.03442) | Verbal feedback stored as memory and retrieved for later tasks |
@@ -31,7 +35,6 @@ These primary sources support the course concepts and interfaces. The notebooks 
 | Observability and events | [Python logging HOWTO](https://docs.python.org/3/howto/logging.html), [LangSmith](https://smith.langchain.com/), [OpenTelemetry, Observability primer](https://opentelemetry.io/docs/concepts/observability-primer/) and [Fowler, What do you mean by "Event-Driven"?](https://martinfowler.com/articles/201701-event-driven.html) | Lab 07's logs, LangSmith trace, message bus, and evidence trail |
 | Weighted voting | [Littlestone and Warmuth, The weighted majority algorithm (1994)](https://doi.org/10.1006/inco.1994.1009) | Background for Lab 16's trust-weighted votes |
 | Weighted decision matrix | [TypeSafe System One docs](https://docs.typesafe.ai/) (the [Score primitive](https://docs.typesafe.ai/primitives/score.md) and the [Python SDK](https://docs.typesafe.ai/sdk/python.md)) | Lab 17's criterion weights, option scores, and the optional live scoring step with the System One model JEV |
-| JEV over OpenRouter | [OpenRouter decisions endpoint](https://openrouter.ai/docs/api-reference/overview) (model `typesafe/jev-1.13`) | An alternative route to the same JEV scoring model when the student has an OpenRouter key instead of a TypeSafe key |
 | MCP | [MCP introduction](https://modelcontextprotocol.io/docs/getting-started/intro) and [official Python SDK](https://github.com/modelcontextprotocol/python-sdk) | Tools/context interface, discovery, schemas, and calls |
 | A2A | [A2A documentation](https://a2a-protocol.org/latest/) and [official Python SDK](https://github.com/a2aproject/a2a-python) | Agent Card, discovery, messages, and response handling |
 | Agent Skills | [Overview](https://agentskills.io/home) and [specification](https://agentskills.io/specification) | Skill folders, SKILL.md metadata, instructions, and progressive loading |

@@ -26,21 +26,19 @@ def load_function(source, name, namespace):
 
 
 class LiveRetryTests(unittest.TestCase):
-    def test_a2a_live_retry_never_reads_the_practice_answers(self):
-        prompts = []
-
-        def ask(prompt, *, example):
-            self.assertEqual(example, "")
-            prompts.append(prompt)
-            return "modular monolith"
-
-        ns = {"MODE": "live", "ask": ask}
-        quiet_exec(code_cells("13_a2a_protocol")[2], ns)
-        for project in ns["projects"]:
-            ns["scripted"].clear()  # live behavior must be independent of these fixtures
-            self.assertEqual(ns["propose"](project, "Policy check failed; revise."), "modular monolith")
-        self.assertEqual(len(prompts), 4)
-        self.assertTrue(all("Policy check failed" in prompt for prompt in prompts))
+    def test_a2a_adapter_keeps_provider_fields_out_of_the_internal_model(self):
+        ns = {}
+        quiet_exec(code_cells("13_a2a_protocol")[0], ns)
+        reply = json.loads(ns["payment_adapter"](json.dumps(
+            {"id": "pi-17", "status": "succeeded", "amount_received": 4200,
+             "currency": "eur", "metadata": {"order_id": "order-17"}})))
+        self.assertNotIn("amount_received", reply)
+        self.assertNotIn("metadata", reply)
+        self.assertNotIn("error", reply)
+        for bad in [True, False, "4200", -1]:
+            request = {"id": "pi-17", "status": "succeeded", "amount_received": bad,
+                       "currency": "eur", "metadata": {"order_id": "order-17"}}
+            self.assertIn("error", json.loads(ns["payment_adapter"](json.dumps(request))))
 
     def test_langgraph_retries_every_project_and_stops_after_two_failures(self):
         cells = code_cells("14_frameworks_langgraph")
@@ -49,7 +47,7 @@ class LiveRetryTests(unittest.TestCase):
         def ask(prompt, *, example):
             self.assertEqual(example, "")
             prompts.append(prompt)
-            return "serverless"  # deliberately fails both attempts
+            return json.dumps({"orderId": "string", "amount": "number"})  # breaks the old total field
 
         ns = {"MODE": "live", "ask": ask}
         for cell in cells[:3]:
@@ -59,15 +57,15 @@ class LiveRetryTests(unittest.TestCase):
             result = ns["app"].invoke({"project": project})
             self.assertEqual(result["attempts"], 2)
             self.assertFalse(result["passed"])
-        self.assertEqual(len(prompts), 8)
-        self.assertTrue(all("failed a check" in prompt for prompt in prompts[1::2]))
+        self.assertEqual(len(prompts), 2 * len(ns["projects"]))
+        self.assertTrue(all("Do not rename total" in prompt for prompt in prompts[1::2]))
 
 
 class SkillContractTests(unittest.TestCase):
     def run_skill(self, ask):
         cells = code_cells("12_agent_skills")
-        ns = {"ask": ask, "choice": "architecture-decision",
-              "skills": {"architecture-decision": {"body": "Apply the course policy."}}}
+        ns = {"ask": ask, "choice": "saga-adr",
+              "skills": {"saga-adr": {"body": "Review the checkout saga."}}}
         quiet_exec(cells[3], ns)
         quiet_exec(cells[4], ns)
 
@@ -77,12 +75,12 @@ class SkillContractTests(unittest.TestCase):
         def ask(prompt, *, example):
             prompts.append(prompt)
             if len(prompts) == 1:
-                return example.replace("Decision: modular monolith", "Decision: modular monolith, because the team is small")
+                return example.replace("Decision: compensate", "Decision: compensate, because payment failed")
             return example
 
         self.run_skill(ask)
         self.assertEqual(len(prompts), 3)
-        self.assertIn("Decision must contain only", prompts[0])
+        self.assertIn("Decision contains only", prompts[0])
         self.assertIn("Your last reply:", prompts[1])
         self.assertIn("Fix these problems:", prompts[1])
 
@@ -91,7 +89,7 @@ class SkillContractTests(unittest.TestCase):
 
         def ask(prompt, *, example):
             prompts.append(prompt)
-            return "Decision: serverless"
+            return "Decision: ignore the payment failure"
 
         with self.assertRaises(AssertionError):
             self.run_skill(ask)
@@ -102,13 +100,13 @@ class MemoryScopeTests(unittest.TestCase):
     def test_similar_but_out_of_scope_memory_never_enters_the_search_prompt(self):
         cells = code_cells("08_human_feedback_memory")
         prompts, queries = [], []
-        stored_lesson = "Past case: Payments platform; one operations engineer; use modular monolith."
+        stored_lesson = "Past case: Pricing quote; idempotent read and transient failure; bounded retry with jitter."
 
         class Memory:
             def query(self, **kwargs):
                 queries.append(kwargs)
                 # A semantic false positive: Search would be the closer match without a scope filter.
-                records = [] if kwargs.get("where") == {"ops_engineers": 4} else [{"lesson": stored_lesson}]
+                records = [] if kwargs.get("where") == {"idempotent": False} else [{"lesson": stored_lesson}]
                 return {"distances": [[0.22] if records else []], "metadatas": [records]}
 
         def ask(prompt, *, example):
@@ -124,14 +122,14 @@ class MemoryScopeTests(unittest.TestCase):
         self.assertEqual(ns["scores"], {"before": 1, "after": 2})
         self.assertIn(stored_lesson, prompts[2])
         self.assertNotIn(stored_lesson, prompts[3])
-        self.assertEqual(queries[-1]["where"], {"ops_engineers": 4})
-        self.assertEqual(queries[-2]["where"], {"ops_engineers": 1})
+        self.assertEqual(queries[-1]["where"], {"idempotent": False})
+        self.assertEqual(queries[-2]["where"], {"idempotent": True})
 
     def test_a_flat_learning_result_is_reported_instead_of_asserted_away(self):
         cells = code_cells("08_human_feedback_memory")
-        ns = {"case": "feedback case", "held_out": [("new case", 4, "microservices")],
+        ns = {"case": "feedback case", "held_out": [("new case", False, "do not retry")],
               "recall": lambda *args, **kwargs: [],
-              "council": lambda *args, **kwargs: "microservices"}
+              "council": lambda *args, **kwargs: "do not retry"}
         quiet_exec(cells[4], ns)
         self.assertEqual(ns["scores"], {"before": 1, "after": 1})
 
