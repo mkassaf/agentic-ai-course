@@ -13,7 +13,7 @@
     },
     {
       "type": "markdown",
-      "source": "## Step 1 · Name qualities and check scenario structure\n\nThe quality labels are a small shared vocabulary. Each scenario needs a stimulus, response, and numerical measure. A number makes a target discussable; a schema check cannot prove the target is feasible."
+      "source": "## Step 1 · Name qualities and check scenario structure\n\nThe quality labels are a small shared vocabulary. Each scenario needs a stimulus, response, and numerical measure. A number makes a target discussable; a schema check cannot prove the target is feasible.\n\nThe brief combines lecture facts and explicit classroom targets. Ask a stakeholder to confirm targets before treating them as real requirements."
     },
     {
       "type": "code",
@@ -29,7 +29,7 @@
     },
     {
       "type": "markdown",
-      "source": "## Step 3 · Define a proposal contract\n\nEvery proposal names an option, a confidence, one mark per scenario, and a claim. Marks use scenario indices because two scenarios may share a quality label. A boolean is not accepted as confidence even though Python treats it as an integer."
+      "source": "## Step 3 · Define a proposal contract\n\nEvery proposal names an option, a confidence, one mark per scenario, and a claim. Marks use scenario indices because two scenarios may share a quality label. A boolean is not accepted as confidence even though Python treats it as an integer.\n\nThe contract checks the reply shape, not the truth of a claim. A high confidence number does not make an unsafe option acceptable."
     },
     {
       "type": "code",
@@ -45,7 +45,7 @@
     },
     {
       "type": "markdown",
-      "source": "## Step 5 · Compare votes and confidence\n\nSelf-reported confidence is a claim, not measured trust. One confident unsafe answer must not bypass a safety rule. In a real implementation, independently reject non-idempotent blind retries before executing any payment action."
+      "source": "## Step 5 · Compare votes and confidence\n\nSelf-reported confidence is a claim, not measured trust. One confident unsafe answer must not bypass a safety rule. In a real implementation, independently reject non-idempotent blind retries before executing any payment action.\n\nA sum of self-reported confidence is a teaching illustration, not a calibrated probability or a substitute for evidence."
     },
     {
       "type": "code",

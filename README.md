@@ -10,7 +10,7 @@ The examples use ShopEasy, the lectures' social app, and small checkout scenario
 
 ## Start in Colab
 
-Save a copy of a notebook to your Drive and run cells in order with a CPU runtime. Students should know Python functions, dictionaries, lists, loops, and JSON. Allow roughly 15–20 minutes per lab, plus installation and discussion. Each core step has at most 20 Python lines; each lab has at most 75 example lines.
+Save a copy of a notebook to your Drive and run cells in order with a CPU runtime. Students should know Python functions, dictionaries, lists, loops, and JSON. Allow roughly 15–20 minutes per lab, plus installation and discussion. Each core step has at most 25 Python lines; each lab has at most 100 example lines.
 
 **Lecture 1 (00–02):** rules, prompting/evaluation, RAG. **Lecture 2 (03–05):** chaining, tools, ReAct. **Lecture 3 (06–08):** debate, observability, human feedback/memory. Labs 09–17 are self-study extensions.
 

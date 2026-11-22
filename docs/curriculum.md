@@ -14,7 +14,7 @@ Nine self-study labs extend the same revision: evaluation (09), routing (10), MC
 
 ## Keep examples small and checkable
 
-Each lab has two to five core code steps, at most 20 lines each and 75 in total. The examples are deliberately reduced models; Python state changes stand in for services, and no Kafka, Kubernetes, or payment deployment is required. Official MCP, A2A, and LangGraph SDKs demonstrate the agentic interfaces themselves.
+Each lab has two to five core code steps, at most 25 lines each and 100 in total. The examples are deliberately reduced models; Python state changes stand in for services, and no Kafka, Kubernetes, or payment deployment is required. Official MCP, A2A, and LangGraph SDKs demonstrate the agentic interfaces themselves.
 
 Lab 00's two-Boolean readiness screen is a classroom adaptation for cases whose stated goal is independent releases. `ops_ready` summarizes the four lecture prerequisites: CI/CD, monitoring, rapid provisioning, and teams owning operations. It is not a universal service-decomposition rule. The lectures also motivate independent scaling. Boundaries require business language, cohesion, consistency and change patterns, not a fixed team-size threshold.
 

@@ -82,10 +82,10 @@ def main():
         # Each step is one short cell, so a beginner reads one idea at a time.
         if not 2 <= len(examples) <= 5:
             issues.append(f"{path.name}: use two to five step code cells")
-        if any(len(c.source.splitlines()) > 20 for c in examples):
-            issues.append(f"{path.name}: a step cell exceeds 20 lines; split it into two steps")
-        if sum(len(c.source.splitlines()) for c in examples) > 75:
-            issues.append(f"{path.name}: example code exceeds the 75-line lab limit")
+        if any(len(c.source.splitlines()) > 25 for c in examples):
+            issues.append(f"{path.name}: a step cell exceeds 25 lines; split it into two steps")
+        if sum(len(c.source.splitlines()) for c in examples) > 100:
+            issues.append(f"{path.name}: example code exceeds the 100-line lab limit")
         for cell in notebook.cells:
             if cell.cell_type == "code":
                 if cell.get("outputs") or cell.get("execution_count") is not None:

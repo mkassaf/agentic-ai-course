@@ -13,7 +13,7 @@
     },
     {
       "type": "markdown",
-      "source": "## Step 1 · Read an inline SKILL.md example\n\nThe visible text stands in for `SKILL.md`. The small parser handles our controlled header format. The skill explains the domain procedure; a later checker verifies its proposed actions."
+      "source": "## Step 1 · Read an inline SKILL.md example\n\nThe visible text stands in for `SKILL.md`. The small parser handles our controlled header format. The skill explains the domain procedure; a later checker verifies its proposed actions.\n\nA skill has a small header between `---` markers and an instruction body. The helper splits those parts; this example uses a deliberately simple header format."
     },
     {
       "type": "code",
@@ -37,11 +37,11 @@
     },
     {
       "type": "markdown",
-      "source": "## Step 4 · Check shape and compensation order\n\nThe checker requires three labelled lines, the expected decision, and exactly the expected ordered actions. It rejects `reject order; release stock`, because that is not reverse completion order. A successful checkout must contain `none`, not an unnecessary compensation. A human still checks the completeness of the supplied saga model."
+      "source": "## Step 4 · Check shape and compensation order\n\nThe checker requires three labelled lines, the expected decision, and exactly the expected ordered actions. It rejects `reject order; release stock`, because that is not reverse completion order. A successful checkout must contain `none`, not an unnecessary compensation. A human still checks the completeness of the supplied saga model.\n\nThe checker verifies the labels and the exact compensation order. It does not execute the compensation or establish that the business policy is correct."
     },
     {
       "type": "code",
-      "source": "def adr_problems(adr, expected, actions=()):\n    lines = adr.strip().splitlines()\n    pairs = [line.split(\":\", 1) for line in lines if \":\" in line]\n    fields = {key.strip(): value.strip() for key, value in pairs}\n    problems = []\n    if len(lines) != 3 or list(fields) != [\"Context\", \"Decision\", \"Consequence\"]:\n        problems.append(\"Use exactly Context, Decision, Consequence, one nonempty line each\")\n    if not all(fields.get(key) for key in (\"Context\", \"Decision\", \"Consequence\")):\n        problems.append(\"Every field needs text\")\n    if fields.get(\"Decision\", \"\").strip().lower() != expected:\n        problems.append(f\"Decision must contain only {expected!r}\")\n    given = [a.strip().lower() for a in fields.get(\"Consequence\", \"\").split(\";\")]\n    if given != (list(actions) if actions else [\"none\"]):\n        problems.append(f\"Consequence must list ordered actions {list(actions) or ['none']}\")\n    return problems\n\nprint(adr_problems(\"Context: Pending.\\nDecision: compensate\\nConsequence: reject order; release stock\",\n                   \"compensate\", [\"release stock\", \"reject order\"]))"
+      "source": "def adr_problems(adr, expected, actions=()):\n    lines = adr.strip().splitlines()\n    fields = {}\n    for line in lines:\n        if \":\" in line:\n            key, value = line.split(\":\", 1)\n            fields[key.strip()] = value.strip()\n    problems = []\n    if len(lines) != 3 or list(fields) != [\"Context\", \"Decision\", \"Consequence\"]:\n        problems.append(\"Use exactly Context, Decision, Consequence, one nonempty line each\")\n    if not all(fields.get(key) for key in (\"Context\", \"Decision\", \"Consequence\")):\n        problems.append(\"Every field needs text\")\n    if fields.get(\"Decision\", \"\").strip().lower() != expected:\n        problems.append(f\"Decision must contain only {expected!r}\")\n    given = [a.strip().lower() for a in fields.get(\"Consequence\", \"\").split(\";\")]\n    if given != (list(actions) if actions else [\"none\"]):\n        problems.append(f\"Consequence must list ordered actions {list(actions) or ['none']}\")\n    return problems\n\nprint(adr_problems(\"Context: Pending.\\nDecision: compensate\\nConsequence: reject order; release stock\",\n                   \"compensate\", [\"release stock\", \"reject order\"]))"
     },
     {
       "type": "markdown",

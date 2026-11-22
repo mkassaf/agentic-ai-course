@@ -13,7 +13,7 @@
     },
     {
       "type": "markdown",
-      "source": "## Step 1 · Store slide notes with provenance\nThese summaries distinguish database ownership, small lookup composition, searchable read models, duplicate events and atomic publication intent. They do not reproduce the full decks."
+      "source": "## Step 1 · Store slide notes with provenance\n`notes` maps each source ID to a short lecture summary. `M24` means slide 24 of Microservices & Their Patterns; `D52` means slide 52 of the DDD deck. We keep these IDs when we retrieve and cite evidence. The notes are summaries, not copies of the complete decks."
     },
     {
       "type": "code",
@@ -25,15 +25,15 @@
     },
     {
       "type": "code",
-      "source": "import numpy as np\nfrom chromadb.utils.embedding_functions import DefaultEmbeddingFunction\nembed = DefaultEmbeddingFunction()\nq_vec, query_note, ownership_note = embed([question, notes[\"M28\"], notes[\"M24\"]])\ndef cosine(a, b):\n    return float(np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b)))\nprint(\"Vector size:\", len(q_vec))\nprint(\"Question vs CQRS:\", round(cosine(q_vec, query_note), 2))\nprint(\"Question vs ownership:\", round(cosine(q_vec, ownership_note), 2))"
+      "source": "import numpy as np\nfrom chromadb.utils.embedding_functions import DefaultEmbeddingFunction\n\nembed = DefaultEmbeddingFunction()\nquestion_vector, cqrs_vector, ownership_vector = embed([question, notes[\"M28\"], notes[\"M24\"]])\n\ndef cosine(first, second):\n    dot_product = np.dot(first, second)\n    vector_lengths = np.linalg.norm(first) * np.linalg.norm(second)\n    return float(dot_product / vector_lengths)\n\nprint(\"Vector size:\", len(question_vector))\nprint(\"Question vs CQRS:\", round(cosine(question_vector, cqrs_vector), 2))\nprint(\"Question vs ownership:\", round(cosine(question_vector, ownership_vector), 2))"
     },
     {
       "type": "markdown",
-      "source": "## Step 3 · Search a vector collection\nA smaller cosine distance means a nearer match. We retain the slide ID as the source identifier. This is an in-memory teaching store, not persistent course infrastructure."
+      "source": "## Step 3 · Search a vector collection\nA smaller cosine distance means a nearer match. We retain the slide ID as the source identifier. This is an in-memory teaching store, not persistent course infrastructure. `upsert` inserts a note or updates an existing ID, so rerunning the cell is safe. Chroma accepts several questions at once, so its results are lists of lists; `[0]` selects the results for our single question. `zip` pairs each source ID with its distance."
     },
     {
       "type": "code",
-      "source": "import chromadb\nfrom chromadb.config import Settings\ncollection = chromadb.Client(Settings(anonymized_telemetry=False)).get_or_create_collection(\n    \"lecture-notes\", embedding_function=embed, configuration={\"hnsw\": {\"space\": \"cosine\"}})\ncollection.upsert(ids=list(notes), documents=list(notes.values()))\nfound = collection.query(query_texts=[question], n_results=3)\nfor sid, distance in zip(found[\"ids\"][0], found[\"distances\"][0]):\n    print(sid, round(distance, 2))"
+      "source": "import chromadb\nfrom chromadb.config import Settings\n\ndatabase = chromadb.Client(Settings(anonymized_telemetry=False))\ncollection = database.get_or_create_collection(\n    \"lecture-notes\", embedding_function=embed,\n    configuration={\"hnsw\": {\"space\": \"cosine\"}},\n)\ncollection.upsert(ids=list(notes), documents=list(notes.values()))\nfound = collection.query(query_texts=[question], n_results=3)\nsource_ids = found[\"ids\"][0]\ndistances = found[\"distances\"][0]\nfor source_id, distance in zip(source_ids, distances):\n    print(source_id, round(distance, 2))"
     },
     {
       "type": "markdown",
@@ -41,15 +41,15 @@
     },
     {
       "type": "code",
-      "source": "def retrieve(question, max_distance=0.7):\n    found = collection.query(query_texts=[question], n_results=1)\n    return {sid: notes[sid] for sid, d in zip(found[\"ids\"][0], found[\"distances\"][0]) if d <= max_distance}\nquestions = [question, \"May Reporting read the private tables owned by Order?\", \"What should we eat for lunch?\"]\nfor q in questions:\n    print(list(retrieve(q)), q)"
+      "source": "def retrieve(question, max_distance=0.7):\n    found = collection.query(query_texts=[question], n_results=1)\n    nearest_id = found[\"ids\"][0][0]\n    nearest_distance = found[\"distances\"][0][0]\n    if nearest_distance > max_distance:\n        return {}  # no suitable evidence\n    return {nearest_id: notes[nearest_id]}\n\nquestions = [\n    question,\n    \"May Reporting read the private tables owned by Order?\",\n    \"What should we eat for lunch?\",\n]\nfor current_question in questions:\n    hits = retrieve(current_question)\n    print(list(hits), current_question)"
     },
     {
       "type": "markdown",
-      "source": "## Step 5 · Answer with a citation, then check support\nThe code checks **citation validity**: a cited ID must have been retrieved. That alone does not prove the source supports the claim. Students must inspect that semantic support and the stated trade-off."
+      "source": "## Step 5 · Answer with a citation, then check support\nThe code checks **citation validity**: a cited ID must have been retrieved. That alone does not prove the source supports the claim. Students must inspect that semantic support and the stated trade-off. `re.findall` extracts IDs such as M28 from the answer. A set removes repeated citations; `issubset` checks that every cited ID belongs to the retrieved evidence. `all(valid)` requires every answered question to pass that check."
     },
     {
       "type": "code",
-      "source": "import re\nscripted = [\"Use a CQRS read model for searchable history; it may lag behind writes [M28].\",\n            \"No: Order owns its private data; Reporting must use an API or events [M24].\", \"\"]\nvalid = []\nfor q, example in zip(questions, scripted):\n    hits = retrieve(q)\n    if not hits:\n        print(\"No matching lecture note; no model call:\", q)\n        continue\n    evidence = \"\\n\".join(f\"[{sid}] {text}\" for sid, text in hits.items())\n    answer = ask(f\"Use only these notes:\\n{evidence}\\nQuestion: {q}\\nReply briefly and cite the slide ID.\", example=example)\n    cited = set(re.findall(r\"[MD]\\d+\", answer))\n    valid.append(bool(cited) and cited <= set(hits))\n    print(answer, \"| citation valid:\", valid[-1])\nassert all(valid), \"Cite only retrieved source IDs.\""
+      "source": "import re\n\nscripted = [\n    \"Use a CQRS read model for searchable history; it may lag behind writes [M28].\",\n    \"No: Order owns its private data; Reporting must use an API or events [M24].\",\n    \"\",\n]\nvalid = []\nfor current_question, example in zip(questions, scripted):\n    hits = retrieve(current_question)\n    if not hits:\n        print(\"No matching lecture note; no model call:\", current_question)\n        continue\n    evidence_lines = []\n    for source_id, text in hits.items():\n        evidence_lines.append(f\"[{source_id}] {text}\")\n    evidence = \"\\n\".join(evidence_lines)\n    prompt = f\"Use only these notes:\\n{evidence}\\nQuestion: {current_question}\\nReply briefly and cite the slide ID.\"\n    answer = ask(prompt, example=example)\n    cited_ids = set(re.findall(r\"[MD]\\d+\", answer))\n    citation_valid = bool(cited_ids) and cited_ids.issubset(hits)\n    valid.append(citation_valid)\n    print(answer, \"| citation valid:\", citation_valid)\nassert all(valid), \"Cite only retrieved source IDs.\""
     },
     {
       "type": "markdown",

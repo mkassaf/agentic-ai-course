@@ -32,7 +32,7 @@
     },
     {
       "type": "markdown",
-      "source": "## Step 3 · Discover the schemas\n\nThe client learns tool names, descriptions, and arguments from the server. It does not inspect `ORDERS`. Colab accepts `await` at the top level; the official MCP SDK handles the local protocol exchange."
+      "source": "## Step 3 · Discover the schemas\n\nThe client learns tool names, descriptions, and arguments from the server. It does not inspect `ORDERS`. Colab accepts `await` at the top level; the official MCP SDK handles the local protocol exchange.\n\n`list_tools()` asks the MCP server for registered tool names, descriptions, and input schemas. This is an in-process SDK exchange; no service is deployed."
     },
     {
       "type": "code",
@@ -40,7 +40,7 @@
     },
     {
       "type": "markdown",
-      "source": "## Step 4 · Read, then record two pattern decisions\n\nThese are fixed client calls. A model could choose tools as in Lab 05, but this lab isolates the protocol and the boundary. CQRS also costs another read model and eventual consistency; API composition depends on its source services being available."
+      "source": "## Step 4 · Read, then record two pattern decisions\n\nThese are fixed client calls. A model could choose tools as in Lab 05, but this lab isolates the protocol and the boundary. CQRS also costs another read model and eventual consistency; API composition depends on its source services being available.\n\nThe Python code chooses a pattern for each example, then asks the server to save it. The MCP server provides tools here; it is not a model choosing the pattern."
     },
     {
       "type": "code",

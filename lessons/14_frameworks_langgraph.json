@@ -13,7 +13,7 @@
     },
     {
       "type": "markdown",
-      "source": "## Step 1 · Describe state and two changes\n\nA `TypedDict` documents fields shared by nodes; it does not validate model output at runtime. `CURRENT` is the published event contract. New fields must use our illustrative `optional string` type so existing consumers are not required to supply them."
+      "source": "## Step 1 · Describe state and two changes\n\nA `TypedDict` documents fields shared by nodes; it does not validate model output at runtime. `CURRENT` is the published event contract. New fields must use our illustrative `optional string` type so existing consumers are not required to supply them.\n\n`State` names the information passed between nodes. `total=False` allows a run to start with only the project; later nodes add the remaining fields."
     },
     {
       "type": "code",
@@ -21,15 +21,15 @@
     },
     {
       "type": "markdown",
-      "source": "## Step 2 · Write generation and checking nodes\n\n`choose` returns only updated state fields. It reads practice fixtures only in practice mode, so a live retry never depends on a second scripted answer. `check` validates the JSON object's shape, existing names and types, and the requested optional addition. This compact check is specific to our controlled example."
+      "source": "## Step 2 · Write generation and checking nodes\n\n`choose` returns only updated state fields. It reads practice fixtures only in practice mode, so a live retry never depends on a second scripted answer. `check` validates the JSON object's shape, existing names and types, and the requested optional addition. This compact check is specific to our controlled example.\n\nThe `choose` node returns the proposed fields and an updated attempt count. The `check` node verifies that existing fields keep their names and types."
     },
     {
       "type": "code",
-      "source": "import json\n\ndef choose(state):\n    p, n = state[\"project\"], state.get(\"attempts\", 0)\n    prompt = (f\"Existing event: {CURRENT}. Add {p['new_field']} without breaking consumers. Keep existing names/types. \"\n              f\"For the new field, use the exact type-label text 'optional string', not 'string?'. Reply with only a JSON object, no fences. {state.get('feedback', '')}\")\n    example = json.dumps(scripted[p[\"name\"]][n]) if MODE == \"practice\" else \"\"\n    return {\"fields\": json.loads(ask(prompt, example=example)), \"attempts\": n + 1}\n\ndef check(state):\n    fields, new = state[\"fields\"], state[\"project\"][\"new_field\"]\n    ok = isinstance(fields, dict) and all(fields.get(k) == v for k, v in CURRENT.items())\n    ok = ok and fields.get(new) == \"optional string\" and all(k in CURRENT or v == \"optional string\" for k, v in fields.items())\n    return {\"passed\": ok, \"feedback\": \"\" if ok else f\"Keep {CURRENT}; the value for {new} must be exactly 'optional string'. Do not rename total.\"}\n\nprint(check({\"project\": projects[0], \"fields\": {\"orderId\": \"string\", \"amount\": \"number\"}}))"
+      "source": "import json\n\ndef choose(state):\n    project = state[\"project\"]\n    attempt = state.get(\"attempts\", 0)\n    prompt = (f\"Existing event: {CURRENT}. Add {project['new_field']} without breaking consumers. Keep existing names/types. \"\n              f\"For the new field, use the exact type-label text 'optional string', not 'string?'. Reply with only a JSON object, no fences. {state.get('feedback', '')}\")\n    example = json.dumps(scripted[project[\"name\"]][attempt]) if MODE == \"practice\" else \"\"\n    return {\"fields\": json.loads(ask(prompt, example=example)), \"attempts\": attempt + 1}\n\ndef check(state):\n    fields = state[\"fields\"]\n    new = state[\"project\"][\"new_field\"]\n    ok = isinstance(fields, dict) and all(fields.get(k) == v for k, v in CURRENT.items())\n    ok = ok and fields.get(new) == \"optional string\" and all(k in CURRENT or v == \"optional string\" for k, v in fields.items())\n    return {\"passed\": ok, \"feedback\": \"\" if ok else f\"Keep {CURRENT}; the value for {new} must be exactly 'optional string'. Do not rename total.\"}\n\nprint(check({\"project\": projects[0], \"fields\": {\"orderId\": \"string\", \"amount\": \"number\"}}))"
     },
     {
       "type": "markdown",
-      "source": "## Step 3 · Connect the graph\n\nThe sequence is `START → choose → check`. A failed check returns to `choose` unless two attempts have already run. Invalid JSON is rejected explicitly by `json.loads`; a non-object JSON reply reaches the checker and fails safely."
+      "source": "## Step 3 · Connect the graph\n\nThe sequence is `START → choose → check`. A failed check returns to `choose` unless two attempts have already run. Invalid JSON is rejected explicitly by `json.loads`; a non-object JSON reply reaches the checker and fails safely.\n\nA conditional edge asks `route` where to go after the check. It retries once at most; a second failure ends for human review."
     },
     {
       "type": "code",
