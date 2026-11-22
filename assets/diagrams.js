@@ -298,19 +298,19 @@ const DIAGRAMS = {
     "stages": [
       {
         "k": "data",
-        "t": "4 readiness cases",
-        "s": "ops + independent releases"
+        "t": "7 quiz questions",
+        "s": "retries + service patterns"
       },
       [
         {
           "k": "code",
           "t": "Apply the rule",
-          "s": "decide()"
+          "s": "rule_answer()"
         },
         {
           "k": "model",
           "t": "Ask a model",
-          "s": "ask() + to_label()"
+          "s": "ask() for one letter"
         }
       ],
       {

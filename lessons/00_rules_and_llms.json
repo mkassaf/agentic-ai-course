@@ -5,43 +5,35 @@
   "cells": [
     {
       "type": "markdown",
-      "source": "## One architecture question, two ways to answer it\n**Start here.** A growing social application can benefit from independent scaling and releases, but a distributed system also needs network, data, and operational support. Independent scaling and releases are benefits, but distribution adds network, data and operations costs.\n\nOur small *screening rule* is: consider **microservices** only when independent releases are needed **and** operational prerequisites are ready; otherwise start with a **modular monolith**. `ops_ready` summarizes all four prerequisites for this example: automated CI/CD, monitoring and alerting, rapid provisioning, and teams that own operations. This screen does not prove that a service boundary or architecture is good. Team size alone never selects the architecture.\n\nWrite the rule, cover its four paths, then compare it with a single unguided LLM call.\n\nFor these four cases, the stated goal is independent releases. The lecture also motivates services by independent scaling and ownership; the two-Boolean screen is a small classroom adaptation, not a complete or universally necessary architecture test."
+      "source": "## One set of questions, two ways to answer\nShopEasy's services communicate over a network. A call may fail temporarily, one slow dependency may consume shared resources, and different clients may need different APIs.\n\nFirst, answer short multiple-choice questions using explicit Python rules. Then ask an LLM the **same questions**, without giving it those rules, and compare its answers. The model is not an agent yet: it makes one independent call per question and uses no tools.\n\nThese are simplified teaching rules. Real designs require more context, and automatic retries need timeouts, a limit, and backoff with jitter."
     },
     {
       "type": "markdown",
-      "source": "## Step 1 · Write a readiness screen\nA project is a dictionary of facts. `decide(project)` returns two values: a decision label and its reason. The two Booleans describe this exercise's stated independent-release goal; they do not replace a full architecture review."
+      "source": "## Step 1 · Read the questions\nEach case contains its question, answer choices, and facts for the rule. `idempotent=True` means repeating the request has the same intended effect as one request. For a payment, this requires a server-supported idempotency key reused on every attempt; a key alone is not enough.\n\nRead the questions and choose your answers before running the rules. Retry questions assume a transient failure unless stated otherwise. A timeout does **not** prove that a payment failed."
     },
     {
       "type": "code",
-      "source": "def decide(project):\n    \"\"\"A simplified readiness screen for these example cases, not a complete design method.\"\"\"\n    ready = project[\"ops_ready\"]\n    independent = project[\"independent_deploys\"]\n    if ready and independent:\n        return \"microservices\", \"independent releases are needed and prerequisites are ready\"\n    if not ready:\n        return \"modular monolith\", \"operational prerequisites are missing\"\n    return \"modular monolith\", \"a shared release meets the stated need\"\n\npilot = {\"name\": \"ShopEasy pilot\", \"ops_ready\": False, \"independent_deploys\": False}\nprint(pilot[\"name\"], decide(pilot))"
+      "source": "retry_choices = [\"A. Retry with a limit and backoff\", \"B. Do not retry automatically\"]\npattern_choices = [\"A. Bulkhead\", \"B. API gateway\", \"C. BFF\"]\ncases = [\n    {\"name\": \"Product read\", \"kind\": \"retry\", \"transient\": True, \"idempotent\": True,\n     \"question\": \"A read-only product lookup times out due to a temporary network failure. Retry?\", \"choices\": retry_choices},\n    {\"name\": \"Unsafe payment\", \"kind\": \"retry\", \"transient\": True, \"idempotent\": False,\n     \"question\": \"A temporary network failure causes a card charge to time out. Repeating it may charge twice. Retry?\", \"choices\": retry_choices},\n    {\"name\": \"Safe payment\", \"kind\": \"retry\", \"transient\": True, \"idempotent\": True,\n     \"question\": \"A charge times out due to a temporary network failure. The server guarantees deduplication using the same idempotency key. Retry?\", \"choices\": retry_choices},\n    {\"name\": \"Invalid request\", \"kind\": \"retry\", \"transient\": False, \"idempotent\": True,\n     \"question\": \"A product read gets a permanent invalid-request error. Retry unchanged?\", \"choices\": retry_choices},\n    {\"name\": \"Resource isolation\", \"kind\": \"isolate_resources\",\n     \"question\": \"Slow recommendations exhaust the shared request pool. What isolates resources?\", \"choices\": pattern_choices},\n    {\"name\": \"Client needs\", \"kind\": \"client_specific_api\",\n     \"question\": \"Mobile needs small responses; web needs rich pages. What provides client-specific APIs?\", \"choices\": pattern_choices},\n    {\"name\": \"Shared entry\", \"kind\": \"shared_entry\",\n     \"question\": \"External clients need one entry point for routing and common authentication. What fits?\", \"choices\": pattern_choices},\n]\nfor case in cases:\n    print(f\"\\n{case['name']}: {case['question']}\")\n    print(\"  \" + \" | \".join(case[\"choices\"]))"
     },
     {
       "type": "markdown",
-      "source": "## Step 2 · Cover all four combinations\nEach row below is a separate invented case. `decision, reason = decide(project)` puts the function's two returned values into two named variables. Predict which one case should pass both conditions before running the cell."
+      "source": "## Step 2 · Apply explicit rules\nFor retries, our rule requires **both** a transient failure and an idempotent operation. Otherwise it selects B. For the other questions, the facts identify the problem: separate resource pools suggest a bulkhead, client-specific APIs suggest BFFs, and shared entry and routing suggest an API gateway.\n\nThese pattern choices address the stated need; a system can use an API gateway and BFFs together. BFFs add a layer and are not needed for every client."
     },
     {
       "type": "code",
-      "source": "projects = [\n    {\"name\": \"ShopEasy pilot\", \"ops_ready\": False, \"independent_deploys\": False},\n    {\"name\": \"Social feeds\", \"ops_ready\": True, \"independent_deploys\": True},\n    {\"name\": \"ShopEasy shared release\", \"ops_ready\": True, \"independent_deploys\": False},\n    {\"name\": \"Returns pilot\", \"ops_ready\": False, \"independent_deploys\": True},\n]\nfor project in projects:\n    decision, reason = decide(project)\n    print(project[\"name\"], \"->\", decision)\n    print(\"  Reason:\", reason)"
+      "source": "def rule_answer(case):\n    if case[\"kind\"] == \"retry\":\n        if case[\"transient\"] and case[\"idempotent\"]:\n            return \"A\"\n        return \"B\"\n    if case[\"kind\"] == \"isolate_resources\":\n        return \"A\"\n    if case[\"kind\"] == \"client_specific_api\":\n        return \"C\"\n    if case[\"kind\"] == \"shared_entry\":\n        return \"B\"\n    raise ValueError(\"Unknown case kind\")\n\nfor case in cases:\n    print(case[\"name\"], \"->\", rule_answer(case))"
     },
     {
       "type": "markdown",
-      "source": "## Step 3 · Normalize a text answer cautiously\nA free-text answer is not a typed decision. If it mentions both options or neither, `to_label` returns `unclear`. It cannot interpret arbitrary prose or negation."
+      "source": "## Step 3 · Ask an LLM the same questions\nThe prompt contains the question and its choices, but not the Python rules or the hidden `kind` and Boolean fields. We ask for one letter so results can be compared. The model may still be wrong or return an invalid format.\n\nIn **practice** mode, `ask` returns the scripted answers below; one is deliberately wrong. In **live** mode, it calls the selected provider once per question and ignores those scripts. This small comparison checks agreement with our simplified answer key, not general architecture expertise."
     },
     {
       "type": "code",
-      "source": "def to_label(reply):\n    text = reply.lower()\n    if \"monolith\" in text and \"microservice\" not in text:\n        return \"modular monolith\"\n    if \"microservice\" in text and \"monolith\" not in text:\n        return \"microservices\"\n    return \"unclear\"\n\nsample_replies = [\n    \"Modular Monolith.\", \"microservices\", \"Either could work\", \"Not microservices; a monolith\"\n]\nfor reply in sample_replies:\n    print(reply, \"->\", to_label(reply))"
+      "source": "practice_answers = [\"A\", \"B\", \"A\", \"B\", \"A\", \"C\", \"C\"]\nagreement = 0\nfor case, practice_answer in zip(cases, practice_answers):\n    options = \"\\n\".join(case[\"choices\"])\n    prompt = f\"{case['question']}\\n{options}\\nReply with only the letter of one listed option.\"\n    reply = ask(prompt, example=practice_answer).strip().upper()\n    expected = rule_answer(case)\n    if reply == expected:\n        agreement += 1\n    print(f\"{case['name']}: rule={expected}, model={reply}\")\nprint(f\"Agreement with the classroom rules: {agreement}/{len(cases)}\")"
     },
     {
       "type": "markdown",
-      "source": "## Step 4 · Ask without the screening rule\nThe model sees the facts but not our exact screen. `ask(prompt, example=...)` returns the example in practice mode; live mode ignores it and makes a real request. `scripted` gives one practice answer per project. Two are deliberately wrong.\n\nThe loop counts exact agreement with our screen, not overall architecture quality. We name the raw reply and normalized label separately so you can inspect each."
-    },
-    {
-      "type": "code",
-      "source": "scripted = {\n    \"ShopEasy pilot\": \"modular monolith\",\n    \"Social feeds\": \"microservices\",\n    \"ShopEasy shared release\": \"microservices\",\n    \"Returns pilot\": \"microservices\",\n}\nagreed = 0\nfor project in projects:\n    prompt = f\"Choose modular monolith or microservices for {project}. Reply with the label only.\"\n    reply = ask(prompt, example=scripted[project[\"name\"]])\n    answer = to_label(reply)\n    expected, reason = decide(project)\n    if answer == expected:\n        agreed += 1\n    print(project[\"name\"], \"| screen:\", expected, \"| model:\", answer)\nprint(f\"Agreement: {agreed}/{len(projects)}\")"
-    },
-    {
-      "type": "markdown",
-      "source": "## What you should see\nOnly Social feeds passes the readiness screen for microservices. The scripted model agrees on 2/4 cases; a live model may differ.\n\n## Try it\n1. In Step 2, set `ops_ready=True` in the Returns pilot dictionary, then rerun Steps 2 and 4. Which screen answer changes, and which four prerequisites does this Boolean stand for?\n2. In Step 2, set Social feeds to `ops_ready=False`, then rerun Steps 2 and 4. Explain why independent deployment alone is insufficient.\n3. Explain why cloning a monolith (X scaling) is different from splitting by function (Y scaling), when deciding how to handle increased traffic.\n\n## Takeaway\nRules are predictable for explicit facts; an LLM can discuss open trade-offs but needs the relevant criteria. Next we put the screen into the prompt and evaluate it."
+      "source": "## What you should see\nThe rule answers are **A, B, A, B, A, C, B**. In practice mode the scripted model agrees on 6/7; the gateway answer is deliberately wrong. A live model may return different letters or extra text.\n\n## Try it\n1. Explain why a timed-out card charge without a server-supported idempotency guarantee must not be retried blindly. How could you check its status?\n2. Change the product lookup's `transient` fact to `False` **and update its question** to describe a permanent error. Rerun all steps. Why does the rule change?\n3. Add a new client-specific API scenario and predict the rule's answer. Then compare it with the model.\n4. In live mode, check each answer and explain any disagreement. Does a matching letter guarantee the design is correct?\n\n## Takeaway\nRules are transparent when the relevant facts are explicit; an LLM can interpret a question written in natural language, but its answer still needs checking. Next, Lab 01 adds criteria, a worked example, and evaluation to a different architecture decision."
     }
   ],
   "review": {
@@ -49,22 +41,20 @@
       {
         "deck": "microservices",
         "slides": [
-          13,
-          18,
-          19,
-          20,
-          21
+          33,
+          35,
+          39
         ]
       }
     ],
     "concepts": [
-      "Independent deployment and scaling",
-      "Microservice premium",
-      "Operational prerequisites"
+      "Safe retries and idempotency",
+      "Bulkheads",
+      "API gateways and BFFs"
     ],
     "questions": [
-      "Which four prerequisites must be checked before choosing microservices?",
-      "Why does needing independent releases not, by itself, justify microservices?"
+      "When is a retry safe, and why is a timed-out payment uncertain?",
+      "How do bulkheads, API gateways, and BFFs address different problems?"
     ]
   }
 }

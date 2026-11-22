@@ -45,7 +45,7 @@
     },
     {
       "type": "markdown",
-      "source": "## Step 5 · Trace a decision from the log, then add an agent\n\n`trace` reads `council.log`, finds a message by its id, and follows its citations back until it reaches the sources. It needs nothing but the log file, so the same trace works after the program has stopped, or on another computer. Then a third agent joins: `rulebook` is Lab 00's rule, with no model at all. It has the same interface as the model architects, so adding it takes one line, and `run_council` runs unchanged with three agents.\n\nThe log stores message IDs and citation IDs. The `SOURCES` dictionary supplies the source text when the trace reaches a source ID; save that dictionary too if you need to reconstruct the trace later."
+      "source": "## Step 5 · Trace a decision from the log, then add an agent\n\n`trace` reads `council.log`, finds a message by its id, and follows its citations back until it reaches the sources. It needs nothing but the log file, so the same trace works after the program has stopped, or on another computer. Then a third agent joins: `rulebook` is a small deterministic reviewer, with no model at all. It has the same interface as the model architects, so adding it takes one line, and `run_council` runs unchanged with three agents.\n\nThe log stores message IDs and citation IDs. The `SOURCES` dictionary supplies the source text when the trace reaches a source ID; save that dictionary too if you need to reconstruct the trace later."
     },
     {
       "type": "code",

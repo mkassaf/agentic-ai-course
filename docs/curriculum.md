@@ -6,7 +6,7 @@ The course has two explicit outcomes for every lab: build an agentic mechanism a
 
 | Lecture | Labs | Agentic mechanisms | Architecture revision |
 | --- | --- | --- | --- |
-| 1 · Ask, check, retrieve | 00–02 | Rule versus LLM, prompting, structured output, evaluation, RAG | Microservice premium and readiness; duplicate deliveries; private service data, CQRS and API composition |
+| 1 · Ask, check, retrieve | 00–02 | Rule versus LLM, prompting, structured output, evaluation, RAG | Safe retries, bulkheads, gateways and BFFs; readiness and duplicate deliveries; private service data, CQRS and API composition |
 | 2 · Chain, call tools, act | 03–05 | Prompt chains, validated tools, bounded ReAct | Business capabilities and bounded contexts; aggregate-root invariants; resilience and safe retries |
 | 3 · Debate, trace, decide | 06–08 | Independent proposals, bounded debate, logging, swappable agents, human feedback, memory | Read-pattern trade-offs; correlation IDs; idempotent effects and scoped retry advice |
 
@@ -16,7 +16,7 @@ Nine self-study labs extend the same revision: evaluation (09), routing (10), MC
 
 Each lab has two to five core code steps, at most 25 lines each and 100 in total. The examples are deliberately reduced models; Python state changes stand in for services, and no Kafka, Kubernetes, or payment deployment is required. Official MCP, A2A, and LangGraph SDKs demonstrate the agentic interfaces themselves.
 
-Lab 00's two-Boolean readiness screen is a classroom adaptation for cases whose stated goal is independent releases. `ops_ready` summarizes the four lecture prerequisites: CI/CD, monitoring, rapid provisioning, and teams owning operations. It is not a universal service-decomposition rule. The lectures also motivate independent scaling. Boundaries require business language, cohesion, consistency and change patterns, not a fixed team-size threshold.
+Lab 01's two-Boolean readiness screen is a classroom adaptation for cases whose stated goal is independent releases. `ops_ready` summarizes the four lecture prerequisites: CI/CD, monitoring, rapid provisioning, and teams owning operations. It is not a universal service-decomposition rule. The lectures also motivate independent scaling. Boundaries require business language, cohesion, consistency and change patterns, not a fixed team-size threshold.
 
 ## Learning outcomes
 

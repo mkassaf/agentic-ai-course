@@ -4,41 +4,45 @@ const labs = [
     "id": "00",
     "file": "00_rules_and_llms",
     "title": "From rules to LLM calls",
-    "subtitle": "Microservice readiness: rules versus an unguided LLM",
-    "topics": "rules llm prompt architecture monolith microservices baseline microservices DDD ShopEasy lecture revision Independent deployment and scaling Microservice premium Operational prerequisites",
-    "idea": "Apply the lecture readiness checklist before considering independent service releases.",
+    "subtitle": "Microservices quiz: rules versus LLM answers",
+    "topics": "rules llm prompting microservices retry idempotency bulkhead api gateway bff",
+    "idea": "Answer practical microservices questions using explicit rules and an LLM.",
     "objectives": [
-      "Apply the lecture readiness checklist before considering independent service releases.",
-      "What operational prerequisite is missing? Change readiness and predict the choice.",
-      "Compare exact Python screening with an unguided model; disagreement is observable, not a failure."
+      "Apply simple rules for retries, bulkheads, gateways, and BFFs.",
+      "Compare the rules and an LLM on the same multiple-choice questions.",
+      "Explain why agreement is useful to inspect but does not prove a design is correct."
     ],
-    "example": "ShopEasy pilot and Social feeds cover the readiness and independent-release combinations.",
-    "exercise": "What operational prerequisite is missing? Change readiness and predict the choice.",
-    "checks": "Compare exact Python screening with an unguided model; disagreement is observable, not a failure.",
-    "bridge": "CI/CD, monitoring, provisioning, and operational ownership cost real effort.",
+    "example": "ShopEasy faces a timed-out payment, a slow dependency, and different client API needs.",
+    "exercise": "Change a failure from transient to permanent, and explain when a retry is safe.",
+    "checks": "Compare the answer letters and examine any disagreement.",
+    "bridge": "A timed-out payment might already have succeeded; server-supported idempotency makes a retry safer.",
     "track": "lecture-1",
-    "steps": 4,
+    "steps": 3,
     "patterns": [],
     "background": [
-      "An LLM responds from its prompt and training; a Python rule applies the stated condition exactly. Comparing them makes missing context visible.",
-      "CI/CD, monitoring, provisioning, and operational ownership cost real effort."
+      "A Python rule checks explicit facts; an LLM reads a natural-language question and returns a response. Both answers need to be reviewed in context.",
+      "Retries need a transient failure, a safe operation, a limit, and backoff. Bulkheads isolate resources; gateways and BFFs serve different edge needs."
     ],
     "terms": [
       [
-        "Rule-based system",
-        "A program whose decisions come from rules that people wrote explicitly."
+        "Idempotency",
+        "Repeating an operation has the same intended effect as performing it once."
       ],
       [
-        "Large language model (LLM)",
-        "A model trained on large amounts of text that continues a prompt with likely text."
+        "Bulkhead",
+        "A resource boundary that keeps one dependency from exhausting another’s capacity."
       ],
       [
-        "Prompt",
-        "The text we send to the model: the instructions, the facts, and the question."
+        "API gateway",
+        "An entry point that can route external requests and apply shared policies."
       ],
       [
-        "Baseline",
-        "A simple reference result that a more advanced system must beat."
+        "Backend for frontend (BFF)",
+        "A backend that adapts an API to a particular client’s needs."
+      ],
+      [
+        "LLM prompt",
+        "The instructions, facts, and question sent to a language model."
       ]
     ],
     "review": {
@@ -46,25 +50,23 @@ const labs = [
         {
           "deck": "microservices",
           "slides": [
-            13,
-            18,
-            19,
-            20,
-            21
+            33,
+            35,
+            39
           ]
         }
       ],
       "concepts": [
-        "Independent deployment and scaling",
-        "Microservice premium",
-        "Operational prerequisites"
+        "Safe retries and idempotency",
+        "Bulkheads",
+        "API gateways and BFFs"
       ],
       "questions": [
-        "Which four prerequisites must be checked before choosing microservices?",
-        "Why does needing independent releases not, by itself, justify microservices?"
+        "When is a retry safe, and why is a timed-out payment uncertain?",
+        "How do bulkheads, API gateways, and BFFs address different problems?"
       ],
       "readings": [
-        "Microservices & Their Patterns · slides 13, 18, 19, 20, 21"
+        "Microservices & Their Patterns · slides 33, 35, 39"
       ]
     }
   },

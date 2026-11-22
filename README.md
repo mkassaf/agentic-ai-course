@@ -16,7 +16,7 @@ Save a copy of a notebook to your Drive and run cells in order with a CPU runtim
 
 | Lab | Microservices revision | Colab |
 | --- | --- | --- |
-| 00 · From rules to LLM calls | Independent deployment and scaling; Microservice premium; Operational prerequisites | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/00_rules_and_llms.ipynb) |
+| 00 · From rules to LLM calls | Safe retries and idempotency; Bulkheads; API gateways and BFFs | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/00_rules_and_llms.ipynb) |
 | 01 · Prompting and small evaluations | Operational prerequisites; At-least-once delivery and event identity; Criteria-based architecture decisions | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/01_prompting_evaluation.ipynb) |
 | 02 · RAG: ground answers in retrieved knowledge | Database per service; API composition vs CQRS; Idempotent consumers and transactional outbox | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/02_rag_systems.ipynb) |
 | 03 · Prompt chaining with quality gates | Event storming; Bounded contexts and ubiquitous language; Business capability vs technical-layer decomposition | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/03_prompt_chaining.ipynb) |

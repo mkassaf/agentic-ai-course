@@ -32,7 +32,7 @@ DECKS = {
 
 
 EXAMPLE_CONTEXT = {
-    "00": "A team considering independent releases needs automated delivery, monitoring, rapid provisioning, and people who can operate the services. A small application can start as a modular monolith.",
+    "00": "A retry repeats a failed request; a timeout can leave the result uncertain. Bulkheads separate resources, an API gateway handles shared edge concerns, and a BFF adapts an API to a client.",
     "01": "Our exercise marks operations ready only when CI/CD, monitoring, provisioning, and ownership are all in place. An event with the same eventId can be delivered more than once.",
     "02": "API composition asks services for data and joins their responses. CQRS maintains a separate read model for queries, which can lag behind writes. A citation identifies a source; it does not prove the answer follows from it.",
     "03": "A technical-layer split places UI, business logic, and data access in different services. A bounded context defines where one business model and language apply; its deployment boundary still needs review.",

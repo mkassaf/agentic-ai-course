@@ -1,5 +1,4 @@
-"""Behavior checks for the slide-based readiness, aggregate, and agent examples."""
-import ast
+"""Behavior checks for the microservices quiz, aggregate, and agent examples."""
 import contextlib
 import io
 import json
@@ -19,24 +18,26 @@ def quiet_exec(source, namespace):
         exec(source, namespace)
 
 
-class ReadinessScreenTests(unittest.TestCase):
-    def test_independent_releases_and_operational_readiness_are_both_needed(self):
-        source = code_cells("00_rules_and_llms")[0]
-        node = next(node for node in ast.parse(source).body
-                    if isinstance(node, ast.FunctionDef) and node.name == "decide")
-        ns = {}
-        exec(compile(ast.Module(body=[node], type_ignores=[]), "<readiness>", "exec"), ns)
-        cases = [
-            (False, False, "modular monolith"),
-            (True, False, "modular monolith"),
-            (False, True, "modular monolith"),
-            (True, True, "microservices"),
-        ]
-        for ready, independent, expected in cases:
-            with self.subTest(ops_ready=ready, independent_deploys=independent):
-                decision, reason = ns["decide"]({"ops_ready": ready, "independent_deploys": independent})
-                self.assertEqual(decision, expected)
-                self.assertTrue(reason.strip())
+class MicroserviceQuizTests(unittest.TestCase):
+    def setUp(self):
+        cells = code_cells("00_rules_and_llms")
+        self.ns = {}
+        quiet_exec(cells[0], self.ns)
+        quiet_exec(cells[1], self.ns)
+
+    def test_retries_require_transient_failure_and_idempotency(self):
+        for transient in (False, True):
+            for idempotent in (False, True):
+                with self.subTest(transient=transient, idempotent=idempotent):
+                    case = {"kind": "retry", "transient": transient, "idempotent": idempotent}
+                    expected = "A" if transient and idempotent else "B"
+                    self.assertEqual(self.ns["rule_answer"](case), expected)
+
+    def test_scenarios_have_the_expected_answers(self):
+        actual = [self.ns["rule_answer"](case) for case in self.ns["cases"]]
+        self.assertEqual(actual, ["A", "B", "A", "B", "A", "C", "B"])
+        with self.assertRaises(ValueError):
+            self.ns["rule_answer"]({"kind": "unknown"})
 
 
 class OrderAggregateTests(unittest.TestCase):

@@ -6,7 +6,7 @@ Slide numbers include each deck's title slide and appendices. The PowerPoint fil
 
 | Lab / agentic mechanism | Microservices / DDD revision | Lecture slides |
 | --- | --- | --- |
-| 00 · From rules to LLM calls | Independent deployment and scaling; Microservice premium; Operational prerequisites | Microservices & Their Patterns: 13, 18, 19, 20, 21 |
+| 00 · From rules to LLM calls | Safe retries and idempotency; Bulkheads; API gateways and BFFs | Microservices & Their Patterns: 33, 35, 39 |
 | 01 · Prompting and small evaluations | Operational prerequisites; At-least-once delivery and event identity; Criteria-based architecture decisions | Microservices & Their Patterns: 19, 20, 21; Microservices Lecture 2 - Condensed DDD: 51, 52 |
 | 02 · RAG: ground answers in retrieved knowledge | Database per service; API composition vs CQRS; Idempotent consumers and transactional outbox | Microservices & Their Patterns: 24, 27, 28, 30; Microservices Lecture 2 - Condensed DDD: 52, 55 |
 | 03 · Prompt chaining with quality gates | Event storming; Bounded contexts and ubiquitous language; Business capability vs technical-layer decomposition | Microservices Lecture 2 - Condensed DDD: 9, 10, 11, 17, 18, 21, 26, 32, 60, 70, 72, 73 |
