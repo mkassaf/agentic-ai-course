@@ -42,7 +42,7 @@ Lecture 1 uses Labs 00–02; Lecture 2 uses 03–05; Lecture 3 uses 06–08. Lab
 
 Practice replies and timings are fixtures. A live call may produce an unexpected or unsupported answer; inspect and report it. Citation-ID validity and output shape are not semantic grounding. Memory need not improve the score. A synthetic learning curve tests aggregation code, not actual model learning. Calibrate a judge against people, and compare real systems on common scenarios before making claims about model performance.
 
-Lab 09 preserves MLflow as an optional extra cell logging explicitly synthetic metrics. It omits an untrusted judge metric rather than replacing missing data with zero. Colab's runtime filesystem and localhost belong to the hosted runtime, not the student's laptop; download tracking data before ending a session, or run the local MLflow UI on a local machine.
+Lab 09 preserves MLflow as an optional extra cell logging explicitly synthetic metrics to a local SQLite database (`mlflow.db`). It omits an untrusted judge metric rather than replacing missing data with zero. Colab's runtime filesystem and localhost belong to the hosted runtime, not the student's laptop; download tracking data before ending a session, or run the local MLflow UI on a local machine.
 
 ## Scope of the implementations
 
