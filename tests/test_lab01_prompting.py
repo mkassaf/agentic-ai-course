@@ -3,7 +3,11 @@ import contextlib
 import io
 import json
 from pathlib import Path
+import re
+import sys
+from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 LESSON = json.loads((ROOT / 'lessons/01_prompting_evaluation.json').read_text())
@@ -62,6 +66,27 @@ class PromptingLessonTests(unittest.TestCase):
         self.assertEqual(len(thinking.calls), 2)
         self.assertIn('r count = 3', output)
         self.assertIn('9.9 > 9.11 is True', output)
+
+    def test_small_model_outputs_are_shown_next_to_independent_checks(self):
+        prompts = []
+        replies = iter(['1', '2', 'equal', '9.9'])
+
+        def generator(messages, **kwargs):
+            prompts.append(messages[0]['content'])
+            return [{'generated_text': [{'role': 'assistant', 'content': next(replies)}]}]
+
+        module = SimpleNamespace(pipeline=lambda *args, **kwargs: generator)
+        source = re.sub(r'(?m)^    %pip .+$', '    pass', CELLS[3])
+        with patch.dict(sys.modules, {'transformers': module}), contextlib.redirect_stdout(io.StringIO()) as output:
+            exec(source, {'find_spec': lambda name: True})
+        self.assertIn('Strawberry — direct: 1', output.getvalue())
+        self.assertIn('Decimals — direct: equal', output.getvalue())
+        self.assertIn('Correct count (Python): 3', output.getvalue())
+        self.assertIn('Correct larger decimal (Python): 9.9', output.getvalue())
+
+        plain = ScriptedClient(['3', '9.9'])
+        run(4, {'plain': plain, 'thinking': ScriptedClient(['3', '9.9'])})
+        self.assertEqual([prompts[0], prompts[2]], [call[0] for call in plain.calls])
 
 
 if __name__ == '__main__':
