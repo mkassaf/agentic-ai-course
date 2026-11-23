@@ -13,7 +13,8 @@ import coursekit
 
 ROOT = Path(__file__).resolve().parents[1]
 LESSON = json.loads((ROOT / 'lessons/00_rules_and_llms.json').read_text())
-OPTIONAL = [cell['source'] for cell in LESSON['cells'] if cell.get('optional')]
+OPTIONAL = [cell['source'] for cell in LESSON['cells'] if cell.get('optional') and 'DeepSeekHarness' not in cell['source']]
+HARNESS = next(cell['source'] for cell in LESSON['cells'] if cell.get('optional') and 'DeepSeekHarness' in cell['source'])
 
 
 class SDKExamplesTests(unittest.TestCase):
@@ -73,6 +74,58 @@ class SDKExamplesTests(unittest.TestCase):
                 python = re.sub(r'(?m)^(\s*)%pip.*$', r'\1pass', source)
                 exec(python, {'MODE': 'practice'})
         self.assertEqual(output.getvalue().count('scripted; no model request'), 2)
+
+
+class HarnessExampleTests(unittest.TestCase):
+    def python_source(self):
+        return re.sub(r'(?m)^(\s*)%pip.*$', r'\1pass', HARNESS)
+
+    def test_practice_and_other_providers_do_not_launch_the_runtime(self):
+        with contextlib.redirect_stdout(io.StringIO()) as output:
+            exec(self.python_source(), {'MODE': 'practice'})
+            exec(self.python_source(), {'MODE': 'live', 'PROVIDER': 'deepseek'})
+            exec(self.python_source().replace('RUN_HARNESS = False', 'RUN_HARNESS = True'),
+                 {'MODE': 'live', 'PROVIDER': 'gemini'})
+        self.assertIn('scripted; no model request', output.getvalue())
+        self.assertIn('Set RUN_HARNESS', output.getvalue())
+
+    def test_live_branch_rejects_unverified_sdk_versions(self):
+        namespace = {'MODE': 'live', 'PROVIDER': 'deepseek', 'find_spec': lambda name: True}
+        source = self.python_source().replace('RUN_HARNESS = False', 'RUN_HARNESS = True')
+        with patch('importlib.metadata.version', return_value='0.0.0'):
+            with self.assertRaisesRegex(AssertionError, 'pinned SDK'):
+                exec(source, namespace)
+
+    def test_live_branch_disables_tools_and_uses_temporary_home(self):
+        captured = {}
+
+        class FakeHarness:
+            def __init__(self, **kwargs):
+                captured['options'] = kwargs
+                captured['patch'] = Path(kwargs['patches'][0]).read_text()
+                captured['workspace_exists'] = Path(kwargs['cwd']).is_dir()
+            def __enter__(self):
+                return self
+            def __exit__(self, *args):
+                return False
+            def run(self, prompt, **kwargs):
+                captured['prompt'] = prompt
+                return SimpleNamespace(finish_reason='completed', final_response='A')
+
+        modules = {'deepseek_harness': SimpleNamespace(DeepSeekHarness=FakeHarness)}
+        namespace = {'MODE': 'live', 'PROVIDER': 'deepseek', 'prompt': 'same question',
+                     'find_spec': lambda name: True}
+        with patch.dict(sys.modules, modules), patch.object(coursekit, 'secret', return_value='TEST_ONLY'), \
+                patch('importlib.metadata.version', return_value='0.2.2rc2'), \
+                contextlib.redirect_stdout(io.StringIO()):
+            exec(self.python_source().replace('RUN_HARNESS = False', 'RUN_HARNESS = True'), namespace)
+        for name in ('persistent-bash', 'persistent-pwsh', 'tool-fs', 'tool-working-directory',
+                     'session-log-deepseek', 'plugin-package-inventory-deepseek'):
+            self.assertIn(f'- id: {name}\n  disabled: true\n', captured['patch'])
+        self.assertTrue(captured['workspace_exists'])
+        self.assertFalse(Path(captured['options']['cwd']).exists())
+        self.assertEqual(captured['options']['profile'], 'sdk-minimal')
+        self.assertEqual(captured['prompt'], 'same question')
 
 
 if __name__ == '__main__':

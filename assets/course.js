@@ -5,14 +5,14 @@ const labs = [
     "file": "00_rules_and_llms",
     "title": "From rules to LLM calls",
     "subtitle": "Microservices quiz: rules versus LLM answers",
-    "topics": "rules llm prompting microservices retry idempotency bulkhead api gateway bff sdk openai langchain framework",
+    "topics": "rules llm prompting microservices retry idempotency bulkhead api gateway bff sdk openai langchain framework deepseek harness",
     "idea": "Compare explicit rules and an LLM on the same microservices questions.",
     "objectives": [
       "Apply simple rules for retries, bulkheads, gateways, and BFFs.",
-      "Make one LLM call, see the same prompt with an SDK and LangChain, then compare answers.",
+      "Make one LLM call, then compare SDK, LangChain, and optional DeepSeek Harness examples.",
       "Explain why agreement is useful to inspect but does not prove a design is correct."
     ],
-    "example": "ShopEasy faces a timed-out payment, a slow dependency, and different client API needs; ask with a helper, SDK, or LangChain.",
+    "example": "ShopEasy faces a slow dependency; ask the same question with a helper, SDK, LangChain, or an optional agent harness.",
     "exercise": "Change a failure from transient to permanent, and explain when a retry is safe.",
     "checks": "Compare the answer letters and examine any disagreement.",
     "bridge": "A timed-out payment might already have succeeded; server-supported idempotency makes a retry safer.",

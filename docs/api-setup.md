@@ -65,6 +65,10 @@ Or use `PROVIDER = "gemini"` with `GEMINI_API_KEY`. You do not need a FreeInfere
 
 Lab 06's council needs at least three model families in live mode, so its architects use all three providers: Qwen on FreeInference, DeepSeek, and Gemini. Save all three keys in Colab Secrets.
 
+## DeepSeek Harness preview (Lab 00)
+
+Lab 00 includes an optional DeepSeek Harness example using the preview `deepseek-harness-sdk`. When students opt in with `RUN_HARNESS=True` in live mode, it installs its runtime, requires `DEEPSEEK_API_KEY`, and uses a temporary workspace with model-facing shell, file and working-directory tools disabled. Session-log and package-inventory uploads are disabled in the example. The runtime is separate from a direct API client and may incur additional model usage. The temporary workspace is not a security sandbox.
+
 ## Prompting and reasoning (Lab 01)
 
 Lab 01 defaults to DeepSeek and starts in scripted practice mode. Live mode uses `DEEPSEEK_API_KEY`; its earlier-model comparison downloads the small SmolLM2 model from Hugging Face and runs it on CPU. The final step calls `deepseek-flash` with thinking disabled and enabled using the same direct questions. The modes may differ in latency and token use; neither is guaranteed correct. The older model differs in age, size and training, so its comparison is not a controlled test of thinking mode. The old `deepseek-chat` and `deepseek-reasoner` names are retired.
