@@ -5,10 +5,12 @@ import hashlib
 import json
 import re
 import textwrap
+import tomllib
 
 import nbformat
 
 ROOT = Path(__file__).resolve().parents[1]
+COURSEKIT_VERSION = tomllib.loads((ROOT / "pyproject.toml").read_text())["project"]["version"]
 EXTRAS = {
     "02_rag_systems": ("rag", "chromadb"),
     "07_observe_trace_swap": ("framework", "langsmith"),  # langgraph brings the LangSmith SDK
@@ -81,8 +83,18 @@ def setup_for(slug, revision):
     url = f"https://github.com/mkassaf/agentic-ai-course/archive/{revision}.zip"
     modules = ["coursekit"] + ([module] if module else [])
     source = ("from importlib.util import find_spec\n"
-              f"if not all(find_spec(name) for name in {modules!r}):\n"
-              f'    %pip install -q "{package} @ {url}"')
+              "from importlib.metadata import PackageNotFoundError, version\n"
+              "try:\n"
+              '    coursekit_version = version("agentic-ai-coursekit")\n'
+              "except PackageNotFoundError:\n"
+              "    coursekit_version = None\n"
+              f'if coursekit_version != "{COURSEKIT_VERSION}" or not all(find_spec(name) for name in {modules!r}):\n'
+              f'    %pip install -q --upgrade "{package} @ {url}"\n'
+              "    import importlib, sys\n"
+              "    for name in list(sys.modules):\n"
+              '        if name == "coursekit" or name.startswith("coursekit."):\n'
+              "            del sys.modules[name]\n"
+              "    importlib.invalidate_caches()")
     direct_sdk = DIRECT_SDKS.get(slug)
     if direct_sdk:
         module, pip_spec = direct_sdk

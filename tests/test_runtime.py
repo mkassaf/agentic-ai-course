@@ -77,6 +77,8 @@ class ClientTests(unittest.TestCase):
             {"choices": [{"finish_reason": "length", "message": {"content": "partial"}}]},
             {"choices": []},
             {"choices": [{"message": {"content": None}}]},
+            {"choices": [{"message": {"content": ""}}]},
+            {"choices": [{"message": {"content": "   "}}]},
             {"choices": [None]},
         ):
             with self.subTest(payload=payload):

@@ -91,7 +91,7 @@ class Client:
                 if choice.get("finish_reason") == "length":
                     raise RuntimeError("Output truncated; inspect token budget before retrying")
                 content = choice["message"]["content"]
-                if not isinstance(content, str):
+                if not isinstance(content, str) or not content.strip():
                     raise ValueError("Missing text response")
                 usage = payload.get("usage") or {}
                 row["input_tokens"] = usage.get("prompt_tokens")

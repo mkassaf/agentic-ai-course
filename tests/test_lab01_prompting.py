@@ -54,6 +54,15 @@ class PromptingLessonTests(unittest.TestCase):
             with self.subTest(reply=reply):
                 self.assertIn(expected, run(2, {'plain': ScriptedClient([reply])}))
 
+    def test_thinking_comparison_does_not_depend_on_local_model_step(self):
+        plain = ScriptedClient(['3', '9.9'])
+        thinking = ScriptedClient(['3', '9.9'])
+        output = run(4, {'plain': plain, 'thinking': thinking})
+        self.assertEqual(len(plain.calls), 2)
+        self.assertEqual(len(thinking.calls), 2)
+        self.assertIn('r count = 3', output)
+        self.assertIn('9.9 > 9.11 is True', output)
+
 
 if __name__ == '__main__':
     unittest.main()
