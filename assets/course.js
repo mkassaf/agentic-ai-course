@@ -18,6 +18,7 @@ const labs = [
     "bridge": "A timed-out payment might already have succeeded; server-supported idempotency makes a retry safer.",
     "track": "lecture-1",
     "steps": 4,
+    "optional_examples": 3,
     "patterns": [],
     "background": [
       "A Python rule checks explicit facts; an LLM reads a natural-language question and returns a response. Both answers need to be reviewed in context.",
@@ -300,7 +301,7 @@ const labs = [
     "file": "04_why_tools",
     "track": "lecture-2",
     "pattern": "One-Step Tool Agent",
-    "title": "Tool calling: let the model read and change live data",
+    "title": "Tool calling: read and change an Order",
     "subtitle": "Tool calling through an Order aggregate",
     "topics": "tools tool calling function calling Order aggregate invariant read write confirmation live data one-step tool agent microservices DDD ShopEasy lecture revision Aggregate root Entity vs value object Consistency boundary and invariant",
     "idea": "Give the model checked tools to read and change an Order instead of guessing its state.",
@@ -309,9 +310,9 @@ const labs = [
       "Try an invalid quantity and compare state before and after the rejected call.",
       "Validate tool names and arguments, require confirmation for writes, and check the invariant."
     ],
-    "example": "A model asks to add an item; the root checks the input and keeps total equal to the sum of its lines.",
+    "example": "A model requests an item change to an in-memory Order; the root checks the input and maintains the total.",
     "exercise": "Try an invalid quantity and compare state before and after the rejected call.",
-    "checks": "Validate tool names and arguments, require confirmation for writes, and check the invariant.",
+    "checks": "Validate tool names and arguments, test the simulated confirmation flag, and check the invariant.",
     "bridge": "Tools perform actions; the model cannot bypass the aggregate root to edit totals.",
     "steps": 5,
     "patterns": [
@@ -379,7 +380,7 @@ const labs = [
       "Try finishing before a successful read, or inspect a non-idempotent payment call.",
       "Inspect action, observation, accumulated history, and the stopping guard."
     ],
-    "example": "Read Inventory latency and idempotency facts before recommending a circuit breaker or a safe retry.",
+    "example": "Read simulated Inventory latency and idempotency facts before recommending a circuit breaker or a safe retry.",
     "exercise": "Try finishing before a successful read, or inspect a non-idempotent payment call.",
     "checks": "Inspect action, observation, accumulated history, and the stopping guard.",
     "bridge": "An agent loop selects its next step from observations; it still needs a bound and allowed tools.",
@@ -449,7 +450,7 @@ const labs = [
       "Remove a citation or change the query workload and inspect challenges and dissent.",
       "Check independent proposals, bounded revision, valid citations, a quorum, and escalation."
     ],
-    "example": "Three architects compare ShopEasy support search with small order-by-ID lookups.",
+    "example": "Three architect roles compare ShopEasy support search with small order-by-ID lookups. Practice uses scripted responses; live mode calls three providers.",
     "exercise": "Remove a citation or change the query workload and inspect challenges and dissent.",
     "checks": "Check independent proposals, bounded revision, valid citations, a quorum, and escalation.",
     "bridge": "CQRS supports search but adds a read model and consistency lag; composition has different costs.",
@@ -593,7 +594,7 @@ const labs = [
       "Change idempotency or whether a failure is transient, and compare candidate memories with applicable ones.",
       "Report before/after held-out scores even when memory does not improve them."
     ],
-    "example": "A retry lesson for idempotent reads must not be reused blindly for a non-idempotent payment charge.",
+    "example": "Simulated human feedback approves retry advice for an idempotent read; the lesson must not be reused blindly for a payment charge.",
     "exercise": "Change idempotency or whether a failure is transient, and compare candidate memories with applicable ones.",
     "checks": "Report before/after held-out scores even when memory does not improve them.",
     "bridge": "Similarity is not applicability. Check known scope conditions before inserting a lesson into a prompt.",
@@ -606,7 +607,7 @@ const labs = [
       "Archival Memory"
     ],
     "background": [
-      "Human review can correct the current proposal and supply a scoped lesson for later ones. Retrieval needs both relevance and applicability checks.",
+      "Human review can correct a proposal and supply a scoped lesson. This lab uses a scripted reviewer, and retrieval checks both relevance and applicability.",
       "Similarity is not applicability. Check known scope conditions before inserting a lesson into a prompt."
     ],
     "terms": [
@@ -1344,13 +1345,13 @@ const tracks = [
     "id": "lecture-2",
     "label": "Lecture 2 · 90 minutes",
     "title": "Chain, call tools, act",
-    "note": "From a fixed chain of prompts, to tools that read and change live data, to an agent that chooses its own steps."
+    "note": "From a fixed chain of prompts, to tools that read and change an in-memory Order, to an agent that chooses its own steps."
   },
   {
     "id": "lecture-3",
     "label": "Lecture 3 · 90 minutes",
     "title": "Debate, trace, decide",
-    "note": "A council of architects debates through a message bus that you can watch and trace, a human decides, and short- and long-term memory keep the lessons."
+    "note": "A council debates, a message bus makes decisions traceable, and simulated human feedback is stored for later use."
   },
   {
     "id": "self-study",
@@ -1416,7 +1417,7 @@ labs.forEach((lab, i) => {
   detail.dataset.search = `${lab.title} ${lab.subtitle} ${lab.topics} ${lab.patterns.join(' ')} ${(lab.review?.concepts || []).join(' ')}`.toLowerCase();
   const prev = labs[i - 1], next = labs[i + 1];
   const pager = `<nav class="lab-pager" aria-label="Neighbouring labs">${prev ? `<a href="#lab-${prev.id}"><small>← Lab ${prev.id}</small>${esc(prev.title)}</a>` : '<span></span>'}${next ? `<a class="next" href="#lab-${next.id}"><small>Lab ${next.id} →</small>${esc(next.title)}</a>` : ''}</nav>`;
-  detail.innerHTML = `<summary><span class="lab-number" aria-hidden="true"><span class="num">${number(i)}</span><span class="tick">✓</span></span><div><h3><span class="visually-hidden">Lab ${number(i)}: </span>${esc(lab.title)}</h3><p>${chips(lab.patterns)}<span class="lab-subtitle">${esc(lab.subtitle)}</span></p></div><span class="lab-time">${lab.steps} steps</span><span class="expand-icon" aria-hidden="true">+</span></summary>`
+  detail.innerHTML = `<summary><span class="lab-number" aria-hidden="true"><span class="num">${number(i)}</span><span class="tick">✓</span></span><div><h3><span class="visually-hidden">Lab ${number(i)}: </span>${esc(lab.title)}</h3><p>${chips(lab.patterns)}<span class="lab-subtitle">${esc(lab.subtitle)}</span></p></div><span class="lab-time">${lab.steps} core steps${lab.optional_examples ? `<br>+ ${lab.optional_examples} optional examples` : ""}</span><span class="expand-icon" aria-hidden="true">+</span></summary>`
     + `<div class="lab-body"><div class="lab-lead"><p class="lab-intro">${esc(lab.idea)}</p>${notebookActions(lab)}</div>`
     + `<section class="lab-context" aria-label="The idea in context"><div><h4>The idea in context</h4>${lab.background.map(text => `<p>${esc(text)}</p>`).join('')}</div>`
     + `<aside class="key-terms"><h4>Key terms</h4><dl>${lab.terms.map(([term, meaning]) => `<dt>${esc(term)}</dt><dd>${esc(meaning)}</dd>`).join('')}</dl></aside></section>`
