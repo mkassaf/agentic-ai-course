@@ -105,9 +105,11 @@ def setup_for(slug, revision):
                    '                      api_key=key, max_calls=12, max_tokens=4096, timeout=120,\n'
                    '                      extra_body={"thinking": {"type": "enabled"}, "reasoning_effort": "low"})')
     elif slug not in NO_MODEL_LABS:
+        provider_line = ('PROVIDER = "deepseek"  # or "gemini" or "freeinference"\n'
+                         if slug == "00_rules_and_llms" else
+                         'PROVIDER = "freeinference"  # or "gemini" or "deepseek"\n')
         source += ('\nfrom coursekit import make_ask\nMODE = "practice"\n'
-                   'PROVIDER = "freeinference"  # or "gemini" or "deepseek"\n'
-                   'ask = make_ask(mode=MODE, provider=PROVIDER)')
+                   + provider_line + 'ask = make_ask(mode=MODE, provider=PROVIDER)')
     return source
 
 
@@ -123,6 +125,12 @@ def build(lesson, revision, diagrams, site_lab):
                        '`MODE="live"`, and rerun this setup cell. Live Step 4 downloads a small '
                        'local model; Step 5 uses DeepSeek thinking mode. Other providers work in '
                        'Steps 1–3; Step 5 requires DeepSeek. Each client stops after 12 calls.')
+    elif slug == "00_rules_and_llms":
+        setup_note += (' Practice answers are scripted. For live mode, save `DEEPSEEK_API_KEY` '
+                       'in Colab Secrets, keep `PROVIDER="deepseek"`, set `MODE="live"`, and '
+                       'rerun setup. You can also choose `"gemini"` or `"freeinference"` with '
+                       'the corresponding secret. `ask` stops after 12 calls; SDK and framework '
+                       'examples make separate calls.')
     elif slug not in NO_MODEL_LABS:
         setup_note += (' Practice answers are scripted. For a live model, choose `PROVIDER` '
                        '(`"freeinference"`, `"gemini"`, or `"deepseek"`), save its key in Colab Secrets '
@@ -153,7 +161,10 @@ def build(lesson, revision, diagrams, site_lab):
     for cell in steps:
         if cell["type"] not in ("markdown", "code"):
             raise ValueError(f"Unknown cell type in {slug}")
-        cells.append(source_cell(cell["type"], cell["source"]))
+        built = source_cell(cell["type"], cell["source"])
+        if cell.get("optional"):
+            built.metadata["tags"] = ["optional"]
+        cells.append(built)
     for index, cell in enumerate(cells):
         cell.id = hashlib.sha256(f"{slug}:{index}".encode()).hexdigest()[:12]
     notebook = nbformat.v4.new_notebook(cells=cells, metadata={

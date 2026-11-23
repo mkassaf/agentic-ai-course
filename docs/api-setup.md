@@ -2,7 +2,7 @@
 
 Model-based notebooks can use **practice** responses or a **live** model. Practice mode returns the explicit `example` text without a model request. Live mode sends the prompt to the selected service. The MCP lab and deterministic A2A adapter need no model key.
 
-Most model labs initially use **FreeInference**; Lab 01 defaults to **DeepSeek**. The teaching adapter supports multiple providers.
+Most model labs initially use **FreeInference**; Labs 00–01 default to **DeepSeek**. The teaching adapter supports multiple providers.
 
 ## Initial Colab setup
 
@@ -17,7 +17,7 @@ PROVIDER = "freeinference"  # or "gemini" or "deepseek"
 ask = make_ask(mode=MODE, provider=PROVIDER)
 ```
 
-Most labs default to FreeInference (`https://freeinference.org/v1`), model `qwen3.6-35b`, and secret `FREEINFERENCE_API_KEY`. Lab 01 defaults to DeepSeek; see *Prompting and reasoning* below. If no Colab secret is available, the helper uses a hidden input prompt. Check current access and quotas in the [FreeInference documentation](https://doc.freeinference.org/).
+Most labs default to FreeInference (`https://freeinference.org/v1`), model `qwen3.6-35b`, and secret `FREEINFERENCE_API_KEY`. Labs 00–01 default to DeepSeek; see *Prompting and reasoning* below for Lab 01. If no Colab secret is available, the helper uses a hidden input prompt. Check current access and quotas in the [FreeInference documentation](https://doc.freeinference.org/).
 
 ## Use another compatible service
 

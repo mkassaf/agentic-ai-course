@@ -39,7 +39,7 @@ Save a copy of a notebook to your Drive and run cells in order with a CPU runtim
 
 Start in `MODE="practice"`. Model replies are explicit scripted fixtures: practice validates the Python workflow, not model intelligence. The MCP and A2A labs use real local SDK protocol exchanges, without deploying business services. No Kafka broker, cloud account, or production payment provider is required.
 
-For a live model, put `FREEINFERENCE_API_KEY` in Colab Secrets, grant access, and choose `MODE="live"`. The default is FreeInference `qwen3.6-35b`. The same `make_ask` interface supports university gateways and the Gemini and DeepSeek presets; see [API setup](docs/api-setup.md). Lab 06 requires all three providers in live mode. Lab 09 only runs its judge live; its comparison inputs are marked synthetic. Lab 17's optional scoring call uses a separate `TYPESAFE_API_KEY` and explicit live mode.
+For a live model, save the selected provider’s key in Colab Secrets, grant access, and choose `MODE="live"`. Labs 00–01 default to DeepSeek and use `DEEPSEEK_API_KEY`; most other model labs default to FreeInference and use `FREEINFERENCE_API_KEY`. The same `make_ask` interface supports university gateways and the Gemini and DeepSeek presets; see [API setup](docs/api-setup.md). Lab 06 requires all three providers in live mode. Lab 09 only runs its judge live; its comparison inputs are marked synthetic. Lab 17's optional scoring call uses a separate `TYPESAFE_API_KEY` and explicit live mode.
 
 A passed format/citation check does not prove factual support or a good architecture. Read the result against the lecture, inspect the trade-off, and report negative results honestly. Do not infer a universal architecture rule from a tiny fixture.
 

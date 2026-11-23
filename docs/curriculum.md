@@ -6,7 +6,7 @@ The course has two outcomes for every lab: learn an agentic AI mechanism and rev
 
 | Lecture | Labs | Agentic mechanisms | Architecture revision |
 | --- | --- | --- | --- |
-| 1 · Ask, check, retrieve | 00–02 | Rule versus LLM, prompting, structured output, evaluation, RAG | Safe retries, bulkheads, gateways and BFFs; prompting with gateway/BFF choices; private service data, CQRS and API composition |
+| 1 · Ask, check, retrieve | 00–02 | Rule versus LLM; optional SDK and LangChain calls; prompting, structured output, evaluation, RAG | Safe retries, bulkheads, gateways and BFFs; prompting with gateway/BFF choices; private service data, CQRS and API composition |
 | 2 · Chain, call tools, act | 03–05 | Prompt chains, validated tools, bounded ReAct | Business capabilities and bounded contexts; aggregate-root invariants; resilience and safe retries |
 | 3 · Debate, trace, decide | 06–08 | Independent proposals, bounded debate, logging, swappable agents, human feedback, memory | Read-pattern trade-offs; correlation IDs; idempotent effects and scoped retry advice |
 
@@ -14,7 +14,7 @@ Nine self-study labs extend the same revision: evaluation (09), routing (10), MC
 
 ## Keep examples small and checkable
 
-Each lab has two to five core code steps, at most 25 lines each and 100 in total. The examples are deliberately reduced models; Python state changes stand in for services, and no Kafka, Kubernetes, or payment deployment is required. Official MCP, A2A, and LangGraph SDKs demonstrate the agentic interfaces themselves.
+Each lab has two to five core code steps, at most 25 lines each and 100 in total. Lab 00 also includes two short optional SDK examples. The examples are deliberately reduced models; Python state changes stand in for services, and no Kafka, Kubernetes, or payment deployment is required. Official MCP, A2A, and LangGraph SDKs demonstrate the agentic interfaces themselves.
 
 Lab 01 compares system and user prompts, temporary context, validation, and reasoning modes. Its older-model questions are small demonstrations, not a benchmark.
 

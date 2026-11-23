@@ -78,8 +78,13 @@ def main():
             issues.append(f"{path.name}: obsolete unrelated example or team-size threshold")
         if "make_ask" in text and ("practice" not in text or "live" not in text):
             issues.append(f"{path.name}: needs practice and live explanations")
-        examples = [c for c in notebook.cells if c.cell_type == "code" and "setup" not in c.metadata.get("tags", [])]
-        # Each step is one short cell, so a beginner reads one idea at a time.
+        examples = [c for c in notebook.cells if c.cell_type == "code"
+                    and not {"setup", "optional"}.intersection(c.metadata.get("tags", []))]
+        optional = [c for c in notebook.cells if c.cell_type == "code"
+                    and "optional" in c.metadata.get("tags", [])]
+        if any(len(c.source.splitlines()) > 25 for c in optional):
+            issues.append(f"{path.name}: an optional example exceeds 25 lines")
+        # Each core step is one short cell, so a beginner reads one idea at a time.
         if not 2 <= len(examples) <= 5:
             issues.append(f"{path.name}: use two to five step code cells")
         if any(len(c.source.splitlines()) > 25 for c in examples):
