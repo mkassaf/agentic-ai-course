@@ -115,6 +115,13 @@ def setup_for(slug, revision):
                    '                      extra_body={"thinking": {"type": "enabled"}, "reasoning_effort": "low"})')
     elif slug == "06_multi_agent_debate":
         source += '\nfrom coursekit import make_ask'
+    elif slug == "02_rag_systems":
+        source += ('\nfrom coursekit import Client, PROVIDERS, secret\n'
+                   'PROVIDER = "deepseek"  # or "gemini" or "freeinference"\n'
+                   'settings = PROVIDERS[PROVIDER]\n'
+                   'client = Client(model=settings["model"], family=settings["family"],\n'
+                   '                base_url=settings["base_url"], api_key=secret(settings["secret_name"]),\n'
+                   '                max_calls=12, max_tokens=256, extra_body=settings.get("extra_body"))')
     elif slug not in NO_MODEL_LABS:
         provider_line = 'PROVIDER = "deepseek"  # or "gemini" or "freeinference"\n'
         token_budget = ', max_tokens=768' if slug == '15_framing_contract' else ''
@@ -140,6 +147,10 @@ def build(lesson, revision, diagrams, site_lab):
     elif slug == "06_multi_agent_debate":
         setup_note += (' Save `FREEINFERENCE_API_KEY`, `DEEPSEEK_API_KEY`, and `GEMINI_API_KEY` in '
                        'Colab Secrets. Each architect uses its own provider and call budget.')
+    elif slug == "02_rag_systems":
+        setup_note += (' Choose `PROVIDER` and save its key in Colab Secrets. DeepSeek uses '
+                       '`DEEPSEEK_API_KEY`; Gemini and FreeInference use their respective secrets. '
+                       '`client` stops after 12 calls; rerun setup to reset the count.')
     elif slug not in NO_MODEL_LABS:
         setup_note += (' Choose `PROVIDER` (`"freeinference"`, `"gemini"`, or `"deepseek"`), and save '
                        'its key in Colab Secrets (`FREEINFERENCE_API_KEY`, `GEMINI_API_KEY`, or '

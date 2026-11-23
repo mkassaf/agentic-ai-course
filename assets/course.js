@@ -144,17 +144,17 @@ const labs = [
     "id": "02",
     "file": "02_rag_systems",
     "title": "RAG: ground answers in retrieved knowledge",
-    "subtitle": "RAG over microservices and DDD notes",
+    "subtitle": "From all policies to retrieved evidence",
     "topics": "rag retrieval embeddings vectors vector database chroma similarity rules source architecture context retrieval-augmented generation microservices DDD ShopEasy lecture revision Database per service API composition vs CQRS Idempotent consumers and transactional outbox",
-    "idea": "Retrieve a relevant architecture note before asking the model to answer.",
+    "idea": "Compare sending every microservices policy with retrieving only relevant policies.",
     "objectives": [
-      "Retrieve the relevant lecture note before answering a pattern question.",
-      "Ask an unrelated question; should the model answer without evidence?",
-      "Inspect retrieval, citation validity, and whether the cited passage actually supports the answer."
+      "Organize policies into categories and compare full-context prompts with RAG.",
+      "Inspect embeddings and ranked policies for several questions, including an unrelated one.",
+      "Compare prompts, input-token usage, and citation validity; inspect factual support."
     ],
-    "example": "Ask about private service data, order history, or repeated events and cite the returned source.",
-    "exercise": "Ask an unrelated question; should the model answer without evidence?",
-    "checks": "Inspect retrieval, citation validity, and whether the cited passage actually supports the answer.",
+    "example": "Compare full-library and retrieved-policy answers about private service data and searchable order history.",
+    "exercise": "Try more questions, change the number of retrieved policies, and inspect irrelevant matches.",
+    "checks": "Inspect prompt sizes, reported input tokens, retrieved IDs and distances, and citation support.",
     "bridge": "Citing a valid source ID does not by itself prove factual support.",
     "track": "lecture-1",
     "pattern": "Retrieval-Augmented Generation",
@@ -163,7 +163,7 @@ const labs = [
       "Retrieval-Augmented Generation"
     ],
     "background": [
-      "Retrieval-augmented generation puts selected external evidence into a prompt. Embeddings find semantic neighbours; neighbours still need relevance checks.",
+      "Sending every policy increases prompt size as a library grows. RAG retrieves selected evidence; embeddings and nearest-neighbour scores do not guarantee relevance.",
       "Citing a valid source ID does not by itself prove factual support."
     ],
     "terms": [

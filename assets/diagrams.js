@@ -331,35 +331,13 @@ const DIAGRAMS = {
   },
   "02": {
     "stages": [
-      {
-        "k": "data",
-        "t": "Question"
-      },
-      {
-        "k": "code",
-        "t": "Embed",
-        "s": "MiniLM vectors"
-      },
-      {
-        "k": "code",
-        "t": "Nearest architecture notes",
-        "s": "Chroma"
-      },
-      {
-        "k": "gate",
-        "t": "close?",
-        "out": "none → abstain"
-      },
-      {
-        "k": "model",
-        "t": "Evidence-based reply",
-        "s": "cites [R3]"
-      },
-      {
-        "k": "check",
-        "t": "Citation check",
-        "s": "cited ⊆ retrieved"
-      }
+      [
+        {"k": "code", "t": "Policy index", "s": "embed + store"},
+        {"k": "data", "t": "Question", "s": "embed query"}
+      ],
+      {"k": "code", "t": "Retrieve", "s": "top 2 policies"},
+      {"k": "model", "t": "Grounded answer", "s": "question + evidence"},
+      {"k": "check", "t": "Check citations", "s": "IDs + support"}
     ]
   },
   "03": {

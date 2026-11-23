@@ -9,7 +9,7 @@
   "17": "Two options (task queue · event log), then Score criteria (0–4 per option) or JEV scores (Score primitive), then Weights (the team’s priorities), then Weighted total (Σ score × weight), then Winner (higher total wins). Then back to Weighted total: reweight, never re-judge.",
   "00": "7 quiz questions (retries + service patterns), then Apply the rule (rule_answer()) or Ask a model (ask() for one letter), then Compare (agreement count).",
   "01": "Architecture question (gateway or BFF), then Prompt (system + user), then Remember (pass prior answer), then Validate (JSON + decision), then Compare (older + thinking modes).",
-  "02": "Question, then Embed (MiniLM vectors), then Nearest architecture notes (Chroma), then close?, then Evidence-based reply (cites [R3]), then Citation check (cited ⊆ retrieved).",
+  "02": "Policy index (embed + store) or Question (embed query), then Retrieve (top 2 policies), then Grounded answer (question + evidence), then Check citations (IDs + support).",
   "03": "Brief, then Business capabilities (3 labels), then gate, then Boundary options (2 options · 3 criteria), then Trade-offs (+ / − table), then gate, then Decision record (Context · Decision · Consequence), then gate.",
   "04": "Request, then Pick a tool ({\"tool\", \"args\"}), then call_tool() (name · types), then User confirms (write tools only), then read_order() (snapshot only) or add_item() (root protects total), then Answer (from the result).",
   "05": "Goal, then Next action (JSON), then Guards (known tool · facts read), then Run the tool (read target metrics), then Observation (added to history). Then back to Next action: repeat · at most 5 turns.",
