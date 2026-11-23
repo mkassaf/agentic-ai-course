@@ -27,14 +27,14 @@ def run(cell, namespace):
 
 
 class PromptingLessonTests(unittest.TestCase):
-    def test_system_instructions_change_while_user_question_stays_the_same(self):
-        client = ScriptedClient(['gateway answer', 'BFF answer'])
+    def test_split_preserves_mixed_content_and_reuses_system_instructions(self):
+        client = ScriptedClient(['mixed answer', 'split answer', 'next answer'])
         run(0, {'plain': client})
-        first, second = client.calls
-        self.assertEqual(first[0], second[0])
-        self.assertNotEqual(first[1]['system'], second[1]['system'])
-        self.assertIn('gateway', first[1]['system'].lower())
-        self.assertIn('bff', second[1]['system'].lower())
+        mixed, split, next_question = client.calls
+        self.assertEqual(mixed[1]['system'], '')
+        self.assertEqual(mixed[0], split[1]['system'] + "\n" + split[0])
+        self.assertEqual(split[1]['system'], next_question[1]['system'])
+        self.assertNotEqual(split[0], next_question[0])
 
     def test_follow_up_carries_the_actual_previous_response(self):
         client = ScriptedClient(['actual model recommendation', 'trade-off'])
