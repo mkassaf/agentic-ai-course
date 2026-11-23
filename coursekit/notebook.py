@@ -14,9 +14,9 @@ PROVIDERS = {
 }
 
 
-def make_ask(mode="practice", *, provider="freeinference", base_url=None, model=None, secret_name=None,
-             token_field="max_tokens", extra_body=None):
-    """Create ask(prompt, example=...). Practice returns the explicit example.
+def make_ask(*, provider="deepseek", base_url=None, model=None, secret_name=None,
+             token_field="max_tokens", extra_body=None, max_tokens=256):
+    """Create ask(prompt) for a configured model provider.
 
     A provider fills in the base URL, model, secret name, and any provider-specific settings;
     each of them can still be overridden, for example to use another model or a university gateway.
@@ -25,13 +25,13 @@ def make_ask(mode="practice", *, provider="freeinference", base_url=None, model=
         raise ValueError(f"Unknown provider {provider!r}; choose one of {sorted(PROVIDERS)}")
     preset = PROVIDERS[provider]
     secret_name = secret_name or preset["secret_name"]
-    client = Client(mode=mode, model=model or preset["model"], family=preset["family"] if not model else "",
+    client = Client(model=model or preset["model"], family=preset["family"] if not model else "",
                     base_url=base_url or preset["base_url"],
-                    api_key=secret(secret_name) if mode == "live" else "",
-                    token_field=token_field, max_calls=12, max_tokens=256,
+                    api_key=secret(secret_name),
+                    token_field=token_field, max_calls=12, max_tokens=max_tokens,
                     extra_body=preset.get("extra_body") if extra_body is None else extra_body)
 
-    def ask(prompt, *, example=""):
-        return client.ask(prompt, practice=example)
+    def ask(prompt):
+        return client.ask(prompt)
 
     return ask

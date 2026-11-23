@@ -86,8 +86,8 @@ def main():
             issues.append(f"{path.name}: lecture revision differs from its lesson source; rebuild")
         if re.search(r"team_size\s*>=\s*8|search_hotels|book_room", text):
             issues.append(f"{path.name}: obsolete unrelated example or team-size threshold")
-        if "make_ask" in text and ("practice" not in text or "live" not in text):
-            issues.append(f"{path.name}: needs practice and live explanations")
+        if re.search(r"MODE\s*=\s*[\"\']practice|(?:example|practice)=", text):
+            issues.append(f"{path.name}: remove scripted model-response mode and arguments")
         examples = [c for c in notebook.cells if c.cell_type == "code"
                     and not {"setup", "optional"}.intersection(c.metadata.get("tags", []))]
         optional = [c for c in notebook.cells if c.cell_type == "code"

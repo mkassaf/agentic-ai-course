@@ -45,7 +45,7 @@ class SDKExamplesTests(unittest.TestCase):
 
                 modules = {'openai': SimpleNamespace(OpenAI=FakeSDK),
                            'langchain_openai': SimpleNamespace(ChatOpenAI=FakeFramework)}
-                namespace = {'MODE': 'live', 'PROVIDER': provider, 'prompt': 'same question',
+                namespace = {'PROVIDER': provider, 'prompt': 'same question',
                              'find_spec': lambda name: True}
                 with patch.dict(sys.modules, modules), patch.object(coursekit, 'secret', return_value='TEST_ONLY'), \
                         contextlib.redirect_stdout(io.StringIO()):
@@ -67,30 +67,21 @@ class SDKExamplesTests(unittest.TestCase):
                 self.assertEqual(records['framework_prompt'], [
                     ('system', 'You are a concise teaching assistant.'), ('user', 'same question')])
 
-    def test_practice_requires_no_imports_or_key(self):
-        with patch.object(coursekit, 'secret', side_effect=AssertionError('unexpected secret')), \
-                contextlib.redirect_stdout(io.StringIO()) as output:
-            for source in OPTIONAL:
-                python = re.sub(r'(?m)^(\s*)%pip.*$', r'\1pass', source)
-                exec(python, {'MODE': 'practice'})
-        self.assertEqual(output.getvalue().count('scripted; no model request'), 2)
 
 
 class HarnessExampleTests(unittest.TestCase):
     def python_source(self):
         return re.sub(r'(?m)^(\s*)%pip.*$', r'\1pass', HARNESS)
 
-    def test_practice_and_other_providers_do_not_launch_the_runtime(self):
+    def test_optional_and_other_providers_do_not_launch_the_runtime(self):
         with contextlib.redirect_stdout(io.StringIO()) as output:
-            exec(self.python_source(), {'MODE': 'practice'})
-            exec(self.python_source(), {'MODE': 'live', 'PROVIDER': 'deepseek'})
+            exec(self.python_source(), {'PROVIDER': 'deepseek'})
             exec(self.python_source().replace('RUN_HARNESS = False', 'RUN_HARNESS = True'),
-                 {'MODE': 'live', 'PROVIDER': 'gemini'})
-        self.assertIn('scripted; no model request', output.getvalue())
+                 {'PROVIDER': 'gemini'})
         self.assertIn('Set RUN_HARNESS', output.getvalue())
 
     def test_live_branch_rejects_unverified_sdk_versions(self):
-        namespace = {'MODE': 'live', 'PROVIDER': 'deepseek', 'find_spec': lambda name: True}
+        namespace = {'PROVIDER': 'deepseek', 'find_spec': lambda name: True}
         source = self.python_source().replace('RUN_HARNESS = False', 'RUN_HARNESS = True')
         with patch('importlib.metadata.version', return_value='0.0.0'):
             with self.assertRaisesRegex(AssertionError, 'pinned SDK'):
@@ -113,7 +104,7 @@ class HarnessExampleTests(unittest.TestCase):
                 return SimpleNamespace(finish_reason='completed', final_response='A')
 
         modules = {'deepseek_harness': SimpleNamespace(DeepSeekHarness=FakeHarness)}
-        namespace = {'MODE': 'live', 'PROVIDER': 'deepseek', 'prompt': 'same question',
+        namespace = {'PROVIDER': 'deepseek', 'prompt': 'same question',
                      'find_spec': lambda name: True}
         with patch.dict(sys.modules, modules), patch.object(coursekit, 'secret', return_value='TEST_ONLY'), \
                 patch('importlib.metadata.version', return_value='0.2.2rc2'), \

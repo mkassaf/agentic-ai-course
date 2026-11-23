@@ -17,8 +17,8 @@ class NotebookHelperTests(unittest.TestCase):
             with self.subTest(provider=provider), patch("coursekit.notebook.secret", return_value="TEST_ONLY") as read_key, \
                     patch("coursekit.runtime.urllib.request.build_opener") as opener:
                 opener.return_value.open.return_value = io.BytesIO(json.dumps(payload).encode())
-                ask = make_ask(mode="live", provider=provider)
-                self.assertEqual(ask("Inspect idempotency", example="fixture"), '{"decision":"retry"}')
+                ask = make_ask(provider=provider)
+                self.assertEqual(ask("Inspect idempotency"), '{"decision":"retry"}')
                 request = opener.return_value.open.call_args.args[0]
                 body = json.loads(request.data)
                 self.assertEqual(request.full_url, endpoint)
@@ -37,28 +37,11 @@ class NotebookHelperTests(unittest.TestCase):
                     self.assertNotIn("thinking", body)
                 read_key.assert_called_once_with(key_name)
 
-    def test_all_provider_practice_modes_are_offline(self):
-        for provider in ("freeinference", "deepseek", "gemini"):
-            with self.subTest(provider=provider), patch("coursekit.notebook.secret") as read_key, \
-                    patch("coursekit.runtime.urllib.request.build_opener") as opener:
-                ask = make_ask(provider=provider)
-                self.assertEqual(ask("Question", example="explicit fixture"), "explicit fixture")
-                read_key.assert_not_called()
-                opener.assert_not_called()
-
-    def test_practice_requires_neither_secret_nor_network(self):
-        with patch("coursekit.notebook.secret") as read_key, patch("coursekit.runtime.urllib.request.build_opener") as network:
-            ask = make_ask()
-            self.assertEqual(ask("Say hello", example="Hello!"), "Hello!")
-        read_key.assert_not_called()
-        network.assert_not_called()
-
-    def test_live_uses_secret_and_ignores_scripted_answer(self):
+    def test_uses_secret_and_model_override(self):
         with patch("coursekit.notebook.secret", return_value="TEST_ONLY"), patch("coursekit.notebook.Client") as factory:
             factory.return_value.ask.return_value = "Actual response"
-            ask = make_ask(mode="live", model="chosen-model", secret_name="MY_SECRET")
-            self.assertEqual(ask("Say hello", example="Fixture"), "Actual response")
-            self.assertEqual(factory.call_args.kwargs["mode"], "live")
+            ask = make_ask(model="chosen-model", secret_name="MY_SECRET")
+            self.assertEqual(ask("Say hello"), "Actual response")
             self.assertEqual(factory.call_args.kwargs["model"], "chosen-model")
 
 
@@ -70,17 +53,18 @@ class NotebookHelperTests(unittest.TestCase):
         for provider, (url, key_name, extra) in expected.items():
             with self.subTest(provider=provider), patch("coursekit.notebook.secret", return_value="TEST_ONLY") as read_key, \
                     patch("coursekit.notebook.Client") as factory:
-                make_ask(mode="live", provider=provider)
+                make_ask(provider=provider)
                 read_key.assert_called_once_with(key_name)
                 self.assertEqual(factory.call_args.kwargs["base_url"], url)
                 self.assertEqual(factory.call_args.kwargs["extra_body"], extra)
 
     def test_overrides_win_and_unknown_providers_are_refused(self):
         with patch("coursekit.notebook.secret", return_value="TEST_ONLY") as read_key, patch("coursekit.notebook.Client") as factory:
-            make_ask(mode="live", provider="gemini", model="another-model", extra_body={})
+            make_ask(provider="gemini", model="another-model", extra_body={}, max_tokens=768)
             read_key.assert_called_once_with("GEMINI_API_KEY")
             self.assertEqual(factory.call_args.kwargs["model"], "another-model")
             self.assertEqual(factory.call_args.kwargs["extra_body"], {})
+            self.assertEqual(factory.call_args.kwargs["max_tokens"], 768)
         with self.assertRaisesRegex(ValueError, "Unknown provider"):
             make_ask(provider="nobody")
 

@@ -9,7 +9,7 @@ from coursekit.runtime import Client, parse_object, summarize_trace
 
 
 def client(**overrides):
-    options = dict(mode="live", model="university-model", family="verified-family",
+    options = dict(model="university-model", family="verified-family",
                    base_url="https://gateway.university.example/v1",
                    api_key="UNITTEST_ONLY_KEY", max_calls=3)
     options.update(overrides)
@@ -17,17 +17,15 @@ def client(**overrides):
 
 
 class ClientTests(unittest.TestCase):
-    def test_practice_runs_offline_and_reports_unknown_usage(self):
-        model = Client(max_calls=1)
+    def test_call_budget_counts_requests(self):
+        model = client(max_calls=1)
+        payload = {"choices": [{"message": {"content": "answer"}}]}
         with patch("coursekit.runtime.urllib.request.build_opener") as opener:
-            self.assertEqual(model.ask("hello", practice="explicit fixture"), "explicit fixture")
-        opener.assert_not_called()
-        trace = summarize_trace([model])
-        self.assertEqual(trace["calls"], 1)
-        self.assertIsNone(trace["input_tokens"])
-        self.assertIsNone(trace["cost"])
-        with self.assertRaisesRegex(RuntimeError, "budget"):
-            model.ask("second request")
+            opener.return_value.open.return_value = io.BytesIO(json.dumps(payload).encode())
+            self.assertEqual(model.ask("hello"), "answer")
+            with self.assertRaisesRegex(RuntimeError, "budget"):
+                model.ask("again")
+        self.assertEqual(summarize_trace([model])["calls"], 1)
 
     def test_compatible_request_uses_real_prompt_and_records_provider_usage(self):
         payload = {"choices": [{"finish_reason": "stop", "message": {"content": "actual answer"}}],
@@ -35,7 +33,7 @@ class ClientTests(unittest.TestCase):
         model = client(token_field="max_completion_tokens", max_tokens=123)
         with patch("coursekit.runtime.urllib.request.build_opener") as opener:
             opener.return_value.open.return_value = io.BytesIO(json.dumps(payload).encode())
-            self.assertEqual(model.ask("real prompt", system="real system", practice="fixture ignored"), "actual answer")
+            self.assertEqual(model.ask("real prompt", system="real system"), "actual answer")
             request = opener.return_value.open.call_args.args[0]
             sent = json.loads(request.data)
             self.assertEqual(request.full_url, "https://gateway.university.example/v1/chat/completions")

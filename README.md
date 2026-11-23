@@ -6,7 +6,7 @@ Prepared by **Mustafa Assaf**
 
 Eighteen short Colab labs teach agentic AI while students review and apply software architecture concepts, including microservices and domain-driven design (DDD). Each lab provides the relevant context, asks two questions, applies the ideas in a small executable example, and ends with a change to try.
 
-The examples use ShopEasy, the lectures' social app, and small checkout scenarios. They cover operational readiness, business boundaries, aggregates, private service data, CQRS, resilience, saga compensation, contracts, anti-corruption layers, and Kafka semantics. The old eight-person architecture rule and hotel-booking examples have been replaced. Scores, workloads, and scripted replies are explicitly teaching fixtures, not empirical results.
+The examples use ShopEasy, the lectures' social app, and small checkout scenarios. They cover operational readiness, business boundaries, aggregates, private service data, CQRS, resilience, saga compensation, contracts, anti-corruption layers, and Kafka semantics. The old eight-person architecture rule and hotel-booking examples have been replaced. Illustrative scores and workloads are teaching inputs, not empirical measurements.
 
 ## Start in Colab
 
@@ -35,13 +35,11 @@ Save a copy of a notebook to your Drive and run cells in order with a CPU runtim
 | 16 · Learning from feedback: learning curves and trust weights | Retry eligibility and idempotency; Correlated reviewer errors; Feedback/test separation | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/16_learning_curve_trust.ipynb) |
 | 17 · Decision models: a weighted decision matrix with a scoring model | task queues versus retained event logs; independent consumer groups and replay; partition key versus eventId; consumer parallelism is capped by partitions | [Run](https://colab.research.google.com/github/mkassaf/agentic-ai-course/blob/main/notebooks/17_weighted_decision_jev.ipynb) |
 
-## Practice and live models
+## Model access
 
-Start in `MODE="practice"`. Model replies are explicit scripted fixtures: practice validates the Python workflow, not model intelligence. The MCP and A2A labs use real local SDK protocol exchanges, without deploying business services. No Kafka broker, cloud account, or production payment provider is required.
+Model-based examples send requests to the selected provider. Save the provider’s key in Colab Secrets and grant the notebook access. The single-provider model labs default to DeepSeek (`DEEPSEEK_API_KEY`); FreeInference (`FREEINFERENCE_API_KEY`) and Gemini (`GEMINI_API_KEY`) are also supported. The adapter also supports Gemini and compatible university gateways; see [API setup](docs/api-setup.md). Lab 06 needs FreeInference, DeepSeek, and Gemini keys. Lab 09 calls a model only for its judge; its comparison dataset is explicitly illustrative. Lab 17 uses a separate `TYPESAFE_API_KEY` for its scoring model.
 
-For a live model, save the selected provider’s key in Colab Secrets, grant access, and choose `MODE="live"`. Labs 00–01 default to DeepSeek and use `DEEPSEEK_API_KEY`; most other model labs default to FreeInference and use `FREEINFERENCE_API_KEY`. Most model labs use `make_ask`, which supports compatible university gateways and the Gemini and DeepSeek presets; Lab 01 uses a lower-level client to show message roles; see [API setup](docs/api-setup.md). Lab 06 requires all three providers in live mode. Lab 09 only runs its judge live; its comparison inputs are marked synthetic. Lab 17's optional scoring call uses a separate `TYPESAFE_API_KEY` and explicit live mode.
-
-A passed format/citation check does not prove factual support or a good architecture. Read the result against the lecture, inspect the trade-off, and report negative results honestly. Do not infer a universal architecture rule from a tiny fixture.
+The MCP and A2A labs use local SDK protocol exchanges without model keys or deployed business services. Check provider access, quotas, and costs before class. Model outputs vary; inspect them against the scenario rather than assuming a passing format or citation check proves correctness.
 
 ## Teaching and revision guides
 
@@ -71,7 +69,7 @@ python scripts/execute_notebooks.py
 python -m http.server 8000
 ```
 
-Practice execution uses fresh temporary directories and no model keys. Chroma downloads a small embedding model on first use. Optional MLflow tracking is an extra cell after Lab 09, with synthetic data labelled as such; it is not required for core execution.
+Automated checks compile all notebooks and execute the model-free protocol and trust-weight labs in fresh temporary directories without model keys. Model-based labs require provider credentials and should also be tested separately with student-equivalent access. Chroma downloads a small embedding model on first use. Optional MLflow tracking is an extra cell after Lab 09, with synthetic data labelled as such; it is not required for core execution.
 
 ## Maintain the course
 

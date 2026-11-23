@@ -31,25 +31,22 @@ class _NoRedirect(urllib.request.HTTPRedirectHandler):
 
 
 class Client:
-    """Practice responses are explicit fixtures, not an LLM or model simulation."""
-    def __init__(self, mode="practice", model="", family="", base_url="", api_key="",
+    """Bounded client for an OpenAI-compatible Chat Completions endpoint."""
+    def __init__(self, model="", family="", base_url="", api_key="",
                  max_calls=24, max_tokens=512, timeout=45, token_field="max_tokens", extra_body=None):
         if extra_body is not None and (not isinstance(extra_body, dict) or
                 set(extra_body) & {"model", "messages", "max_tokens", "max_completion_tokens", "stream"}):
             raise ValueError("extra_body must be a dict and cannot override the request contract or budgets")
-        if mode not in {"practice", "live"}:
-            raise ValueError("mode must be practice or live")
         if token_field not in {"max_tokens", "max_completion_tokens"}:
             raise ValueError("Check which output-token field your provider supports")
         if max_calls < 1 or max_tokens < 1 or timeout <= 0:
             raise ValueError("Call, output, and timeout bounds must be positive")
-        if mode == "live":
-            url = urllib.parse.urlsplit(base_url)
-            if url.scheme != "https" or not url.netloc or url.username or url.password or url.query or url.fragment:
-                raise ValueError("Use an HTTPS API base URL, without credentials/query/fragment")
-            if not model.strip() or not api_key.strip():
-                raise ValueError("Live mode requires a model and secret key")
-        self.mode, self.model, self.family = mode, model, family
+        url = urllib.parse.urlsplit(base_url)
+        if url.scheme != "https" or not url.netloc or url.username or url.password or url.query or url.fragment:
+            raise ValueError("Use an HTTPS API base URL, without credentials/query/fragment")
+        if not model.strip() or not api_key.strip():
+            raise ValueError("A model and secret key are required")
+        self.model, self.family = model, family
         self.base_url, self._api_key = base_url.rstrip("/"), api_key
         self.max_calls, self.max_tokens, self.timeout = max_calls, max_tokens, timeout
         self.token_field, self.trace = token_field, []
@@ -57,7 +54,7 @@ class Client:
         self._freeinference = urllib.parse.urlsplit(self.base_url).hostname == "freeinference.org"
         self._attempts, self._lock = 0, threading.Lock()
 
-    def ask(self, prompt, *, system="You are a concise teaching assistant.", practice=""):
+    def ask(self, prompt, *, system="You are a concise teaching assistant."):
         if not isinstance(prompt, str) or len(prompt) + len(system) > 28000:
             raise ValueError("Prompt must be text and total prompt length <= 28,000 characters")
         with self._lock:
@@ -66,46 +63,43 @@ class Client:
             self._attempts += 1
             call_id = self._attempts
         started = time.perf_counter()
-        row = dict(call=call_id, mode=self.mode, model=self.model or "scripted-fixture",
-                   family=self.family or ("practice" if self.mode == "practice" else None), input_tokens=None, output_tokens=None,
+        row = dict(call=call_id, model=self.model,
+                   family=self.family or None, input_tokens=None, output_tokens=None,
                    cost=None, status="ok")
         try:
-            if self.mode == "practice":
-                content = practice
-            else:
-                messages = [{"role": "system", "content": system}, {"role": "user", "content": prompt}]
-                body = {"model": self.model, "messages": messages, self.token_field: self.max_tokens}
-                body.update(self.extra_body)
-                if self._freeinference:
-                    body.update({"stream": False, "thinking": {"type": "disabled"}})
-                req = urllib.request.Request(self.base_url + "/chat/completions",
-                    data=json.dumps(body).encode(), method="POST",
-                    headers={"Authorization": "Bearer " + self._api_key, "Content-Type": "application/json",
-                             "User-Agent": USER_AGENT})
-                try:
-                    with _host_slots(urllib.parse.urlsplit(self.base_url).hostname):
-                        with urllib.request.build_opener(_NoRedirect).open(req, timeout=self.timeout) as response:
-                            payload = json.load(response)
-                except urllib.error.HTTPError as exc:
-                    if exc.code == 429:
-                        raise RuntimeError("Gateway HTTP 429: rate/quota limit. Check your quota; no retry or key rotation made.") from None
-                    raise RuntimeError(f"Gateway HTTP {exc.code}; check provider access/configuration. No retry made.") from None
-                except (urllib.error.URLError, TimeoutError, OSError, ValueError):
-                    raise RuntimeError("Gateway/network/JSON error; inspect provider configuration. No retry made.") from None
-                try:
-                    choice = payload["choices"][0]
-                    if choice.get("finish_reason") == "length":
-                        raise RuntimeError("Output truncated; inspect token budget before retrying")
-                    content = choice["message"]["content"]
-                    if not isinstance(content, str):
-                        raise ValueError("Missing text response")
-                    usage = payload.get("usage") or {}
-                    row["input_tokens"] = usage.get("prompt_tokens")
-                    row["output_tokens"] = usage.get("completion_tokens")
-                    if self._freeinference and "model is starting up" in content.lower():
-                        raise RuntimeError("FreeInference model is starting up. Wait about 120 seconds, then retry manually; this attempt used the call budget.")
-                except (KeyError, IndexError, TypeError, ValueError, AttributeError):
-                    raise RuntimeError("Gateway response has no usable text; schema/capability check needed") from None
+            messages = [{"role": "system", "content": system}, {"role": "user", "content": prompt}]
+            body = {"model": self.model, "messages": messages, self.token_field: self.max_tokens}
+            body.update(self.extra_body)
+            if self._freeinference:
+                body.update({"stream": False, "thinking": {"type": "disabled"}})
+            req = urllib.request.Request(self.base_url + "/chat/completions",
+                data=json.dumps(body).encode(), method="POST",
+                headers={"Authorization": "Bearer " + self._api_key, "Content-Type": "application/json",
+                         "User-Agent": USER_AGENT})
+            try:
+                with _host_slots(urllib.parse.urlsplit(self.base_url).hostname):
+                    with urllib.request.build_opener(_NoRedirect).open(req, timeout=self.timeout) as response:
+                        payload = json.load(response)
+            except urllib.error.HTTPError as exc:
+                if exc.code == 429:
+                    raise RuntimeError("Gateway HTTP 429: rate/quota limit. Check your quota; no retry or key rotation made.") from None
+                raise RuntimeError(f"Gateway HTTP {exc.code}; check provider access/configuration. No retry made.") from None
+            except (urllib.error.URLError, TimeoutError, OSError, ValueError):
+                raise RuntimeError("Gateway/network/JSON error; inspect provider configuration. No retry made.") from None
+            try:
+                choice = payload["choices"][0]
+                if choice.get("finish_reason") == "length":
+                    raise RuntimeError("Output truncated; inspect token budget before retrying")
+                content = choice["message"]["content"]
+                if not isinstance(content, str):
+                    raise ValueError("Missing text response")
+                usage = payload.get("usage") or {}
+                row["input_tokens"] = usage.get("prompt_tokens")
+                row["output_tokens"] = usage.get("completion_tokens")
+                if self._freeinference and "model is starting up" in content.lower():
+                    raise RuntimeError("FreeInference model is starting up. Wait about 120 seconds, then retry manually; this attempt used the call budget.")
+            except (KeyError, IndexError, TypeError, ValueError, AttributeError):
+                raise RuntimeError("Gateway response has no usable text; schema/capability check needed") from None
             return content
         except Exception:
             row["status"] = "error"

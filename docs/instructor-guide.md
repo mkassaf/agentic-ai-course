@@ -4,7 +4,7 @@ Teach the agentic mechanism and the microservices concept together. Start with t
 
 ## Before class
 
-Run the README checks and open the Colab notebooks with student-equivalent access. Allow installation time; RAG and memory download a small CPU embedding model. Use practice mode first. For live calls, use Colab Secrets and a configurable provider; do not embed keys in notebooks. Lab 06 needs Qwen, DeepSeek and Gemini in live mode, while MCP and the deterministic A2A adapter need no model. Lab 17 optionally uses TypeSafe with a separate key and explicit live mode.
+Run the README checks and open the Colab notebooks with student-equivalent access. Allow installation time; RAG and memory download a small CPU embedding model. For model calls, use Colab Secrets and a configurable provider; do not embed keys in notebooks. Lab 06 needs Qwen, DeepSeek and Gemini, while MCP and the deterministic A2A adapter need no model. Lab 17 uses TypeSafe with a separate key for scoring.
 
 The source PowerPoints remain class materials. Slide numbers include title slides and appendices. The notebooks contain paraphrased source notes and small adaptations, so their code runs without accessing your local PowerPoint paths. Targets and scores introduced for a classroom exercise must be identified as assumptions, not values measured by the lectures.
 
@@ -18,7 +18,7 @@ The source PowerPoints remain class materials. Slide numbers include title slide
 | 50–75 | Third lab. Leave longer installations running while discussing the source slides. |
 | 75–90 | Explain one architecture trade-off and one agentic guard. Assign remaining exercises as homework. |
 
-Lecture 1 uses Labs 00–02; Lecture 2 uses 03–05; Lecture 3 uses 06–08. Lab 06 has more moving parts: keep the first class run scripted, trace one challenge, and assign three-provider live runs as homework. External tracing and optional MLflow are extensions, not prerequisites for the three lectures.
+Lecture 1 uses Labs 00–02; Lecture 2 uses 03–05; Lecture 3 uses 06–08. Lab 06 has more moving parts: verify access to all three providers before class, trace any challenge, and allow time for live calls. External tracing and optional MLflow are extensions, not prerequisites for the three lectures.
 
 ## Questions worth asking
 
@@ -40,7 +40,7 @@ Lecture 1 uses Labs 00–02; Lecture 2 uses 03–05; Lecture 3 uses 06–08. Lab
 
 ## Keep the experiments honest
 
-Practice replies and timings are fixtures. A live call may produce an unexpected or unsupported answer; inspect and report it. Citation-ID validity and output shape are not semantic grounding. Memory need not improve the score. A synthetic learning curve tests aggregation code, not actual model learning. Calibrate a judge against people, and compare real systems on common scenarios before making claims about model performance.
+Illustrative datasets and timings are labelled. A model call may produce an unexpected or unsupported answer; inspect and report it. Citation-ID validity and output shape are not semantic grounding. Memory need not improve the score. A synthetic learning curve tests aggregation code, not actual model learning. Calibrate a judge against people, and compare real systems on common scenarios before making claims about model performance.
 
 Lab 09 preserves MLflow as an optional extra cell logging explicitly synthetic metrics to a local SQLite database (`mlflow.db`). It omits an untrusted judge metric rather than replacing missing data with zero. Colab's runtime filesystem and localhost belong to the hosted runtime, not the student's laptop; download tracking data before ending a session, or run the local MLflow UI on a local machine.
 

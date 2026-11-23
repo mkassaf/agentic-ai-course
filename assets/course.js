@@ -450,7 +450,7 @@ const labs = [
       "Remove a citation or change the query workload and inspect challenges and dissent.",
       "Check independent proposals, bounded revision, valid citations, a quorum, and escalation."
     ],
-    "example": "Three architect roles compare ShopEasy support search with small order-by-ID lookups. Practice uses scripted responses; live mode calls three providers.",
+    "example": "Three architect roles on three providers compare ShopEasy support search with small order-by-ID lookups.",
     "exercise": "Remove a citation or change the query workload and inspect challenges and dissent.",
     "checks": "Check independent proposals, bounded revision, valid citations, a quorum, and escalation.",
     "bridge": "CQRS supports search but adds a read model and consistency lag; composition has different costs.",
@@ -669,11 +669,11 @@ const labs = [
     "objectives": [
       "Compare systems on the same architecture cases and calibrate a narrow LLM judge.",
       "Change one answer and inspect correctness, valid citations, costs, and human/judge disagreement.",
-      "Fixtures demonstrate the measurement code; live mode runs the judge, not a fresh council benchmark."
+      "The synthetic dataset demonstrates the measurement code; the model only judges the example answers."
     ],
     "example": "Score synthetic recommendations for customer support search and order-details lookups.",
     "exercise": "Change one answer and inspect correctness, valid citations, costs, and human/judge disagreement.",
-    "checks": "Fixtures demonstrate the measurement code; live mode runs the judge, not a fresh council benchmark.",
+    "checks": "The synthetic dataset demonstrates the measurement code; the model only judges the example answers.",
     "bridge": "Use actual run logs and repeated scenarios for the project experiment.",
     "track": "self-study",
     "steps": 5,
@@ -1258,12 +1258,12 @@ const labs = [
     ],
     "example": "Compare a simple task queue with a retained event log; distinguish an order key from eventId and compute consumer-group parallelism.",
     "exercise": "Make replay mandatory, change the Kafka key, or add a fifth consumer to four partitions.",
-    "checks": "Check the weighted arithmetic, key roles, and consumer count; optional TypeSafe judgements can differ.",
+    "checks": "Check the weighted arithmetic, key roles, and consumer count; TypeSafe judgements can differ.",
     "bridge": "Preferences belong in weights; mandatory replay is an eligibility condition. Partition keys, event IDs, and consumer offsets solve different problems.",
     "steps": 5,
     "patterns": [],
     "background": [
-      "A weighted matrix exposes the assumptions behind a choice. Code combines the scores; an optional scoring model supplies judgements rather than implementing broker guarantees.",
+      "A weighted matrix exposes the assumptions behind a choice. Code combines the scores; a scoring model supplies judgements rather than implementing broker guarantees.",
       "A task queue distributes deliveries among workers. A retained event log lets subscriber groups read and replay independently. Kafka groups are limited by partition count; eventId supports deduplication while a record key determines grouping under a stable partition mapping."
     ],
     "terms": [

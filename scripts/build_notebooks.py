@@ -89,27 +89,25 @@ def setup_for(slug, revision):
         source += (f"\nif not find_spec({module!r}):\n"
                    f"    %pip install -q {pip_spec!r}")
     if slug == "01_prompting_evaluation":
-        source += ('\nMODE = "practice"  # change to "live" for real model calls\n'
-                   'PROVIDER = "deepseek"  # or "gemini" or "freeinference" for Steps 1–3\n'
-                   'if MODE == "live" and find_spec("transformers") is None:\n'
-                   '    %pip install -q "transformers>=4.45,<5" torch\n'
+        source += ('\nPROVIDER = "deepseek"  # or "gemini" or "freeinference" for Steps 1–3\n'
                    'from coursekit.runtime import Client, secret\n'
                    'from coursekit.notebook import PROVIDERS\n'
                    'settings = PROVIDERS[PROVIDER]\n'
-                   'key = secret(settings["secret_name"]) if MODE == "live" else ""\n'
-                   'plain = Client(mode=MODE, model=settings["model"], base_url=settings["base_url"],\n'
+                   'key = secret(settings["secret_name"])\n'
+                   'plain = Client(model=settings["model"], base_url=settings["base_url"],\n'
                    '               api_key=key, max_calls=12, extra_body=settings.get("extra_body"))\n'
                    'thinking = None\n'
                    'if PROVIDER == "deepseek":\n'
-                   '    thinking = Client(mode=MODE, model=settings["model"], base_url=settings["base_url"],\n'
+                   '    thinking = Client(model=settings["model"], base_url=settings["base_url"],\n'
                    '                      api_key=key, max_calls=12, max_tokens=4096, timeout=120,\n'
                    '                      extra_body={"thinking": {"type": "enabled"}, "reasoning_effort": "low"})')
+    elif slug == "06_multi_agent_debate":
+        source += '\nfrom coursekit import make_ask'
     elif slug not in NO_MODEL_LABS:
-        provider_line = ('PROVIDER = "deepseek"  # or "gemini" or "freeinference"\n'
-                         if slug == "00_rules_and_llms" else
-                         'PROVIDER = "freeinference"  # or "gemini" or "deepseek"\n')
-        source += ('\nfrom coursekit import make_ask\nMODE = "practice"\n'
-                   + provider_line + 'ask = make_ask(mode=MODE, provider=PROVIDER)')
+        provider_line = 'PROVIDER = "deepseek"  # or "gemini" or "freeinference"\n'
+        token_budget = ', max_tokens=768' if slug == '15_framing_contract' else ''
+        source += ('\nfrom coursekit import make_ask\n'
+                   + provider_line + f'ask = make_ask(provider=PROVIDER{token_budget})')
     return source
 
 
@@ -120,24 +118,22 @@ def build(lesson, revision, diagrams, site_lab):
              f'**Prepared by Mustafa Assaf** · {lesson["section"]} · ~15–20 min core work (estimate; setup and extras take longer)')
     setup_note = '## Setup\nRun this cell once to load the course helpers, then run the steps below in order.'
     if slug == "01_prompting_evaluation":
-        setup_note += (' Practice mode uses scripted answers without a key. For live mode, save '
-                       '`DEEPSEEK_API_KEY` in Colab Secrets, keep `PROVIDER="deepseek"`, set '
-                       '`MODE="live"`, and rerun this setup cell. Live Step 4 downloads a small '
-                       'local model; Step 5 uses DeepSeek thinking mode. Other providers work in '
-                       'Steps 1–3; Step 5 requires DeepSeek. Each client stops after 12 calls.')
+        setup_note += (' Save `DEEPSEEK_API_KEY` in Colab Secrets and keep `PROVIDER="deepseek"`. '
+                       'Step 4 downloads a small local model; Step 5 uses DeepSeek thinking mode. '
+                       'Other providers work in Steps 1–3; Step 5 requires DeepSeek. Each client stops after 12 calls.')
     elif slug == "00_rules_and_llms":
-        setup_note += (' Practice answers are scripted. For live mode, save `DEEPSEEK_API_KEY` '
-                       'in Colab Secrets, keep `PROVIDER="deepseek"`, set `MODE="live"`, and '
-                       'rerun setup. You can also choose `"gemini"` or `"freeinference"` with '
-                       'the corresponding secret. `ask` stops after 12 calls; SDK and framework '
-                       'examples make separate calls.')
+        setup_note += (' Save `DEEPSEEK_API_KEY` in Colab Secrets and keep `PROVIDER="deepseek"`. '
+                       'You can also select `"gemini"` or `"freeinference"` with the corresponding secret. '
+                       '`ask` stops after 12 calls; optional SDK and framework examples make separate calls.')
+    elif slug == "06_multi_agent_debate":
+        setup_note += (' Save `FREEINFERENCE_API_KEY`, `DEEPSEEK_API_KEY`, and `GEMINI_API_KEY` in '
+                       'Colab Secrets. Each architect uses its own provider and call budget.')
     elif slug not in NO_MODEL_LABS:
-        setup_note += (' Practice answers are scripted. For a live model, choose `PROVIDER` '
-                       '(`"freeinference"`, `"gemini"`, or `"deepseek"`), save its key in Colab Secrets '
-                       '(`FREEINFERENCE_API_KEY`, `GEMINI_API_KEY`, or `DEEPSEEK_API_KEY`), and change `MODE` to '
-                       '`"live"`. `ask` stops after 12 calls; run this cell again to reset the count.')
+        setup_note += (' Choose `PROVIDER` (`"freeinference"`, `"gemini"`, or `"deepseek"`), and save '
+                       'its key in Colab Secrets (`FREEINFERENCE_API_KEY`, `GEMINI_API_KEY`, or '
+                       '`DEEPSEEK_API_KEY`). `ask` stops after 12 calls; rerun setup to reset the count.')
     elif slug == '17_weighted_decision_jev':
-        setup_note += ' Practice scores need no key. Optional live scoring uses TYPESAFE_API_KEY and explicit live mode in the lab.'
+        setup_note += ' Steps 4–5 use TypeSafe and require `TYPESAFE_API_KEY` in Colab Secrets.'
     else:
         setup_note += ' This lab needs no model key.'
     # The lesson's first cell states the idea, so learners read it before the setup boilerplate.
@@ -206,7 +202,7 @@ def main():
         "context and questions; its code, checks, and exercises apply those ideas.\n\n"
         "Slide numbers include each deck's title slide and appendices. The PowerPoint files remain "
         "class materials and are not redistributed here. The examples are small adaptations; "
-        "scripted replies, scores, workloads, and timing fixtures are not empirical results.\n\n"
+        "illustrative scores, workloads, and timing fixtures are not empirical results.\n\n"
         "| Lab / agentic mechanism | Microservices / DDD revision | Lecture slides |\n"
         "| --- | --- | --- |\n" + "\n".join(rows) + "\n")
 

@@ -1,4 +1,4 @@
-"""Exercise the failure paths hidden by the default scripted notebook runs."""
+"""Exercise model-output and failure paths using test-only mocks."""
 import ast
 import contextlib
 import io
@@ -26,6 +26,30 @@ def load_function(source, name, namespace):
 
 
 class LiveRetryTests(unittest.TestCase):
+    def test_debate_challenges_and_repairs_missing_citations(self):
+        replies = {
+            "freeinference": iter(['{"option":"CQRS","claim":"Search fits a read model.","evidence":["R3","C1"]}']),
+            "deepseek": iter(['{"option":"API composition","claim":"Fewer moving parts.","evidence":["C2"]}',
+                              'Which source supports that claim?']),
+            "gemini": iter(['{"option":"CQRS","claim":"Always fresh.","evidence":[]}',
+                            '{"option":"CQRS","claim":"The read model can lag.","evidence":["R3"]}']),
+        }
+        prompts = []
+
+        def make_ask(*, provider):
+            def ask(prompt):
+                prompts.append((provider, prompt))
+                return next(replies[provider])
+            return ask
+
+        ns = {"make_ask": make_ask}
+        for cell in code_cells("06_multi_agent_debate"):
+            quiet_exec(cell, ns)
+        self.assertEqual(ns["outcome"]["option"], "CQRS")
+        self.assertEqual(ns["outcome"]["votes"], {"CQRS": 2, "API composition": 1})
+        self.assertEqual(len(prompts), 5)
+        self.assertTrue(any("Challenge:" in prompt for _, prompt in prompts))
+
     def test_a2a_adapter_keeps_provider_fields_out_of_the_internal_model(self):
         ns = {}
         quiet_exec(code_cells("13_a2a_protocol")[0], ns)
@@ -44,15 +68,13 @@ class LiveRetryTests(unittest.TestCase):
         cells = code_cells("14_frameworks_langgraph")
         prompts = []
 
-        def ask(prompt, *, example):
-            self.assertEqual(example, "")
+        def ask(prompt):
             prompts.append(prompt)
             return json.dumps({"orderId": "string", "amount": "number"})  # breaks the old total field
 
-        ns = {"MODE": "live", "ask": ask}
+        ns = {"ask": ask}
         for cell in cells[:3]:
             quiet_exec(cell, ns)
-        ns["scripted"].clear()
         for project in ns["projects"]:
             result = ns["app"].invoke({"project": project})
             self.assertEqual(result["attempts"], 2)
@@ -72,11 +94,13 @@ class SkillContractTests(unittest.TestCase):
     def test_explanation_in_decision_is_repaired_without_weakening_the_checker(self):
         prompts = []
 
-        def ask(prompt, *, example):
+        def ask(prompt):
             prompts.append(prompt)
             if len(prompts) == 1:
-                return example.replace("Decision: compensate", "Decision: compensate, because payment failed")
-            return example
+                return "Context: visible.\nDecision: compensate, because payment failed\nConsequence: release stock; reject order"
+            if "Payment failed" in prompt:
+                return "Context: visible.\nDecision: compensate\nConsequence: release stock; reject order"
+            return "Context: visible.\nDecision: complete\nConsequence: none"
 
         self.run_skill(ask)
         self.assertEqual(len(prompts), 3)
@@ -87,7 +111,7 @@ class SkillContractTests(unittest.TestCase):
     def test_invalid_skill_output_still_fails_after_the_repair_budget(self):
         prompts = []
 
-        def ask(prompt, *, example):
+        def ask(prompt):
             prompts.append(prompt)
             return "Decision: ignore the payment failure"
 
@@ -111,9 +135,9 @@ class MemoryScopeTests(unittest.TestCase):
                 records = [{"lesson": stored_lesson}] if scope is None or scope == approved else []
                 return {"distances": [[0.22] if records else []], "metadatas": [records]}
 
-        def ask(prompt, *, example):
+        def ask(prompt):
             prompts.append(prompt)
-            return example
+            return "retry" if "Applicable approved lessons" in prompt else "do not retry"
 
         ns = {"ask": ask, "memory": Memory()}
         quiet_exec(cells[0], ns)
