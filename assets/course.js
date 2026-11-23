@@ -518,7 +518,7 @@ const labs = [
       "Add an agent through the registry and follow its cited messages in the log.",
       "Inspect the live log, persisted records, and the decision evidence trail."
     ],
-    "example": "Use the lecture tracing idea to connect ShopEasy pattern recommendations and their evidence.",
+    "example": "Trace ShopEasy pattern recommendations back to the claims and evidence behind them.",
     "exercise": "Add an agent through the registry and follow its cited messages in the log.",
     "checks": "Inspect the live log, persisted records, and the decision evidence trail.",
     "bridge": "Agent-run traces and microservice request traces share correlation principles but are different systems.",
@@ -590,11 +590,11 @@ const labs = [
     "idea": "Reuse human feedback only when it applies to the current operation.",
     "objectives": [
       "Store the reason for human feedback and retrieve it only for cases within its approved scope.",
-      "Change idempotency and compare semantic matches with applicable memories.",
+      "Change idempotency or whether a failure is transient, and compare candidate memories with applicable ones.",
       "Report before/after held-out scores even when memory does not improve them."
     ],
     "example": "A retry lesson for idempotent reads must not be reused blindly for a non-idempotent payment charge.",
-    "exercise": "Change idempotency and compare semantic matches with applicable memories.",
+    "exercise": "Change idempotency or whether a failure is transient, and compare candidate memories with applicable ones.",
     "checks": "Report before/after held-out scores even when memory does not improve them.",
     "bridge": "Similarity is not applicability. Check known scope conditions before inserting a lesson into a prompt.",
     "track": "lecture-3",
@@ -624,7 +624,7 @@ const labs = [
       ],
       [
         "Held-out case",
-        "A test case that was never used for feedback, so it measures learning, not memorisation."
+        "A case not used for feedback, reserved to test whether the approach generalizes."
       ]
     ],
     "review": {
@@ -670,7 +670,7 @@ const labs = [
       "Change one answer and inspect correctness, valid citations, costs, and human/judge disagreement.",
       "Fixtures demonstrate the measurement code; live mode runs the judge, not a fresh council benchmark."
     ],
-    "example": "Score small synthetic recommendations for read patterns and checkout reliability.",
+    "example": "Score synthetic recommendations for customer support search and order-details lookups.",
     "exercise": "Change one answer and inspect correctness, valid citations, costs, and human/judge disagreement.",
     "checks": "Fixtures demonstrate the measurement code; live mode runs the judge, not a fresh council benchmark.",
     "bridge": "Use actual run logs and repeated scenarios for the project experiment.",

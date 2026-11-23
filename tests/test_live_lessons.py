@@ -106,7 +106,9 @@ class MemoryScopeTests(unittest.TestCase):
             def query(self, **kwargs):
                 queries.append(kwargs)
                 # A semantic false positive: Search would be the closer match without a scope filter.
-                records = [] if kwargs.get("where") == {"idempotent": False} else [{"lesson": stored_lesson}]
+                scope = kwargs.get("where")
+                approved = {"$and": [{"idempotent": True}, {"transient": True}]}
+                records = [{"lesson": stored_lesson}] if scope is None or scope == approved else []
                 return {"distances": [[0.22] if records else []], "metadatas": [records]}
 
         def ask(prompt, *, example):
@@ -122,12 +124,12 @@ class MemoryScopeTests(unittest.TestCase):
         self.assertEqual(ns["scores"], {"before": 1, "after": 2})
         self.assertIn(stored_lesson, prompts[2])
         self.assertNotIn(stored_lesson, prompts[3])
-        self.assertEqual(queries[-1]["where"], {"idempotent": False})
-        self.assertEqual(queries[-2]["where"], {"idempotent": True})
+        self.assertEqual(queries[-1]["where"], {"$and": [{"idempotent": False}, {"transient": True}]})
+        self.assertEqual(queries[-2]["where"], {"$and": [{"idempotent": True}, {"transient": True}]})
 
     def test_a_flat_learning_result_is_reported_instead_of_asserted_away(self):
         cells = code_cells("08_human_feedback_memory")
-        ns = {"case": "feedback case", "held_out": [("new case", False, "do not retry")],
+        ns = {"case": "feedback case", "held_out": [("new case", False, True, "do not retry")],
               "recall": lambda *args, **kwargs: [],
               "council": lambda *args, **kwargs: "do not retry"}
         quiet_exec(cells[4], ns)

@@ -117,7 +117,7 @@ def build(lesson, revision, diagrams, site_lab):
     slug = lesson["slug"]
     number = slug.split("_", 1)[0]
     intro = (f'# Lab {number} · {lesson["title"]}\n\n'
-             f'**Prepared by Mustafa Assaf** · {lesson["section"]} · 15–20 minute lab')
+             f'**Prepared by Mustafa Assaf** · {lesson["section"]} · ~15–20 min core work (estimate; setup and extras take longer)')
     setup_note = '## Setup\nRun this cell once to load the course helpers, then run the steps below in order.'
     if slug == "01_prompting_evaluation":
         setup_note += (' Practice mode uses scripted answers without a key. For live mode, save '
@@ -202,8 +202,8 @@ def main():
     (ROOT / "docs" / "slide-map.md").write_text(
         "# Microservices lecture review map\n\n"
         "Each Colab lab has two goals: build one agentic mechanism and revisit a concrete "
-        "microservices or DDD decision from the supplied lectures. Its opening review names the "
-        "slides and asks two recall questions; its code, checks, and exercises apply those ideas.\n\n"
+        "microservices or DDD decision from the supplied lectures. Its opening review provides "
+        "context and questions; its code, checks, and exercises apply those ideas.\n\n"
         "Slide numbers include each deck's title slide and appendices. The PowerPoint files remain "
         "class materials and are not redistributed here. The examples are small adaptations; "
         "scripted replies, scores, workloads, and timing fixtures are not empirical results.\n\n"

@@ -10,7 +10,7 @@ The examples use ShopEasy, the lectures' social app, and small checkout scenario
 
 ## Start in Colab
 
-Save a copy of a notebook to your Drive and run cells in order with a CPU runtime. Students should know Python functions, dictionaries, lists, loops, and JSON. Allow roughly 15–20 minutes per lab, plus installation and discussion. Each core step has at most 25 Python lines; each lab has at most 100 example lines.
+Save a copy of a notebook to your Drive and run cells in order with a CPU runtime. Students should know Python functions, dictionaries, lists, loops, and JSON. Plan roughly 15–20 minutes for core work in each lab; this is an estimate, and installation, discussion, live calls, and optional work take extra time. Each core step has at most 25 Python lines and each lab has at most 100 core example lines; optional examples are additional.
 
 **Lecture 1 (00–02):** rules, prompting/evaluation, RAG. **Lecture 2 (03–05):** chaining, tools, ReAct. **Lecture 3 (06–08):** debate, observability, human feedback/memory. Labs 09–17 are self-study extensions.
 
@@ -39,7 +39,7 @@ Save a copy of a notebook to your Drive and run cells in order with a CPU runtim
 
 Start in `MODE="practice"`. Model replies are explicit scripted fixtures: practice validates the Python workflow, not model intelligence. The MCP and A2A labs use real local SDK protocol exchanges, without deploying business services. No Kafka broker, cloud account, or production payment provider is required.
 
-For a live model, save the selected provider’s key in Colab Secrets, grant access, and choose `MODE="live"`. Labs 00–01 default to DeepSeek and use `DEEPSEEK_API_KEY`; most other model labs default to FreeInference and use `FREEINFERENCE_API_KEY`. The same `make_ask` interface supports university gateways and the Gemini and DeepSeek presets; see [API setup](docs/api-setup.md). Lab 06 requires all three providers in live mode. Lab 09 only runs its judge live; its comparison inputs are marked synthetic. Lab 17's optional scoring call uses a separate `TYPESAFE_API_KEY` and explicit live mode.
+For a live model, save the selected provider’s key in Colab Secrets, grant access, and choose `MODE="live"`. Labs 00–01 default to DeepSeek and use `DEEPSEEK_API_KEY`; most other model labs default to FreeInference and use `FREEINFERENCE_API_KEY`. Most model labs use `make_ask`, which supports compatible university gateways and the Gemini and DeepSeek presets; Lab 01 uses a lower-level client to show message roles; see [API setup](docs/api-setup.md). Lab 06 requires all three providers in live mode. Lab 09 only runs its judge live; its comparison inputs are marked synthetic. Lab 17's optional scoring call uses a separate `TYPESAFE_API_KEY` and explicit live mode.
 
 A passed format/citation check does not prove factual support or a good architecture. Read the result against the lecture, inspect the trade-off, and report negative results honestly. Do not infer a universal architecture rule from a tiny fixture.
 

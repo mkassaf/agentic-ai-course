@@ -1,5 +1,5 @@
 {
-  "10": "Case (facts + note), then Router (route + reason), then valid?, then Safe rule (0 model calls) or Review (uncertain effects), then Compare (vs human routes).",
+  "10": "Case (facts + note), then Router (route + reason), then valid?, then Safe rule (0 extra model calls) or Review (uncertain effects), then Compare (vs human routes).",
   "11": "MCP server (2 registered tools), then list_tools (names + schemas), then get_order (read), then Choose read pattern (plain Python), then save_decision (write), then State check (rejected calls change nothing).",
   "12": "Skill catalog (names + descriptions), then Pick a skill (name only), then Load instructions (SKILL.md body), then Review saga (per case), then Check the ADR (format + compensation order). Then back to Review saga: one repair, then stop.",
   "13": "Provider payload (synthetic payment), then Discover Agent Card (official A2A SDK), then Payment adapter (validate and translate), then valid?, then Internal Payment (Money value + order ID).",
@@ -10,7 +10,7 @@
   "00": "7 quiz questions (retries + service patterns), then Apply the rule (rule_answer()) or Ask a model (ask() for one letter), then Compare (agreement count).",
   "01": "Architecture question (gateway or BFF), then Prompt (system + user), then Remember (pass prior answer), then Validate (JSON + decision), then Compare (older + thinking modes).",
   "02": "Question, then Embed (MiniLM vectors), then Nearest architecture notes (Chroma), then close?, then Evidence-based reply (cites [R3]), then Citation check (cited ⊆ retrieved).",
-  "03": "Brief, then Business capabilities (3 labels), then gate, then Boundary options (2 or 3), then gate, then Trade-offs (+ / − table), then gate, then Decision record (Context · Decision · Consequence), then gate.",
+  "03": "Brief, then Business capabilities (3 labels), then gate, then Boundary options (2 options · 3 criteria), then Trade-offs (+ / − table), then gate, then Decision record (Context · Decision · Consequence), then gate.",
   "04": "Request, then Pick a tool ({\"tool\", \"args\"}), then call_tool() (name · types), then User confirms (write tools only), then read_order() (snapshot only) or add_item() (root protects total), then Answer (from the result).",
   "05": "Goal, then Next action (JSON), then Guards (known tool · facts read), then Run the tool (read target metrics), then Observation (added to history). Then back to Next action: repeat · at most 5 turns.",
   "06": "Shared sources (R2 · R3 · case), then Minimalist (Qwen) or Safeguard (DeepSeek) or Modernizer (Gemini), then valid citations?, then Challenge + revise (one round), then Chair counts (⅔ of registered peers), then Decision (+ dissent kept) or Escalate (no majority).",

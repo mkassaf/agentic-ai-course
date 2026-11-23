@@ -85,6 +85,8 @@ def main():
         if any(len(c.source.splitlines()) > 25 for c in optional):
             issues.append(f"{path.name}: an optional example exceeds 25 lines")
         # Each core step is one short cell, so a beginner reads one idea at a time.
+        if site_labs.get(path.stem, {}).get("steps") != len(examples):
+            issues.append(f"{path.name}: website core-step count differs from the notebook")
         if not 2 <= len(examples) <= 5:
             issues.append(f"{path.name}: use two to five step code cells")
         if any(len(c.source.splitlines()) > 25 for c in examples):

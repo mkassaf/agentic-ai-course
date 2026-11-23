@@ -13,7 +13,7 @@
     },
     {
       "type": "markdown",
-      "source": "## Step 1 · A brief and a reusable gate\nThe gates check structural contracts. Students still judge whether a proposed context has coherent language, rules and data. A gate is just a function that returns `None` for a pass or an error message for a failure. `run_step` calls the model, runs the gate, and returns only a checked reply. Later cells reuse those earlier results."
+      "source": "## Step 1 · A brief and a reusable gate\nThe gates check structural contracts. Students still judge whether a proposed context has coherent language, rules and data. A gate is just a function that returns `None` for a pass or an error message for a failure. `run_step` gets a reply using `ask`, runs the gate, and returns only a checked reply. In practice mode those replies are fixtures. Later cells reuse those earlier results."
     },
     {
       "type": "code",
@@ -21,7 +21,7 @@
     },
     {
       "type": "markdown",
-      "source": "## Step 2 · From events to candidate bounded contexts\nEvent storming names facts in the past tense. Group by business meaning rather than by UI, logic and data-access layers. Our compact exercise groups Payment with a provided external capability; it does not claim all domains have exactly three contexts."
+      "source": "## Step 2 · From events to candidate bounded contexts\nEvent storming names facts in the past tense. Group by business meaning rather than by UI, logic and data-access layers. Our compact exercise treats Payment as an externally provided capability; it does not claim all domains have exactly three contexts."
     },
     {
       "type": "code",
@@ -45,7 +45,7 @@
     },
     {
       "type": "markdown",
-      "source": "## What you should see\nThe chain proposes Order, Inventory and Shipping contexts, compares both strategies, and records the business-capability split with its contract/data-ownership cost. Three model calls make intermediate results visible. Gates verify shape, not the truth of every architectural claim.\n\n## Try it\n1. Replace Order, Inventory, Shipping with UI, BusinessLogic, DataAccess. The list gate still passes: explain why the design may still be poor.\n2. Explain why `Product` has different fields in Catalog, Inventory and Shipping when Catalog uses title and price, Inventory tracks quantity, and Shipping tracks package weight.\n3. A customer returns a damaged jacket; after inspection it is refunded and then restocked or scrapped. Which language, rules and data would you investigate before drawing another boundary?\n\n## Takeaway\nA chain makes intermediate modelling choices reviewable. Good JSON is necessary for automation; domain experts and change patterns still validate service candidates."
+      "source": "## What you should see\nThe chain proposes Order, Inventory and Shipping contexts, compares both strategies, and records the business-capability split with its contract/data-ownership cost. Three calls to `ask` make intermediate results visible; in practice mode they return fixtures rather than calling a model. Gates verify shape, not the truth of every architectural claim.\n\n## Try it\n1. Replace Order, Inventory, Shipping with UI, BusinessLogic, DataAccess. The list gate still passes: explain why the design may still be poor.\n2. Explain why `Product` has different fields in Catalog, Inventory and Shipping when Catalog uses title and price, Inventory tracks quantity, and Shipping tracks package weight.\n3. A customer returns a damaged jacket; after inspection it is refunded and then restocked or scrapped. Which language, rules and data would you investigate before drawing another boundary?\n\n## Takeaway\nA chain makes intermediate modelling choices reviewable. Good JSON is necessary for automation; domain experts and change patterns still validate service candidates."
     }
   ],
   "review": {

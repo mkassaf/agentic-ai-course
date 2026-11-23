@@ -28,7 +28,7 @@ Lecture 1 uses Labs 00–02; Lecture 2 uses 03–05; Lecture 3 uses 06–08. Lab
 - **04:** Who may change Order's total? What distinguishes an entity from a value object in the full lecture model?
 - **05:** What was actually observed? Why do transient failure and idempotency both matter for retry?
 - **06–07:** Which proposal was independent, which claim was challenged, and how does a trace connect a decision to sources? How does that compare with correlation IDs across services?
-- **08:** Which scope condition makes a memory applicable? Why must a read-retry lesson not cause a second non-idempotent card charge?
+- **08:** Which two scope conditions make a retry memory applicable, and what happens when either is unknown? Why must a read-retry lesson not cause a second non-idempotent card charge?
 - **09–10:** What is synthetic? What did a live judge really measure? Which skipped review is dangerous?
 - **11:** Does an MCP tool expose an owner API or bypass another service's database?
 - **12:** Which completed write is undone first? Why is there no compensation for a read-only check or a failed authorization?

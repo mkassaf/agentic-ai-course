@@ -1,6 +1,6 @@
 # Microservices lecture review map
 
-Each Colab lab has two goals: build one agentic mechanism and revisit a concrete microservices or DDD decision from the supplied lectures. Its opening review names the slides and asks two recall questions; its code, checks, and exercises apply those ideas.
+Each Colab lab has two goals: build one agentic mechanism and revisit a concrete microservices or DDD decision from the supplied lectures. Its opening review provides context and questions; its code, checks, and exercises apply those ideas.
 
 Slide numbers include each deck's title slide and appendices. The PowerPoint files remain class materials and are not redistributed here. The examples are small adaptations; scripted replies, scores, workloads, and timing fixtures are not empirical results.
 

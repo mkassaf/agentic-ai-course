@@ -26,7 +26,7 @@ const DIAGRAMS = {
         {
           "k": "code",
           "t": "Safe rule",
-          "s": "0 model calls"
+          "s": "0 extra model calls"
         },
         {
           "k": "human",
@@ -379,13 +379,9 @@ const DIAGRAMS = {
         "out": "fail → stop"
       },
       {
-        "k": "model",
+        "k": "code",
         "t": "Boundary options",
-        "s": "2 or 3"
-      },
-      {
-        "k": "gate",
-        "t": "gate"
+        "s": "2 options · 3 criteria"
       },
       {
         "k": "model",
