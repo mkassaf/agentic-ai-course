@@ -1,6 +1,6 @@
 # Curriculum
 
-The course has two outcomes for every lab: learn an agentic AI mechanism and review and apply a related software architecture concept, including microservices and DDD decisions. Every notebook provides context and two questions before the code.
+The course has two outcomes for every lab: learn an agentic AI mechanism and review and apply a related software architecture concept, including microservices and DDD decisions. Each notebook starts with a concrete problem and explains how its technique helps, then provides context and questions before the code.
 
 ## Three introductory lectures
 

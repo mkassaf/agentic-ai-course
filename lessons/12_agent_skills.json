@@ -5,7 +5,7 @@
   "cells": [
     {
       "type": "markdown",
-      "source": "## Package a saga review as a skill\n\n**New:** an agent sees skill names and descriptions, selects one, then loads only its body: **progressive disclosure**. A skill is a reusable procedure, not a guarantee that a model follows it.\n\nThe domain exercise revisits checkout sagas. When payment fails, compensate completed local writes in reverse order: release reserved stock, then reject the pending order. A completed read needs no undo, and a failed authorization is not a completed charge to refund. If payment succeeds, keep the completed order. Sagas provide no isolation: other services may see intermediate states."
+      "source": "## Package a saga review as a skill\n**Start with a problem:** Repeating every procedure in every prompt makes instructions harder to maintain and can include material irrelevant to the task.\n\n**In this lab:** Choose a relevant skill from short descriptions, load its procedure, and check the proposed saga actions.\n\n**New:** an agent sees skill names and descriptions, selects one, then loads only its body: **progressive disclosure**. A skill is a reusable procedure, not a guarantee that a model follows it.\n\nThe domain exercise revisits checkout sagas. When payment fails, compensate completed local writes in reverse order: release reserved stock, then reject the pending order. A completed read needs no undo, and a failed authorization is not a completed charge to refund. If payment succeeds, keep the completed order. Sagas provide no isolation: other services may see intermediate states."
     },
     {
       "type": "markdown",

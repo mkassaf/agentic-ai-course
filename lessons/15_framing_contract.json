@@ -5,7 +5,7 @@
   "cells": [
     {
       "type": "markdown",
-      "source": "## Frame checkout resilience before the council votes\n\n**New:** a chair turns a broad goal into measurable quality scenarios, and every architect replies through one proposal contract.\n\nWe revisit the checkout exercise: Inventory is usually 50 ms but can take 5 seconds; Payments has p99 1.5 seconds and the charge is not idempotent; Recommendations is optional. Measurements describe different dependencies, so do not use one timeout or retry policy for all of them. The numerical acceptance targets below are classroom assumptions to discuss, not extra claims from the example."
+      "source": "## Frame checkout resilience before the council votes\n**Start with a problem:** Reviewers may interpret a request to make checkout “fast” differently and return answers that are hard to compare.\n\n**In this lab:** Define measurable scenarios and a common proposal shape before comparing the responses.\n\n**New:** a chair turns a broad goal into measurable quality scenarios, and every architect replies through one proposal contract.\n\nWe revisit the checkout exercise: Inventory is usually 50 ms but can take 5 seconds; Payments has p99 1.5 seconds and the charge is not idempotent; Recommendations is optional. Measurements describe different dependencies, so do not use one timeout or retry policy for all of them. The numerical acceptance targets below are classroom assumptions to discuss, not extra claims from the example."
     },
     {
       "type": "markdown",

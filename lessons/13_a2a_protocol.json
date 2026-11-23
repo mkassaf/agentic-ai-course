@@ -8,7 +8,7 @@
   "cells": [
     {
       "type": "markdown",
-      "source": "## Delegate a translation across an agent boundary\n\n**New:** A2A lets a client discover an agent's capabilities from an **Agent Card**, then exchange messages through a protocol. Our remote function is deterministic: agents do not have to call an LLM.\n\nThe domain example is an **anti-corruption layer (ACL)**. A synthetic Stripe-style payload uses a provider's field names and minor currency units. The receiving agent translates it into ShopEasy's internal Payment model. This is not the Stripe API, and the local A2A transport opens no public server. The point is to protect the internal model, not spread the provider schema everywhere."
+      "source": "## Delegate a translation across an agent boundary\n**Start with a problem:** An agent that depends directly on a payment provider’s field names may break when the provider format changes.\n\n**In this lab:** Discover a translation agent through A2A and return an internal Payment format. The protocol and the translation have different jobs.\n\n**New:** A2A lets a client discover an agent's capabilities from an **Agent Card**, then exchange messages through a protocol. Our remote function is deterministic: agents do not have to call an LLM.\n\nThe domain example is an **anti-corruption layer (ACL)**. A synthetic Stripe-style payload uses a provider's field names and minor currency units. The receiving agent translates it into ShopEasy's internal Payment model. This is not the Stripe API, and the local A2A transport opens no public server. The point is to protect the internal model, not spread the provider schema everywhere."
     },
     {
       "type": "markdown",

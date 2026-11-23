@@ -37,10 +37,11 @@ class PromptingLessonTests(unittest.TestCase):
         self.assertNotEqual(split[0], next_question[0])
 
     def test_follow_up_carries_the_actual_previous_response(self):
-        client = ScriptedClient(['actual model recommendation', 'trade-off'])
+        client = ScriptedClient(['please supply context', 'actual model recommendation', 'trade-off'])
         run(1, {'plain': client})
-        self.assertIn('actual model recommendation', client.calls[1][0])
+        self.assertIn('actual model recommendation', client.calls[2][0])
         self.assertNotIn('actual model recommendation', client.calls[0][0])
+        self.assertNotIn('actual model recommendation', client.calls[1][0])
 
     def test_validation_rejects_wrong_decision_and_malformed_json(self):
         for reply, expected in [

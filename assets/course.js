@@ -6,7 +6,7 @@ const labs = [
     "title": "From rules to LLM calls",
     "subtitle": "Microservices quiz: rules versus LLM answers",
     "topics": "rules llm prompting microservices retry idempotency bulkhead api gateway bff",
-    "idea": "Answer practical microservices questions using explicit rules and an LLM.",
+    "idea": "Compare explicit rules and an LLM on the same microservices questions.",
     "objectives": [
       "Apply simple rules for retries, bulkheads, gateways, and BFFs.",
       "Make one LLM call, then compare its answers with rules on the same questions.",
@@ -76,7 +76,7 @@ const labs = [
     "title": "Prompting and small evaluations",
     "subtitle": "System and user prompts, memory, validation, and reasoning",
     "topics": "system user messages prompting memory validation json reasoning thinking chain of thought strawberry decimal architecture gateway bff",
-    "idea": "Compare system and user prompts, carry a previous response, and validate a structured answer.",
+    "idea": "Separate reusable system instructions from changing user questions, then check model answers.",
     "objectives": [
       "Distinguish system instructions from the user question.",
       "Pass a previous response into a follow-up and validate JSON.",
@@ -145,7 +145,7 @@ const labs = [
     "title": "RAG: ground answers in retrieved knowledge",
     "subtitle": "RAG over microservices and DDD notes",
     "topics": "rag retrieval embeddings vectors vector database chroma similarity rules source architecture context retrieval-augmented generation microservices DDD ShopEasy lecture revision Database per service API composition vs CQRS Idempotent consumers and transactional outbox",
-    "idea": "Retrieve the relevant architecture note before answering a pattern question.",
+    "idea": "Retrieve a relevant architecture note before asking the model to answer.",
     "objectives": [
       "Retrieve the relevant lecture note before answering a pattern question.",
       "Ask an unrelated question; should the model answer without evidence?",
@@ -223,7 +223,7 @@ const labs = [
     "title": "Prompt chaining with quality gates",
     "subtitle": "Prompt chaining for ShopEasy boundaries",
     "topics": "prompt chaining workflow gate requirements options trade-offs adr patterns council single-path planning microservices DDD ShopEasy lecture revision Event storming Bounded contexts and ubiquitous language Business capability vs technical-layer decomposition",
-    "idea": "Turn events and business responsibilities into candidate bounded contexts and a short ADR.",
+    "idea": "Break a boundary decision into smaller prompts so you can inspect each handoff.",
     "objectives": [
       "Turn events and business responsibilities into candidate bounded contexts and a short ADR.",
       "Place Returns and Refunds; explain the language and invariants behind your boundary.",
@@ -303,7 +303,7 @@ const labs = [
     "title": "Tool calling: let the model read and change live data",
     "subtitle": "Tool calling through an Order aggregate",
     "topics": "tools tool calling function calling Order aggregate invariant read write confirmation live data one-step tool agent microservices DDD ShopEasy lecture revision Aggregate root Entity vs value object Consistency boundary and invariant",
-    "idea": "Read current Order state and make a validated change through its public root.",
+    "idea": "Give the model checked tools to read and change an Order instead of guessing its state.",
     "objectives": [
       "Read current Order state and make a validated change through its public root.",
       "Try an invalid quantity and compare state before and after the rejected call.",
@@ -373,7 +373,7 @@ const labs = [
     "title": "ReAct agents: reason, act, observe",
     "subtitle": "ReAct for checkout resilience",
     "topics": "agent foundations patterns react action observation loop chaining routing one-step tool agent in a react loop microservices DDD ShopEasy lecture revision Cascading failure Circuit breaker vs retry Idempotency and graceful degradation",
-    "idea": "Inspect a service before choosing a resilience response, using a bounded action loop.",
+    "idea": "Observe a dependency before selecting a resilience policy.",
     "objectives": [
       "Inspect a service before choosing a resilience response, using a bounded action loop.",
       "Try finishing before a successful read, or inspect a non-idempotent payment call.",
@@ -443,7 +443,7 @@ const labs = [
     "title": "Multi-agent debate: propose, challenge, agree",
     "subtitle": "Multi-agent debate over CQRS and API composition",
     "topics": "multi-agent council debate parallel proposals critique revision consensus voting dissent chair coordinator grounding model families patterns debate-based cooperation microservices DDD ShopEasy lecture revision API composition versus CQRS Eventual consistency and read-model cost",
-    "idea": "Give peers the same source notes and ask them to defend a read-pattern choice.",
+    "idea": "Compare independent proposals and preserve disagreement on a design choice.",
     "objectives": [
       "Give peers the same source notes and ask them to defend a read-pattern choice.",
       "Remove a citation or change the query workload and inspect challenges and dissent.",
@@ -512,7 +512,7 @@ const labs = [
     "title": "Observability, tracing, and swappable agents",
     "subtitle": "Observable decisions and microservice correlation IDs",
     "topics": "observability logging logs log file json lines traceability swappable message bus registry schema dataclass provenance langsmith tracing trace spans microservices DDD ShopEasy lecture revision Correlation IDs across service boundaries Structured logs and immutable event facts",
-    "idea": "Log structured agent messages with correlation IDs and trace a decision to its inputs.",
+    "idea": "Keep structured logs so you can trace a decision and swap an agent.",
     "objectives": [
       "Log structured agent messages with correlation IDs and trace a decision to its inputs.",
       "Add an agent through the registry and follow its cited messages in the log.",
@@ -587,7 +587,7 @@ const labs = [
     "title": "Human-in-the-loop and agent memory",
     "subtitle": "Human feedback and scoped memory for safe retries",
     "topics": "human in the loop feedback memory vector database chroma lessons evaluation held-out learning patterns council human in the loop and archival memory short-term memory long-term memory scratchpad microservices DDD ShopEasy lecture revision Idempotent reads versus non-idempotent charges Bounded retries and deduplicated effects",
-    "idea": "Store the reason for human feedback and retrieve it only for cases within its approved scope.",
+    "idea": "Reuse human feedback only when it applies to the current operation.",
     "objectives": [
       "Store the reason for human feedback and retrieve it only for cases within its approved scope.",
       "Change idempotency and compare semantic matches with applicable memories.",
@@ -664,7 +664,7 @@ const labs = [
     "title": "Evaluation: a multi-agent system against a single model",
     "subtitle": "Evaluate pattern advice against single models",
     "topics": "evaluation baseline experiment llm judge calibration human ratings grounding cost latency council patterns microservices DDD ShopEasy lecture revision Choose data patterns from requirements Measure label agreement, citation validity, and trade-offs",
-    "idea": "Compare systems on the same architecture cases and calibrate a narrow LLM judge.",
+    "idea": "Compare council and single-model answers on the same cases.",
     "objectives": [
       "Compare systems on the same architecture cases and calibrate a narrow LLM judge.",
       "Change one answer and inspect correctness, valid citations, costs, and human/judge disagreement.",
@@ -731,7 +731,7 @@ const labs = [
     "title": "Routing: rules, models, and a safe fallback",
     "subtitle": "Route clear cases and escalate ambiguous ones",
     "topics": "routing router classifier dispatch handlers fallback cost few shot council patterns microservices DDD ShopEasy lecture revision Retry safety and fallback choices Different costs of routing errors",
-    "idea": "Dispatch simple pattern checks to rules and send contested architecture cases for review.",
+    "idea": "Route clear cases to rules and uncertain cases to review.",
     "objectives": [
       "Dispatch simple pattern checks to rules and send contested architecture cases for review.",
       "Alter criticality or idempotency and compare skipped reviews with unnecessary ones.",
@@ -806,7 +806,7 @@ const labs = [
     "title": "MCP: serve tools through a standard protocol",
     "subtitle": "MCP tools respect service data ownership",
     "topics": "tools mcp server client extract action agent foundations registry & adapter microservices DDD ShopEasy lecture revision Database per service API composition versus CQRS Tool schema and validation",
-    "idea": "Discover and call an Order-owned API through a real local MCP server.",
+    "idea": "Let agents discover approved Orders tools through MCP.",
     "objectives": [
       "Discover and call an Order-owned API through a real local MCP server.",
       "Send bad arguments and verify that a rejected write leaves state unchanged.",
@@ -883,7 +883,7 @@ const labs = [
     "title": "Agent skills: reusable instructions on demand",
     "subtitle": "Agent skills review Saga compensation",
     "topics": "skills skill.md adr architecture decision record reusable skill library evolution microservices DDD ShopEasy lecture revision Saga compensation in reverse completion order Read-only steps need no undo No isolation and intermediate states Skill discovery and bounded repair",
-    "idea": "Select and load a saga-review skill, then check the proposed compensations.",
+    "idea": "Load only the skill instructions relevant to a task.",
     "objectives": [
       "Choose a skill by its description.",
       "Validate compensation order, not just prose format.",
@@ -956,7 +956,7 @@ const labs = [
     "title": "A2A: delegate work to another agent",
     "subtitle": "A2A and an anti-corruption layer",
     "topics": "a2a agent card discovery message review architecture generator–critic loop agent card payment adapter microservices DDD ShopEasy lecture revision Anti-corruption layer Published internal contract Agent Card discovery",
-    "idea": "Send a message to a discoverable local agent that translates a provider model at the boundary.",
+    "idea": "Discover a translation agent and protect the internal Payment model.",
     "objectives": [
       "Send a message to a discoverable local agent that translates a provider model at the boundary.",
       "Change a provider field or currency and inspect validation at the translation boundary.",
@@ -1024,7 +1024,7 @@ const labs = [
     "title": "Agent frameworks: graphs with LangGraph",
     "subtitle": "LangGraph checks event-contract compatibility",
     "topics": "framework langgraph state nodes edges evaluate architecture generator–critic loop microservices DDD ShopEasy lecture revision Additive event changes Published contract Bounded generator–critic repair",
-    "idea": "Use nodes, state, and a bounded retry to validate an OrderPlaced contract.",
+    "idea": "Use a graph to make generation, checks, and bounded repair visible.",
     "objectives": [
       "Use nodes, state, and a bounded retry to validate an OrderPlaced contract.",
       "Remove a required old field and watch the compatibility feedback trigger a retry.",
@@ -1095,7 +1095,7 @@ const labs = [
     "title": "Problem framing and typed message contracts",
     "subtitle": "Frame checkout qualities and typed proposals",
     "topics": "framing quality attribute scenarios iso 25010 message contract schema confidence swappable agents chair passive goal creator and a contract microservices DDD ShopEasy lecture revision Dependency-specific resilience Non-idempotent payment safety Requirements versus assumed targets",
-    "idea": "Turn a checkout brief into measurable scenarios and comparable architecture messages.",
+    "idea": "Turn a vague goal into measurable scenarios and comparable proposals.",
     "objectives": [
       "Turn a checkout brief into measurable scenarios and comparable architecture messages.",
       "Identify which targets are given facts and which are assumptions to confirm with a stakeholder.",
@@ -1172,7 +1172,7 @@ const labs = [
     "title": "Learning from feedback: learning curves and trust weights",
     "subtitle": "Learn trust weights from retry decisions",
     "topics": "evaluation experiment feedback test split held-out learning curve per-model trust weighted vote council voting-based cooperation microservices DDD ShopEasy lecture revision Retry eligibility and idempotency Correlated reviewer errors Feedback/test separation",
-    "idea": "Keep feedback cases separate from test cases while updating weights on pattern recommendations.",
+    "idea": "Use separate feedback and test cases to inspect reviewer weights.",
     "objectives": [
       "Keep feedback cases separate from test cases while updating weights on pattern recommendations.",
       "Change the feedback order and inspect how a small sample affects the learning curve.",
@@ -1249,7 +1249,7 @@ const labs = [
     "title": "Decision models: a weighted decision matrix with a scoring model",
     "subtitle": "Weighted decisions for task queues and event logs",
     "topics": "decision matrix criteria weights scoring model typesafe jev system one score rubric composite judgement trade-off reweight microservices DDD ShopEasy lecture revision task queues versus retained event logs independent consumer groups and replay partition key versus eventId consumer parallelism is capped by partitions",
-    "idea": "Explore how task distribution, replay, simplicity, and fan-out change a communication recommendation.",
+    "idea": "Make priorities and hard requirements explicit in a decision matrix.",
     "objectives": [
       "Separate illustrative scores from priorities.",
       "Recall Kafka grouping, deduplication IDs, and per-group partition limits.",

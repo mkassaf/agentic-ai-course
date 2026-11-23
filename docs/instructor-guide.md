@@ -1,6 +1,6 @@
 # Instructor guide
 
-Teach the agentic mechanism and the microservices concept together. Use the scenario in each lab to ask students to predict an answer, then run the small example and change one fact.
+Teach the agentic mechanism and the microservices concept together. Start with the problem in each lab, ask students to predict what could go wrong, then run the example, explain how the technique helps, and change one fact. A proposed benefit is a reason to test the technique, not proof that it always works.
 
 ## Before class
 

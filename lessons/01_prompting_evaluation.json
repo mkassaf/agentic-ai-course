@@ -5,7 +5,7 @@
   "cells": [
     {
       "type": "markdown",
-      "source": "## Prompts, memory and evaluation\n**Goal:** Learn to send system and user prompts, reuse a previous response, validate an answer, and compare prompting and reasoning modes.\n\nShopEasy has web and mobile clients. An **API gateway** can provide shared routing and security at the edge; a **backend for frontend (BFF)** tailors an API to a particular client. A system can use both. We will use these ideas in short architecture questions, then try two small reasoning puzzles.\n\nThe model can make mistakes. Practice mode uses scripted replies, so it teaches the code flow; use live mode to observe real model answers."
+      "source": "## Prompts, memory and evaluation\n**Start with a problem:** If every question repeats the assistant’s instructions, changing those instructions means editing each prompt. A follow-up may also lack the previous answer.\n\n**In this lab:** Separate reusable system instructions from user questions, carry a previous response forward, and check the result.\n\n**Goal:** Learn to send system and user prompts, reuse a previous response, validate an answer, and compare prompting and reasoning modes.\n\nShopEasy has web and mobile clients. An **API gateway** can provide shared routing and security at the edge; a **backend for frontend (BFF)** tailors an API to a particular client. A system can use both. We will use these ideas in short architecture questions, then try two small reasoning puzzles.\n\nThe model can make mistakes. Practice mode uses scripted replies, so it teaches the code flow; use live mode to observe real model answers."
     },
     {
       "type": "markdown",
@@ -17,11 +17,11 @@
     },
     {
       "type": "markdown",
-      "source": "## Step 2 · Temporary memory: pass the previous answer\nSave one response in `first_answer`, then include it in the next user prompt. The second call can use that text as context. This is temporary memory held in a Python variable: each API request is independent, and the model does not remember the previous request unless we send the context again. It is not persistent memory.\n\nBecause this version copies the response into a new **user message**, it is not a complete role-labelled chat history. A production conversation may instead resend selected user and assistant messages as separate roles."
+      "source": "## Step 2 · Temporary memory: pass the previous answer\nFirst ask a follow-up without context. Then save one response in `first_answer` and include it in the next user prompt. The second call can use that text as context. This is temporary memory held in a Python variable: each API request is independent, and the model does not remember the previous request unless we send the context again. It is not persistent memory.\n\nBecause this version copies the response into a new **user message**, it is not a complete role-labelled chat history. A production conversation may instead resend selected user and assistant messages as separate roles."
     },
     {
       "type": "code",
-      "source": "first_answer = plain.ask(\n    \"ShopEasy's mobile app needs a tailored API. Suggest one pattern in one sentence.\",\n    practice=\"Use a mobile BFF to tailor responses to the app.\")\n\nfollow_up = f\"\"\"Earlier answer: {first_answer}\nWhat is one drawback of this choice? Answer in one sentence.\"\"\"\nsecond_answer = plain.ask(follow_up,\n    practice=\"A BFF adds another component for the team to maintain.\")\nprint(\"First answer:\", first_answer)\nprint(\"Follow-up:\", second_answer)"
+      "source": "without_context = plain.ask(\"What is one drawback of this choice? Answer in one sentence.\",\n    practice=\"Please tell me which choice you mean.\")\n\nfirst_answer = plain.ask(\n    \"ShopEasy's mobile app needs a tailored API. Suggest one pattern in one sentence.\",\n    practice=\"Use a mobile BFF to tailor responses to the app.\")\n\nfollow_up = f\"\"\"Earlier answer: {first_answer}\nWhat is one drawback of this choice? Answer in one sentence.\"\"\"\nsecond_answer = plain.ask(follow_up,\n    practice=\"A BFF adds another component for the team to maintain.\")\nprint(\"Without context:\", without_context)\nprint(\"First answer:\", first_answer)\nprint(\"Follow-up:\", second_answer)"
     },
     {
       "type": "markdown",
