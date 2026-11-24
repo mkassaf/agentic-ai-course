@@ -87,6 +87,22 @@ class ToolAgentTests(unittest.TestCase):
         quiet_exec(self.cells[4], self.ns)
         self.assertIn("extract and validate", self.ns["history"])
 
+    def test_non_json_reply_returns_a_result_and_the_loop_retries(self):
+        replies = iter([
+            "I will extract it now.",
+            '{"tool":"extract_service","name":"orders"}',
+            '{"tool":"validate_service"}',
+            '{"tool":"format_html"}',
+            '{"tool":"finish","answer":"Done"}',
+        ])
+        class Client:
+            def ask(self, prompt, *, system):
+                return next(replies)
+        self.ns["client"] = Client()
+        quiet_exec(self.cells[4], self.ns)
+        self.assertIn("JSON object", self.ns["history"])
+        self.assertTrue(self.ns["validated"])
+
 
 class ReActObservationTests(unittest.TestCase):
     def run_actions(self, actions):

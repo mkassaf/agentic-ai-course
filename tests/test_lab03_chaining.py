@@ -51,7 +51,7 @@ class PromptChainTests(unittest.TestCase):
         namespace = {'ask': ask}
         with contextlib.redirect_stdout(io.StringIO()):
             exec(STEPS[1], namespace)
-            with self.assertRaisesRegex(ValueError, 'three items'):
+            with self.assertRaisesRegex(ValueError, 'Quality gate'):
                 exec(STEPS[2], namespace)
         self.assertEqual(len(prompts), 1)
 
