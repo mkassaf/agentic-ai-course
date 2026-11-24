@@ -54,6 +54,7 @@ class ToolAgentTests(unittest.TestCase):
         self.assertEqual(self.ns["validate_service"](data), "Valid")
         self.assertIn("Sales team", self.ns["format_html"](data))
         self.assertEqual(self.ns["validate_service"]({}), "Invalid: missing name")
+        self.assertEqual(self.ns["format_html"]({"name": "Orders"}), "Cannot format an invalid record.")
         data["name"] = "<script>"
         self.assertIn("&lt;script&gt;", self.ns["format_html"](data))
         self.assertEqual(self.ns["extract_service"]("missing"), {})

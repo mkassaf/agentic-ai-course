@@ -317,12 +317,13 @@ const labs = [
     "pattern": "Tool-using agent",
     "title": "Tool calling: an agent with three tools",
     "subtitle": "Extract, validate, and format service data",
-    "topics": "tools tool calling extraction validation HTML microservices service ownership agent",
+    "topics": "tools tool calling extraction validation HTML microservices service ownership agent langgraph langchain framework",
     "idea": "Give an agent three small tools to look up, validate, and format microservice data.",
     "objectives": [
       "Extract a service record from a small catalog.",
       "Validate required fields and format the record as HTML.",
-      "Trace how a model selects tools described in its system prompt."
+      "Trace how a model selects tools described in its system prompt.",
+      "Compare the manual tool loop with a LangGraph-based agent."
     ],
     "example": "An agent looks up the Orders service, checks its record, and formats it as HTML.",
     "exercise": "Ask about Inventory, an unknown service, or a general microservices concept.",
@@ -386,7 +387,8 @@ const labs = [
         "Microservices & Their Patterns · slides 24, 27, 28, 30",
         "Microservices Lecture 2 - Condensed DDD · slide 32"
       ]
-    }
+    },
+    "optional_examples": 2
   },
   {
     "id": "05",

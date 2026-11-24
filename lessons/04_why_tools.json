@@ -17,7 +17,7 @@
     },
     {
       "type": "code",
-      "source": "services = {\n    \"orders\": {\"name\": \"Orders\", \"owner\": \"Sales team\", \"responsibility\": \"Manage orders\"},\n    \"inventory\": {\"name\": \"Inventory\", \"owner\": \"Stock team\", \"responsibility\": \"Track stock\"},\n}\n\ndef extract_service(name):\n    return services.get(name.lower().strip(), {}).copy()\n\nprint(\"Extracted:\", extract_service(\"orders\"))"
+      "source": "services = {\n    \"orders\": {\"name\": \"Orders\", \"owner\": \"Sales team\", \"responsibility\": \"Manage orders\"},\n    \"inventory\": {\"name\": \"Inventory\", \"owner\": \"Stock team\", \"responsibility\": \"Track stock\"},\n}\n\ndef extract_service(name: str) -> dict:\n    \"\"\"Find an Orders or Inventory record by name in the local catalog.\"\"\"\n    return services.get(name.lower().strip(), {}).copy()\n\nprint(\"Extracted:\", extract_service(\"orders\"))"
     },
     {
       "type": "markdown",
@@ -25,7 +25,7 @@
     },
     {
       "type": "code",
-      "source": "def validate_service(data):\n    for field in (\"name\", \"owner\", \"responsibility\"):\n        if not isinstance(data.get(field), str) or not data[field].strip():\n            return \"Invalid: missing \" + field\n    return \"Valid\"\n\nprint(\"Complete record:\", validate_service(extract_service(\"orders\")))\nprint(\"Missing owner:\", validate_service({\"name\": \"Orders\"}))"
+      "source": "def validate_service(data: dict) -> str:\n    \"\"\"Check that a service record has a name, owner, and responsibility.\"\"\"\n    for field in (\"name\", \"owner\", \"responsibility\"):\n        if not isinstance(data.get(field), str) or not data[field].strip():\n            return \"Invalid: missing \" + field\n    return \"Valid\"\n\nprint(\"Complete record:\", validate_service(extract_service(\"orders\")))\nprint(\"Missing owner:\", validate_service({\"name\": \"Orders\"}))"
     },
     {
       "type": "markdown",
@@ -33,7 +33,7 @@
     },
     {
       "type": "code",
-      "source": "from html import escape\n\ndef format_html(data):\n    name = escape(data[\"name\"])\n    owner = escape(data[\"owner\"])\n    responsibility = escape(data[\"responsibility\"])\n    return f\"<h2>{name}</h2><p>Owner: {owner}</p><p>Responsibility: {responsibility}</p>\"\n\nprint(format_html(extract_service(\"orders\")))"
+      "source": "from html import escape\n\ndef format_html(data: dict) -> str:\n    \"\"\"Format a valid service record as HTML; return an error if invalid.\"\"\"\n    if validate_service(data) != \"Valid\":\n        return \"Cannot format an invalid record.\"\n    name = escape(data[\"name\"])\n    owner = escape(data[\"owner\"])\n    responsibility = escape(data[\"responsibility\"])\n    return f\"<h2>{name}</h2><p>Owner: {owner}</p><p>Responsibility: {responsibility}</p>\"\n\nprint(format_html(extract_service(\"orders\")))"
     },
     {
       "type": "markdown",
@@ -54,6 +54,28 @@
     {
       "type": "markdown",
       "source": "## What you should see\nFor the HTML request, look for three tool results: the Orders record, `Valid`, and HTML with its owner and responsibility. The model then gives an answer based on those results. Model choices can vary; read the trace.\n\n## Try it\n1. Change the question to ask for Inventory as HTML. Run Steps 4 and 5.\n2. Ask for an unknown service. What does the extraction tool return?\n3. Remove the Orders owner in Step 1 and rerun Steps 1–5. What does validation report?\n4. Ask a conceptual question such as “What does a microservice own?” Does the model need a tool?\n\n## Takeaway\nA system prompt describes available tools. The model requests a tool, while application code controls execution and checks results."
+    },
+    {
+      "type": "markdown",
+      "source": "## Optional · The same tools with LangGraph\n\nIn Step 5, we wrote the loop that asks the model, chooses a tool, runs it, and returns the result. Here, LangChain’s `create_agent` builds a **LangGraph** workflow that manages those steps for us. We reuse the same three functions from Steps 1–3. Their type hints and descriptions tell the framework what each tool accepts.\n\nRun Steps 1–3 first, then install the packages below. Use a fresh Colab runtime if you previously installed conflicting versions for another lab. This example sends requests to your selected provider and requires a model that supports native tool calling. It uses a separate model client, so the 100-call limit in the earlier client does not apply; the graph has its own recursion limit."
+    },
+    {
+      "type": "code",
+      "source": "%pip install -q \"langchain==1.5.2\" \"langchain-openai==1.8.5\"",
+      "optional": true
+    },
+    {
+      "type": "markdown",
+      "source": "### Create and run the agent\n\nThe model receives the tool descriptions automatically. Its system prompt explains when to use them. The framework calls the requested functions and returns the results to the model. Print the messages to inspect what happened. The validation tool checks fields, and the formatter also refuses an invalid record; neither verifies facts against an external source."
+    },
+    {
+      "type": "code",
+      "source": "from langchain.agents import create_agent\nfrom langchain_openai import ChatOpenAI\nfrom langchain_core.messages import ToolMessage\nmodel = ChatOpenAI(\n    model=settings[\"model\"], base_url=settings[\"base_url\"],\n    api_key=secret(settings[\"secret_name\"]),\n    extra_body=settings.get(\"extra_body\"), max_tokens=256,\n)\nagent = create_agent(\n    model=model,\n    tools=[extract_service, validate_service, format_html],\n    system_prompt=\"\"\"You are a microservices assistant. For HTML, extract the service,\n    validate the record, then format it. Use only tool results; do not invent data.\n    If the service is missing or invalid, explain that instead of formatting it.\"\"\",\n)\nresult = agent.invoke(\n    {\"messages\": [{\"role\": \"user\", \"content\": \"Show the Orders service as HTML.\"}]},\n    config={\"recursion_limit\": 12},\n)\nfor message in result[\"messages\"]:\n    if getattr(message, \"tool_calls\", None):\n        print(\"Agent requested:\", message.tool_calls)\n    if isinstance(message, ToolMessage):\n        print(\"Tool result:\", message.content)\nprint(\"Final answer:\", result[\"messages\"][-1].content)",
+      "optional": true
+    },
+    {
+      "type": "markdown",
+      "source": "**Compare:** The manual example prints each request and calls a function with `if` statements. The LangGraph version receives the same functions and runs requested tools in its graph. The model still decides which tool to request, and its behavior can vary. Change the question to Inventory or an unknown service and inspect the trace."
     }
   ],
   "review": {
