@@ -13,15 +13,15 @@
     },
     {
       "type": "code",
-      "source": "criteria = [\"Task distribution\", \"Replay\", \"Simplicity\", \"Fan-out\"]\nqueue = [4, 0, 4, 1]  # competing workers; this task-queue example has no replay requirement\nlog = [2, 4, 1, 4]    # retained records; independent subscriber groups; more concepts to run\nrecord = {\"key\": \"order-17\", \"eventId\": \"evt-9001\", \"eventType\": \"OrderPlaced\"}\nprint(\"Partition grouping:\", record[\"key\"], \"| deduplication:\", record[\"eventId\"])\n\ndef average(scores):\n    return sum(scores) / len(scores)\n\nfor name, scores in [(\"Task queue\", queue), (\"Event log\", log)]:\n    print(f\"{name:<17} average {average(scores):.2f}\")"
+      "source": "criteria = [\"Task distribution\", \"Replay\", \"Simplicity\", \"Fan-out\"]\nqueue = [4, 0, 4, 1]\nlog = [2, 4, 1, 4]\nrecord = {\"key\": \"order-17\", \"eventId\": \"evt-9001\", \"eventType\": \"OrderPlaced\"}\nprint(\"Partition grouping:\", record[\"key\"], \"| deduplication:\", record[\"eventId\"])\n\naverages = {}\nfor name, scores in [(\"Task queue\", queue), (\"Event log\", log)]:\n    averages[name] = sum(scores) / len(scores)\n    print(name, \"average:\", averages[name])"
     },
     {
       "type": "markdown",
-      "source": "## Step 2 · Weight a simple work-distribution task\n\nFor a small background-work queue where each delivery goes to one worker and replay is optional, the team gives Simplicity weight 3. This is a scenario preference, not a universal comparison of every queue and log product.\n\n`zip(scores, weights)` pairs values in the same position: the first score with the first weight, and so on. Divide the weighted sum by the sum of weights to keep the 0–4 scale."
+      "source": "## Step 2 · Weight a simple work-distribution task\nGive Simplicity weight 3 when replay is optional. A loop multiplies each score by its matching weight. Divide by the sum of weights to keep the 0–4 scale. Then compare the two totals with a simple `if`."
     },
     {
       "type": "code",
-      "source": "weights = [1, 1, 3, 1]\n\ndef weighted(scores):\n    total = 0\n    for score, weight in zip(scores, weights):\n        total += score * weight\n    return total / sum(weights)\n\ntable = [(name, weighted(s)) for name, s in [(\"Task queue\", queue), (\"Event log\", log)]]\nfor name, score in table:\n    print(f\"{name:<17} {score:.2f}\")\nprint(\"winner:\", max(table, key=lambda r: r[1])[0])"
+      "source": "weights = [1, 1, 3, 1]\ntable = []\nfor name, scores in [(\"Task queue\", queue), (\"Event log\", log)]:\n    total = 0\n    for score, weight in zip(scores, weights):\n        total += score * weight\n    result = total / sum(weights)\n    table.append((name, result))\n    print(name, round(result, 2))\nif table[0][1] > table[1][1]:\n    print(\"Winner:\", table[0][0])\nelif table[1][1] > table[0][1]:\n    print(\"Winner:\", table[1][0])\nelse:\n    print(\"Tie\")"
     },
     {
       "type": "markdown",
@@ -29,7 +29,7 @@
     },
     {
       "type": "code",
-      "source": "weights_2 = [1, 3, 0, 2]\n\ndef weighted_2(scores):\n    total = 0\n    for score, weight in zip(scores, weights_2):\n        total += score * weight\n    return total / sum(weights_2)\n\ntable2 = [(name, weighted_2(s)) for name, s in [(\"Task queue\", queue), (\"Event log\", log)]]\nfor name, score in table2:\n    print(f\"{name:<17} {score:.2f}\")\nprint(\"winner:\", max(table2, key=lambda r: r[1])[0])\npartitions, consumers = 4, 5\nprint(\"Active consumers in this group:\", min(partitions, consumers))"
+      "source": "weights_2 = [1, 3, 0, 2]\ntable2 = []\nfor name, scores in [(\"Task queue\", queue), (\"Event log\", log)]:\n    total = 0\n    for score, weight in zip(scores, weights_2):\n        total += score * weight\n    result = total / sum(weights_2)\n    table2.append((name, result))\n    print(name, round(result, 2))\nif table2[0][1] > table2[1][1]:\n    print(\"Winner:\", table2[0][0])\nelif table2[1][1] > table2[0][1]:\n    print(\"Winner:\", table2[1][0])\nelse:\n    print(\"Tie\")\npartitions, consumers = 4, 5\nprint(\"Active consumers in this group:\", min(partitions, consumers))"
     },
     {
       "type": "markdown",
@@ -45,7 +45,7 @@
     },
     {
       "type": "code",
-      "source": "def ask_scores():\n    questions = {}\n    for option in state[\"options\"]:\n        for criterion in criteria:\n            question_id = f\"{option}:{criterion}\"\n            question = f\"How well does {option} support {criterion}, as defined in state?\"\n            questions[question_id] = Score(instructions=question, criteria=rubric)\n    with TypeSafeClient(api_key=secret(\"TYPESAFE_API_KEY\")) as client:\n        return client.system_one(state=state, questions=questions)\n\nresp = ask_scores()\nscored = {o: [resp.scores[f\"{o}:{c}\"].score for c in criteria] for o in state[\"options\"]}\nfor name, scores in scored.items():\n    print(f\"{name:<17} {weighted_2(scores):.2f}\")"
+      "source": "questions = {}\nfor option in state[\"options\"]:\n    for criterion in criteria:\n        question_id = f\"{option}:{criterion}\"\n        question = f\"How well does {option} support {criterion}, as defined in state?\"\n        questions[question_id] = Score(instructions=question, criteria=rubric)\nwith TypeSafeClient(api_key=secret(\"TYPESAFE_API_KEY\")) as client:\n    resp = client.system_one(state=state, questions=questions)\n\nfor option in state[\"options\"]:\n    total = 0\n    for criterion, weight in zip(criteria, weights_2):\n        score = resp.scores[f\"{option}:{criterion}\"].score\n        total += score * weight\n    print(option, round(total / sum(weights_2), 2))"
     },
     {
       "type": "markdown",

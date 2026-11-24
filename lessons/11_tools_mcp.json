@@ -16,7 +16,7 @@
     },
     {
       "type": "markdown",
-      "source": "## Step 1 · Keep the data behind its owner\n\nOnly the Orders server owns `ORDERS`. `get_order` returns a copy of the fields this interface exposes; callers do not receive a database connection or a reference they can mutate. This mirrors database-per-service, so Reporting cannot read Order's private tables directly."
+      "source": "## Step 1 · Keep the data behind its owner\n\nOnly the Orders server owns `ORDERS`. `get_order` returns a copy of the fields this interface exposes; callers do not receive a database connection or a reference they can mutate. This mirrors database-per-service, so Reporting cannot read Order's private tables directly.\n\nThe MCP SDK requires a Python function for each tool. The decorator registers the function so a client can discover and call it."
     },
     {
       "type": "code",
@@ -36,7 +36,7 @@
     },
     {
       "type": "code",
-      "source": "from mcp import Client\n\nasync with Client(server) as client:\n    listing = await client.list_tools()\nfor tool in listing.tools:\n    args = \", \".join(f\"{name}: {spec['type']}\" for name, spec in tool.input_schema[\"properties\"].items())\n    print(f\"{tool.name}({args})\\n    {tool.description}\")"
+      "source": "from mcp import Client\n\nasync with Client(server) as client:\n    listing = await client.list_tools()\nfor tool in listing.tools:\n    parts = []\n    for name, spec in tool.input_schema[\"properties\"].items():\n        parts.append(f\"{name}: {spec['type']}\")\n    args = \", \".join(parts)\n    print(f\"{tool.name}({args})\\n    {tool.description}\")"
     },
     {
       "type": "markdown",
@@ -90,7 +90,7 @@
   "warmup": {
     "title": "Discover and call one MCP tool",
     "explanation": "An MCP server exposes a greeting tool. A client discovers its name and calls it through the actual local MCP SDK. This warm-up does not use a model or the network.",
-    "code": "from mcp.server import MCPServer\nfrom mcp import Client\n\nwarm_server = MCPServer(\"greeting\")\n@warm_server.tool(description=\"Greet a person by name.\")\ndef greet(name: str) -> str:\n    return f\"Hello, {name}!\"\n\nasync with Client(warm_server) as warm_client:\n    tools = await warm_client.list_tools()\n    print(\"Discovered:\", [tool.name for tool in tools.tools])\n    result = await warm_client.call_tool(\"greet\", {\"name\": \"Sam\"})\n    print(\"Result:\", result.content[0].text)",
+    "code": "from mcp.server import MCPServer\nfrom mcp import Client\n\nwarm_server = MCPServer(\"greeting\")\n@warm_server.tool(description=\"Greet a person by name.\")\ndef greet(name: str) -> str:\n    return f\"Hello, {name}!\"\n\nasync with Client(warm_server) as warm_client:\n    tools = await warm_client.list_tools()\n    print(\"Discovered tools:\")\n    for tool in tools.tools:\n        print(tool.name)\n    result = await warm_client.call_tool(\"greet\", {\"name\": \"Sam\"})\n    print(\"Result:\", result.content[0].text)",
     "bridge": "Apply the same discover-and-call protocol to an Orders owner."
   }
 }

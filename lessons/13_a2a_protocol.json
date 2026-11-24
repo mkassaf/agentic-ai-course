@@ -24,7 +24,7 @@
     },
     {
       "type": "markdown",
-      "source": "## Step 2 · Discover the translator and send a message\n\nThe helper uses the official A2A SDK to publish the Agent Card and exchange JSON-RPC messages over an in-process HTTP transport. The client discovers the card and sends text containing JSON; only the adapter knows the provider's field names. The helper is course code, not an A2A SDK method.\n\nThe helper starts an in-process A2A server and discovers its Agent Card. No real payment is sent or charged."
+      "source": "## Step 2 · Discover the translator and send a message\n\nThe helper uses the official A2A SDK to publish the Agent Card and exchange JSON-RPC messages over an in-process HTTP transport. The client discovers the card and sends text containing JSON; only the adapter knows the provider's field names. The helper is course code, not an A2A SDK method.\n\nThe helper starts an in-process A2A server and discovers its Agent Card. No real payment is sent or charged.\n\nThe A2A helper needs a function that handles the incoming message, so this example passes `payment_adapter`. The function validates and translates the data; the SDK handles the protocol exchange."
     },
     {
       "type": "code",
@@ -36,7 +36,7 @@
     },
     {
       "type": "code",
-      "source": "bad_payloads = [{**provider_payment, \"amount_received\": value} for value in (\"4200\", True)]\nbad_payloads += [{**provider_payment, \"currency\": value} for value in (None, \"\", 123)]\nbad_payloads += [\n                {**provider_payment, \"status\": \"pending\"}, []]\nfor payload in bad_payloads:\n    _, reply = await talk_over_a2a(payment_adapter, json.dumps(payload), **ADAPTER)\n    result = json.loads(reply)\n    print(result)\n    assert \"error\" in result\n\norder = {\"id\": payment[\"order_id\"], \"paid_total\": payment[\"total\"]}\nprint(\"Order sees:\", order)\nassert order[\"paid_total\"][\"minor_units\"] == 4200"
+      "source": "bad_payloads = []\nfor value in (\"4200\", True):\n    bad_payloads.append({**provider_payment, \"amount_received\": value})\nfor value in (None, \"\", 123):\n    bad_payloads.append({**provider_payment, \"currency\": value})\nbad_payloads.append({**provider_payment, \"status\": \"pending\"})\nbad_payloads.append([])\nfor payload in bad_payloads:\n    _, reply = await talk_over_a2a(payment_adapter, json.dumps(payload), **ADAPTER)\n    result = json.loads(reply)\n    print(result)\n    assert \"error\" in result\n\norder = {\"id\": payment[\"order_id\"], \"paid_total\": payment[\"total\"]}\nprint(\"Order sees:\", order)\nassert order[\"paid_total\"][\"minor_units\"] == 4200"
     },
     {
       "type": "markdown",

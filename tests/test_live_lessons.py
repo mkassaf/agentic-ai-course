@@ -75,8 +75,9 @@ class LiveRetryTests(unittest.TestCase):
         ns = {"ask": ask}
         for cell in cells[:3]:
             quiet_exec(cell, ns)
-        for project in ns["projects"]:
-            result = ns["app"].invoke({"project": project})
+        with self.assertRaisesRegex(AssertionError, "still breaks"):
+            quiet_exec(cells[3], ns)
+        for result in ns["results"]:
             self.assertEqual(result["attempts"], 2)
             self.assertFalse(result["passed"])
         self.assertEqual(len(prompts), 2 * len(ns["projects"]))
@@ -155,7 +156,8 @@ class MemoryScopeTests(unittest.TestCase):
         cells = code_cells("08_human_feedback_memory")
         ns = {"case": "feedback case", "held_out": [("new case", False, True, "do not retry")],
               "recall": lambda *args, **kwargs: [],
-              "council": lambda *args, **kwargs: "do not retry"}
+              "OPTIONS": ["retry", "do not retry"], "POLICY": "test policy",
+              "ask": lambda prompt: "do not retry"}
         quiet_exec(cells[4], ns)
         self.assertEqual(ns["scores"], {"before": 1, "after": 1})
 

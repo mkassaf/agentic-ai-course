@@ -459,7 +459,7 @@ const labs = [
     "file": "06_multi_agent_debate",
     "title": "Multi-agent debate: propose, challenge, agree",
     "subtitle": "Multi-agent debate over CQRS and API composition",
-    "topics": "multi-agent council debate parallel proposals critique revision consensus voting dissent chair coordinator grounding model families patterns debate-based cooperation microservices DDD ShopEasy lecture revision API composition versus CQRS Eventual consistency and read-model cost",
+    "topics": "multi-agent council debate independent proposals critique revision consensus voting dissent chair coordinator grounding model families patterns debate-based cooperation microservices DDD ShopEasy lecture revision API composition versus CQRS Eventual consistency and read-model cost",
     "idea": "Compare independent proposals and preserve disagreement on a design choice.",
     "objectives": [
       "Give peers the same source notes and ask them to defend a read-pattern choice.",
@@ -479,7 +479,7 @@ const labs = [
       "Voting-Based Cooperation"
     ],
     "background": [
-      "Parallel proposals preserve independent views. A coded chair limits discussion and aggregates proposals; agreement is not proof of correctness.",
+      "Independent proposals do not see one another. A coded chair limits discussion and aggregates proposals; agreement is not proof of correctness.",
       "CQRS supports search but adds a read model and consistency lag; composition has different costs."
     ],
     "terms": [
@@ -529,7 +529,7 @@ const labs = [
     "file": "07_observe_trace_swap",
     "title": "Observability, tracing, and swappable agents",
     "subtitle": "Observable decisions and microservice correlation IDs",
-    "topics": "observability logging logs log file json lines traceability swappable message bus registry schema dataclass provenance langsmith tracing trace spans microservices DDD ShopEasy lecture revision Correlation IDs across service boundaries Structured logs and immutable event facts",
+    "topics": "observability logging logs log file json lines traceability swappable registry structured messages provenance langsmith tracing trace spans microservices DDD ShopEasy lecture revision Correlation IDs across service boundaries Structured logs and immutable event facts",
     "idea": "Keep structured logs so you can trace a decision and swap an agent.",
     "objectives": [
       "Log structured agent messages with correlation IDs and trace a decision to its inputs.",
@@ -548,7 +548,7 @@ const labs = [
       "Registry & Adapter"
     ],
     "background": [
-      "Observability makes a workflow inspectable during and after a run. A message bus owns logging; a registry lets implementations share one interface.",
+      "Observability makes a workflow inspectable during and after a run. Each proposal is logged, and a registry lists reviewer settings.",
       "Agent-run traces and microservice request traces share correlation principles but are different systems."
     ],
     "terms": [
@@ -1067,7 +1067,7 @@ const labs = [
       "Generator–Critic Loop"
     ],
     "background": [
-      "A graph names workflow steps and conditional edges. Generation and checking remain distinct so failed proposals receive explicit feedback.",
+      "A graph names workflow steps and edges. A simple Python loop retries failed proposals using the check feedback.",
       "An additive event change protects consumers; a framework does not make a proposal compatible automatically."
     ],
     "terms": [
@@ -1084,8 +1084,8 @@ const labs = [
         "A connection that sets which node runs next."
       ],
       [
-        "Conditional edge",
-        "An edge that picks the next node from the state, which is how a graph loops."
+        "Retry loop",
+        "Python repeats the graph when its check fails, up to a fixed limit."
       ]
     ],
     "review": {
@@ -1379,7 +1379,7 @@ const tracks = [
     "id": "lecture-3",
     "label": "Lecture 3 · 90 minutes",
     "title": "Debate, trace, decide",
-    "note": "A council debates, a message bus makes decisions traceable, and simulated human feedback is stored for later use."
+    "note": "A council debates, structured logs make decisions traceable, and simulated human feedback is stored for later use."
   },
   {
     "id": "self-study",

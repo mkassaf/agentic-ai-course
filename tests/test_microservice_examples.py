@@ -29,15 +29,17 @@ class MicroserviceQuizTests(unittest.TestCase):
         for transient in (False, True):
             for idempotent in (False, True):
                 with self.subTest(transient=transient, idempotent=idempotent):
-                    case = {"kind": "retry", "transient": transient, "idempotent": idempotent}
+                    case = {"name": "test", "kind": "retry", "transient": transient, "idempotent": idempotent}
                     expected = "A" if transient and idempotent else "B"
-                    self.assertEqual(self.ns["rule_answer"](case), expected)
+                    ns = {"cases": [case]}
+                    quiet_exec(code_cells("00_rules_and_llms")[1], ns)
+                    self.assertEqual(ns["rule_answers"]["test"], expected)
 
     def test_scenarios_have_the_expected_answers(self):
-        actual = [self.ns["rule_answer"](case) for case in self.ns["cases"]]
+        actual = [self.ns["rule_answers"][case["name"]] for case in self.ns["cases"]]
         self.assertEqual(actual, ["A", "B", "A", "B", "A", "C", "B"])
         with self.assertRaises(ValueError):
-            self.ns["rule_answer"]({"kind": "unknown"})
+            quiet_exec(code_cells("00_rules_and_llms")[1], {"cases": [{"kind": "unknown"}]})
 
 
 class OrderAggregateTests(unittest.TestCase):
@@ -106,7 +108,7 @@ class ReActObservationTests(unittest.TestCase):
         quiet_exec(cells[0], ns)
         quiet_exec(cells[1], ns)
         steps = iter(actions)
-        ns["next_action"] = lambda history: next(steps)
+        ns["ask"] = lambda prompt: json.dumps(next(steps))
         quiet_exec(cells[2], ns)
         return ns
 

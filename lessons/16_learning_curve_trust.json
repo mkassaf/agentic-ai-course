@@ -17,7 +17,7 @@
     },
     {
       "type": "code",
-      "source": "scenarios = [  # (name, idempotent, critical); these are explicit classroom operation contracts\n    (\"Pricing read\", True, True), (\"Recommendations read\", True, False), (\"Inventory read\", True, True),\n    (\"Card charge\", False, True), (\"Refund request\", False, True), (\"Catalog read\", True, False),\n    (\"Second charge\", False, True), (\"Stock lookup\", True, True), (\"Profile lookup\", True, False),\n    (\"Payout request\", False, True),\n]\nexpert = {n: \"retry permitted\" if idem else \"no blind retry\" for n, idem, critical in scenarios}\nfeedback, test = [s[0] for s in scenarios[:6]], [s[0] for s in scenarios[6:]]\nassert not set(feedback) & set(test)\nprint(\"feedback:\", feedback, \"\\ntest:\", test)"
+      "source": "scenarios = [  # (name, idempotent, critical): classroom contracts\n    (\"Pricing read\", True, True), (\"Recommendations read\", True, False), (\"Inventory read\", True, True),\n    (\"Card charge\", False, True), (\"Refund request\", False, True), (\"Catalog read\", True, False),\n    (\"Second charge\", False, True), (\"Stock lookup\", True, True), (\"Profile lookup\", True, False),\n    (\"Payout request\", False, True),\n]\nexpert, feedback, test = {}, [], []\nfor index, (name, idempotent, critical) in enumerate(scenarios):\n    if idempotent:\n        expert[name] = \"retry permitted\"\n    else:\n        expert[name] = \"no blind retry\"\n    if index < 6:\n        feedback.append(name)\n    else:\n        test.append(name)\nassert not set(feedback) & set(test)\nprint(\"feedback:\", feedback, \"\\ntest:\", test)"
     },
     {
       "type": "markdown",
@@ -25,23 +25,23 @@
     },
     {
       "type": "code",
-      "source": "answers = {\n    \"Optimist\": {n: \"retry permitted\" for n, idem, critical in scenarios},\n    \"Criticality\": {n: \"retry permitted\" if critical else \"no blind retry\" for n, idem, critical in scenarios},\n    \"Contract\": {n: \"retry permitted\" if idem else \"no blind retry\" for n, idem, critical in scenarios},\n}\nanswers[\"Contract\"][\"Recommendations read\"] = \"no blind retry\"  # deliberate synthetic slip\nfor name, given in answers.items():\n    print(name, \"correct on\", sum(given[n] == expert[n] for n in test), \"of\", len(test), \"held-out cases\")"
+      "source": "answers = {\"Optimist\": {}, \"Criticality\": {}, \"Contract\": {}}\nfor name, idempotent, critical in scenarios:\n    answers[\"Optimist\"][name] = \"retry permitted\"\n    if critical:\n        answers[\"Criticality\"][name] = \"retry permitted\"\n    else:\n        answers[\"Criticality\"][name] = \"no blind retry\"\n    if idempotent:\n        answers[\"Contract\"][name] = \"retry permitted\"\n    else:\n        answers[\"Contract\"][name] = \"no blind retry\"\nanswers[\"Contract\"][\"Recommendations read\"] = \"no blind retry\"  # deliberate synthetic slip\nfor name, given in answers.items():\n    correct = 0\n    for case in test:\n        if given[case] == expert[case]:\n            correct += 1\n    print(name, \"correct on\", correct, \"of\", len(test), \"held-out cases\")"
     },
     {
       "type": "markdown",
-      "source": "## Step 3 · Turn feedback agreement into vote weights\n\nSmoothing keeps no-record agreement at 0.5. A weight of zero at chance is one teaching choice for this balanced binary exercise, not a universal ensemble rule. The council escalates equal scores instead of inventing a majority.\n\nTrust is calculated only from feedback cases seen so far. Adding one correct answer and two cases smooths small samples; with no feedback, trust starts at 0.5."
+      "source": "## Step 3 · Calculate weights from one feedback case\nCount each reviewer's correct answers on the feedback seen so far. Smoothing starts trust at 0.5 with no evidence. This example turns that agreement into a nonnegative weight. The formula is a teaching choice, not a universal trust score."
     },
     {
       "type": "code",
-      "source": "def trust(seen):\n    result = {}\n    for architect, given in answers.items():\n        correct = 0\n        for case in seen:\n            if given[case] == expert[case]:\n                correct += 1\n        # Smoothing starts each architect at 0.5 when there is no feedback.\n        result[architect] = (correct + 1) / (len(seen) + 2)\n    return result\n\ndef weight(p):\n    return max(0.0, 2 * p - 1)\n\ndef council(case, weights):\n    score = {\"retry permitted\": 0.0, \"no blind retry\": 0.0}\n    for architect, given in answers.items():\n        score[given[case]] += weights[architect]\n    if round(score[\"retry permitted\"], 9) == round(score[\"no blind retry\"], 9):\n        return \"escalate\"\n    return max(score, key=score.get)"
+      "source": "seen = feedback[:1]\nweights = {}\nfor reviewer, given in answers.items():\n    correct = 0\n    for case in seen:\n        if given[case] == expert[case]:\n            correct += 1\n    trust = (correct + 1) / (len(seen) + 2)\n    weights[reviewer] = max(0.0, 2 * trust - 1)\n    print(reviewer, \"feedback correct:\", correct, \"weight:\", round(weights[reviewer], 2))"
     },
     {
       "type": "markdown",
-      "source": "## Step 4 · Measure after each feedback round\n\nRound zero starts with equal votes. Each later round updates weights from one more feedback case and scores the same held-out cases. Report the entire curve, including flat or worse results; improvement must not be required by an assertion. For a real experiment, use a larger frozen benchmark and separate final evaluation if you tune the method from this curve.\n\nAfter each feedback round, use the current weights to score the same held-out cases. Never use their labels to update trust."
+      "source": "## Step 4 · Measure after each feedback round\nFor each round, calculate the weights from feedback only. Then use those weights to vote on the held-out cases. A tied vote is escalated. Print every result, even if it stays flat or gets worse."
     },
     {
       "type": "code",
-      "source": "curve = []\nfor k in range(len(feedback) + 1):\n    weights = {a: weight(p) for a, p in trust(feedback[:k]).items()} if k else dict.fromkeys(answers, 1.0)\n    decisions = [council(n, weights) for n in test]\n    curve.append(sum(d == expert[n] for d, n in zip(decisions, test)))\n    shown = \", \".join(f\"{a} {w:.2f}\" for a, w in weights.items())\n    print(f\"round {k}: {curve[-1]}/{len(test)} correct  weights: {shown}  escalated: {decisions.count('escalate')}\")\nprint(\"learning curve:\", curve)\nprint(\"Score change:\", curve[-1] - curve[0])"
+      "source": "curve = []\nfor k in range(len(feedback) + 1):\n    weights = {}\n    for reviewer, given in answers.items():\n        correct = 0\n        for case in feedback[:k]:\n            if given[case] == expert[case]:\n                correct += 1\n        trust = (correct + 1) / (k + 2)\n        if k == 0:\n            weights[reviewer] = 1.0\n        else:\n            weights[reviewer] = max(0.0, 2 * trust - 1)\n    decisions, correct_count = [], 0\n    for case in test:\n        votes = {\"retry permitted\": 0.0, \"no blind retry\": 0.0}\n        for reviewer, given in answers.items():\n            votes[given[case]] += weights[reviewer]\n        if round(votes[\"retry permitted\"], 9) == round(votes[\"no blind retry\"], 9):\n            decision = \"escalate\"\n        elif votes[\"retry permitted\"] > votes[\"no blind retry\"]:\n            decision = \"retry permitted\"\n        else:\n            decision = \"no blind retry\"\n        decisions.append(decision)\n        if decision == expert[case]:\n            correct_count += 1\n    curve.append(correct_count)\n    print(\"round\", k, \":\", correct_count, \"/\", len(test), \"weights:\", weights, \"escalated:\", decisions.count(\"escalate\"))\nprint(\"Learning curve:\", curve, \"| score change:\", curve[-1] - curve[0])"
     },
     {
       "type": "markdown",
@@ -79,7 +79,7 @@
   "warmup": {
     "title": "Learn from feedback",
     "explanation": "Two reviewers give answers to the same three questions. Compare each with known feedback before assigning more weight. These are synthetic answers, not evidence about real models.",
-    "code": "questions = ['Is an apple a fruit?', 'Is a carrot a fruit?', 'Is a pear a fruit?']\nprint('Feedback questions:', questions)\nexpected = [\"yes\", \"no\", \"yes\"]\nreviewer_a = [\"yes\", \"no\", \"yes\"]\nreviewer_b = [\"yes\", \"yes\", \"no\"]\nprint(\"Reviewer A:\", sum(a == b for a, b in zip(reviewer_a, expected)), \"/ 3\")\nprint(\"Reviewer B:\", sum(a == b for a, b in zip(reviewer_b, expected)), \"/ 3\")",
+    "code": "questions = ['Is an apple a fruit?', 'Is a carrot a fruit?', 'Is a pear a fruit?']\nprint('Feedback questions:', questions)\nexpected = [\"yes\", \"no\", \"yes\"]\nreviewer_a = [\"yes\", \"no\", \"yes\"]\nreviewer_b = [\"yes\", \"yes\", \"no\"]\ncorrect_a, correct_b = 0, 0\nfor index in range(len(expected)):\n    if reviewer_a[index] == expected[index]:\n        correct_a += 1\n    if reviewer_b[index] == expected[index]:\n        correct_b += 1\nprint(\"Reviewer A:\", correct_a, \"/ 3\")\nprint(\"Reviewer B:\", correct_b, \"/ 3\")",
     "bridge": "Next, turn feedback into weights and evaluate the votes on separate cases."
   }
 }

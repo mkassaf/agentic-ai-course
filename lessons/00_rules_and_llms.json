@@ -21,7 +21,7 @@
     },
     {
       "type": "code",
-      "source": "def rule_answer(case):\n    if case[\"kind\"] == \"retry\":\n        if case[\"transient\"] and case[\"idempotent\"]:\n            return \"A\"\n        return \"B\"\n    if case[\"kind\"] == \"isolate_resources\":\n        return \"A\"\n    if case[\"kind\"] == \"client_specific_api\":\n        return \"C\"\n    if case[\"kind\"] == \"shared_entry\":\n        return \"B\"\n    raise ValueError(\"Unknown case kind\")\n\nfor case in cases:\n    print(case[\"name\"], \"->\", rule_answer(case))"
+      "source": "rule_answers = {}\nfor case in cases:\n    kind = case[\"kind\"]\n    if kind == \"retry\":\n        if case[\"transient\"] and case[\"idempotent\"]:\n            answer = \"A\"\n        else:\n            answer = \"B\"\n    elif kind == \"isolate_resources\":\n        answer = \"A\"\n    elif kind == \"client_specific_api\":\n        answer = \"C\"\n    elif kind == \"shared_entry\":\n        answer = \"B\"\n    else:\n        raise ValueError(\"Unknown case kind\")\n    rule_answers[case[\"name\"]] = answer\n    print(case[\"name\"], \"->\", answer)"
     },
     {
       "type": "markdown",
@@ -64,7 +64,7 @@
     },
     {
       "type": "code",
-      "source": "agreement = 0\nfor case in cases:\n    options = \"\\n\".join(case[\"choices\"])\n    prompt = f\"{case['question']}\\n{options}\\nReply with only the letter of one listed option.\"\n    reply = ask(prompt).strip().upper()\n    expected = rule_answer(case)\n    if reply == expected:\n        agreement += 1\n    print(f\"{case['name']}: rule={expected}, model={reply}\")\nprint(f\"Agreement with the classroom rules: {agreement}/{len(cases)}\")"
+      "source": "agreement = 0\nfor case in cases:\n    options = \"\\n\".join(case[\"choices\"])\n    prompt = f\"{case['question']}\\n{options}\\nReply with only the letter of one listed option.\"\n    reply = ask(prompt).strip().upper()\n    expected = rule_answers[case[\"name\"]]\n    if reply == expected:\n        agreement += 1\n    print(f\"{case['name']}: rule={expected}, model={reply}\")\nprint(f\"Agreement with the classroom rules: {agreement}/{len(cases)}\")"
     },
     {
       "type": "markdown",
@@ -95,7 +95,7 @@
   "warmup": {
     "title": "Rules and an LLM",
     "explanation": "A rule chooses a drink from an explicit temperature; a model answers a similar question in natural language. The rule is deterministic; the model reply can vary. Compare both results.",
-    "code": "temperature = 30\nrule = \"water\" if temperature >= 25 else \"tea\"\nprint(\"Rule:\", rule)\n\nanswer = ask(\"It is 30°C outside. Suggest water or tea and briefly explain why.\")\nprint(\"LLM:\", answer)",
+    "code": "temperature = 30\nif temperature >= 25:\n    rule = \"water\"\nelse:\n    rule = \"tea\"\nprint(\"Rule:\", rule)\n\nanswer = ask(\"It is 30°C outside. Suggest water or tea and briefly explain why.\")\nprint(\"LLM:\", answer)",
     "bridge": "Now apply explicit rules and a model to the same microservices questions."
   }
 }

@@ -160,7 +160,7 @@ const DIAGRAMS = {
       },
       {
         "k": "gate",
-        "t": "route"
+        "t": "Python retry?"
       },
       {
         "k": "data",
@@ -533,13 +533,13 @@ const DIAGRAMS = {
       {
         "k": "check",
         "t": "Schema check",
-        "s": "typed Message",
+        "s": "structured message",
         "out": "broken → rejected"
       },
       {
         "k": "code",
-        "t": "Message bus",
-        "s": "publish + trace_id"
+        "t": "Write the log",
+        "s": "JSON + trace_id"
       },
       [
         {

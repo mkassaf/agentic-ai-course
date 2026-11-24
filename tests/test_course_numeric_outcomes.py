@@ -56,7 +56,7 @@ class NumericOutcomeTests(unittest.TestCase):
 
     def test_weighted_scores_and_consumer_limit(self):
         ns = run_lesson('17_weighted_decision_jev', cells=3)
-        self.assertEqual((ns['average'](ns['queue']), ns['average'](ns['log'])), (2.25, 2.75))
+        self.assertEqual((ns['averages']['Task queue'], ns['averages']['Event log']), (2.25, 2.75))
         self.assertEqual([round(value, 2) for _, value in ns['table']], [2.83, 2.17])
         self.assertEqual([round(value, 2) for _, value in ns['table2']], [1.00, 3.67])
         self.assertEqual(min(ns['partitions'], ns['consumers']), 4)
