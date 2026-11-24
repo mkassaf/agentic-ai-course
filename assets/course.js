@@ -314,72 +314,77 @@ const labs = [
     "id": "04",
     "file": "04_why_tools",
     "track": "lecture-2",
-    "pattern": "One-Step Tool Agent",
-    "title": "Tool calling: read and change an Order",
-    "subtitle": "Tool calling through an Order aggregate",
-    "topics": "tools tool calling function calling Order aggregate invariant read write confirmation live data one-step tool agent microservices DDD ShopEasy lecture revision Aggregate root Entity vs value object Consistency boundary and invariant",
-    "idea": "Give the model checked tools to read and change an Order instead of guessing its state.",
+    "pattern": "Tool-using agent",
+    "title": "Tool calling: an agent with three tools",
+    "subtitle": "Extract, validate, and format service data",
+    "topics": "tools tool calling extraction validation HTML microservices service ownership agent",
+    "idea": "Give an agent three small tools to look up, validate, and format microservice data.",
     "objectives": [
-      "Read current Order state and make a validated change through its public root.",
-      "Try an invalid quantity and compare state before and after the rejected call.",
-      "Validate tool names and arguments, require confirmation for writes, and check the invariant."
+      "Extract a service record from a small catalog.",
+      "Validate required fields and format the record as HTML.",
+      "Trace how a model selects tools described in its system prompt."
     ],
-    "example": "A model requests an item change to an in-memory Order; the root checks the input and maintains the total.",
-    "exercise": "Try an invalid quantity and compare state before and after the rejected call.",
-    "checks": "Validate tool names and arguments, test the simulated confirmation flag, and check the invariant.",
-    "bridge": "Tools perform actions; the model cannot bypass the aggregate root to edit totals.",
+    "example": "An agent looks up the Orders service, checks its record, and formats it as HTML.",
+    "exercise": "Ask about Inventory, an unknown service, or a general microservices concept.",
+    "checks": "Inspect each tool request and result; only validated records can be formatted.",
+    "bridge": "The model chooses actions while Python runs the tools and controls access.",
     "steps": 5,
     "warmups": 2,
     "patterns": [
-      "One-Step Tool Agent"
+      "Tool-using agent"
     ],
     "background": [
-      "Tool calling connects model-selected requests to ordinary code. The host validates requests and retains authority over state changes.",
-      "Tools perform actions; the model cannot bypass the aggregate root to edit totals."
+      "A tool is an ordinary function the agent can request. The application runs it and returns its result.",
+      "A microservice owns its data and exposes useful information through an interface."
     ],
     "terms": [
       [
         "Tool",
-        "A function that the model may ask the program to run."
+        "A function the model can ask the application to run."
       ],
       [
-        "Function calling",
-        "A reply format in which the model names a tool and gives its arguments as JSON."
+        "System prompt",
+        "Instructions that describe the agent and its available tools."
       ],
       [
-        "Read and write tools",
-        "A read tool only looks data up; a write tool changes data and needs more care."
+        "Validation",
+        "Checking whether data satisfies defined rules."
       ],
       [
-        "Confirmation",
-        "A person's approval before a tool changes anything."
+        "Tool result",
+        "The information returned to the model after a tool runs."
       ]
     ],
     "review": {
       "sources": [
         {
+          "deck": "microservices",
+          "slides": [
+            24,
+            27,
+            28,
+            30
+          ]
+        },
+        {
           "deck": "ddd",
           "slides": [
-            29,
-            67,
-            68,
-            75,
-            76,
-            83
+            32
           ]
         }
       ],
       "concepts": [
-        "Aggregate root",
-        "Entity vs value object",
-        "Consistency boundary and invariant"
+        "Database per service",
+        "Service-owned data",
+        "Published interface"
       ],
       "questions": [
-        "Why must outside code change an Order through the aggregate root rather than set its total?",
-        "What distinguishes the identity of Order from the value of Money, and which details does this tiny model omit?"
+        "Why should a service expose its data through an interface rather than let other services access its database directly?",
+        "What does checking that a service record has required fields tell you, and what does it not prove?"
       ],
       "readings": [
-        "Microservices Lecture 2 - Condensed DDD · slides 29, 67, 68, 75, 76, 83"
+        "Microservices & Their Patterns · slides 24, 27, 28, 30",
+        "Microservices Lecture 2 - Condensed DDD · slide 32"
       ]
     }
   },

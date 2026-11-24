@@ -383,43 +383,12 @@ const DIAGRAMS = {
   },
   "04": {
     "stages": [
-      {
-        "k": "data",
-        "t": "Request"
-      },
-      {
-        "k": "model",
-        "t": "Pick a tool",
-        "s": "{\"tool\", \"args\"}"
-      },
-      {
-        "k": "check",
-        "t": "call_tool()",
-        "s": "name · types",
-        "out": "bad → error as data"
-      },
-      {
-        "k": "human",
-        "t": "User confirms",
-        "s": "write tools only"
-      },
-      [
-        {
-          "k": "code",
-          "t": "read_order()",
-          "s": "snapshot only"
-        },
-        {
-          "k": "code",
-          "t": "add_item()",
-          "s": "root protects total"
-        }
-      ],
-      {
-        "k": "model",
-        "t": "Answer",
-        "s": "from the result"
-      }
+      {"k": "data", "t": "Question"},
+      {"k": "model", "t": "Agent chooses", "s": "system lists tools"},
+      {"k": "code", "t": "Extract", "s": "service record"},
+      {"k": "check", "t": "Validate", "s": "required fields"},
+      {"k": "code", "t": "Format HTML", "s": "escaped text"},
+      {"k": "model", "t": "Answer", "s": "from tool results"}
     ]
   },
   "05": {

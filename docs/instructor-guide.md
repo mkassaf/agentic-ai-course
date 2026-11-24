@@ -25,7 +25,7 @@ Lecture 1 uses Labs 00–02; Lecture 2 uses 03–05; Lecture 3 uses 06–08. Lab
 - **00–01:** When is a retry safe? How do bulkheads, gateways and BFFs solve different problems? How does a system instruction shape an answer, and what context does a follow-up need?
 - **02:** Did the retrieved note support the claim? What changes when no relevant note is found?
 - **03:** Where does ShopEasy's language change? Why is a UI/logic/data split a poor default service boundary?
-- **04:** Who may change Order's total? What distinguishes an entity from a value object in the full lecture model?
+- **04:** Which tool supplies the service record? What does validation check, and who runs the tools?
 - **05:** What was actually observed? Why do transient failure and idempotency both matter for retry?
 - **06–07:** Which proposal was independent, which claim was challenged, and how does a trace connect a decision to sources? How does that compare with correlation IDs across services?
 - **08:** Which two scope conditions make a retry memory applicable, and what happens when either is unknown? Why must a read-retry lesson not cause a second non-idempotent card charge?
@@ -46,4 +46,4 @@ Lab 09 preserves MLflow as an optional extra cell logging explicitly synthetic m
 
 ## Scope of the implementations
 
-The Order aggregate, compensation plans, broker-selection arithmetic and consumer-count calculations are small teaching models. They do not provide production durability, transactions across remote services, or a running Kafka cluster. MCP and A2A exchanges do use their official SDKs locally. Skills are selected from an inline catalog; the LangGraph workflow has a real conditional retry. Every model action remains subject to code checks, budgets and human authority.
+The service catalog, compensation plans, broker-selection arithmetic and consumer-count calculations are small teaching models. They do not provide production durability, transactions across remote services, or a running Kafka cluster. MCP and A2A exchanges do use their official SDKs locally. Skills are selected from an inline catalog; the LangGraph workflow has a real conditional retry. Every model action remains subject to code checks, budgets and human authority.

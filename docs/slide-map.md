@@ -10,7 +10,7 @@ Slide numbers include each deck's title slide and appendices. The PowerPoint fil
 | 01 · Prompting and small evaluations | API gateway; Backend for frontend (BFF); Client-specific APIs | Microservices & Their Patterns: 33, 35 |
 | 02 · RAG: ground answers in retrieved knowledge | Database per service; API composition vs CQRS; Idempotent consumers and transactional outbox | Microservices & Their Patterns: 24, 27, 28, 30; Microservices Lecture 2 - Condensed DDD: 52, 55 |
 | 03 · Prompt chaining with quality gates | Event storming; Bounded contexts and ubiquitous language; Business capability vs technical-layer decomposition | Microservices Lecture 2 - Condensed DDD: 9, 10, 11, 17, 18, 21, 26, 32, 60, 70, 72, 73 |
-| 04 · Tool calling: read and change an Order | Aggregate root; Entity vs value object; Consistency boundary and invariant | Microservices Lecture 2 - Condensed DDD: 29, 67, 68, 75, 76, 83 |
+| 04 · Tool calling: an agent with three tools | Database per service; Service-owned data; Published interface | Microservices & Their Patterns: 24, 27, 28, 30; Microservices Lecture 2 - Condensed DDD: 32 |
 | 05 · ReAct agents: reason, act, observe | Cascading failure; Circuit breaker vs retry; Idempotency and graceful degradation | Microservices & Their Patterns: 38, 39, 40, 41 |
 | 06 · Multi-agent debate: propose, challenge, agree | API composition versus CQRS; Eventual consistency and read-model cost | Microservices & Their Patterns: 27, 28, 30 |
 | 07 · Observability, tracing, and swappable agents | Correlation IDs across service boundaries; Structured logs and immutable event facts | Microservices & Their Patterns: 46, 48; Microservices Lecture 2 - Condensed DDD: 30, 31 |

@@ -38,7 +38,7 @@ EXAMPLE_CONTEXT = {
     "01": "An API gateway can route requests and apply common policies. A backend for frontend (BFF) can tailor an API to one client, such as a mobile app. A system may use both.",
     "02": "API composition asks services for data and joins their responses. CQRS maintains a separate read model for queries, which can lag behind writes. A citation identifies a source; it does not prove the answer follows from it.",
     "03": "A technical-layer split places UI, business logic, and data access in different services. A bounded context defines where one business model and language apply; its deployment boundary still needs review.",
-    "04": "An Order has a stable identity and contains order lines. Its root is responsible for keeping the total equal to the sum of its lines. Money is compared by amount and currency.",
+    "04": "A microservice owns its data and exposes information through a defined interface. The local service records in this example are illustrative.",
     "05": "A slow dependency can occupy callers while they wait. Retrying adds more requests. A repeated card charge can have a second financial effect when the operation is not idempotent.",
     "06": "ShopEasy support needs to search orders, payments, and deliveries by customer name. API composition joins responses; CQRS provides a searchable read model that may lag behind writes.",
     "07": "An agent review contains several messages about one decision. A trace ID groups the run; a message ID identifies one message. A source link records what a claim is based on.",
@@ -115,13 +115,14 @@ def setup_for(slug, revision):
                    '                      extra_body={"thinking": {"type": "enabled"}, "reasoning_effort": "low"})')
     elif slug == "06_multi_agent_debate":
         source += '\nfrom coursekit import make_ask'
-    elif slug == "02_rag_systems":
+    elif slug in ("02_rag_systems", "04_why_tools"):
         source += ('\nfrom coursekit import Client, PROVIDERS, secret\n'
                    'PROVIDER = "deepseek"  # or "gemini" or "freeinference"\n'
                    'settings = PROVIDERS[PROVIDER]\n'
                    'client = Client(model=settings["model"], family=settings["family"],\n'
                    '                base_url=settings["base_url"], api_key=secret(settings["secret_name"]),\n'
-                   '                max_calls=100, max_tokens=256, extra_body=settings.get("extra_body"))')
+                   '                max_calls=100, max_tokens=256, extra_body=settings.get("extra_body"))'
+                   + ('\nask = client.ask' if slug == '04_why_tools' else ''))
     elif slug not in NO_MODEL_LABS:
         provider_line = 'PROVIDER = "deepseek"  # or "gemini" or "freeinference"\n'
         token_budget = ', max_tokens=768' if slug == '15_framing_contract' else ''
@@ -147,7 +148,7 @@ def build(lesson, revision, diagrams, site_lab):
     elif slug == "06_multi_agent_debate":
         setup_note += (' Save `FREEINFERENCE_API_KEY`, `DEEPSEEK_API_KEY`, and `GEMINI_API_KEY` in '
                        'Colab Secrets. Each architect uses its own provider and call budget.')
-    elif slug == "02_rag_systems":
+    elif slug in ("02_rag_systems", "04_why_tools"):
         setup_note += (' Choose `PROVIDER` and save its key in Colab Secrets. DeepSeek uses '
                        '`DEEPSEEK_API_KEY`; Gemini and FreeInference use their respective secrets. '
                        '`client` stops after 100 calls; rerun setup to reset the count.')
