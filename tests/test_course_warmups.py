@@ -58,6 +58,14 @@ class WarmupTests(unittest.TestCase):
                     self.assertEqual(namespace['warm_graph'].compile().invoke({'message': 'Sam'})['message'],
                                      'Hello, Sam')
 
+    def test_crewai_install_cell_includes_pinned_coursekit(self):
+        notebook = json.loads((ROOT / 'notebooks/05_react_agent.ipynb').read_text())
+        install = next(''.join(cell['source']) for cell in notebook['cells']
+                       if cell['cell_type'] == 'code' and 'crewai==1.15.45' in ''.join(cell['source']))
+        revision = (ROOT / 'coursekit-ref.txt').read_text().strip()
+        self.assertIn('agentic-ai-coursekit @ https://github.com/', install)
+        self.assertIn(revision + '.zip', install)
+
     def test_every_lab_starts_with_its_simple_example(self):
         for path in sorted((ROOT / 'notebooks').glob('*.ipynb')):
             with self.subTest(lab=path.stem):

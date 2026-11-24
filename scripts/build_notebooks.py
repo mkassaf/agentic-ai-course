@@ -212,7 +212,7 @@ def build(lesson, revision, diagrams, site_lab):
     for cell in steps:
         if cell["type"] not in ("markdown", "code"):
             raise ValueError(f"Unknown cell type in {slug}")
-        built = source_cell(cell["type"], cell["source"])
+        built = source_cell(cell["type"], cell["source"].replace("{coursekit_revision}", revision))
         if cell.get("optional"):
             built.metadata["tags"] = ["optional"]
         cells.append(built)

@@ -49,11 +49,11 @@
     },
     {
       "type": "markdown",
-      "source": "## Optional · The same ReAct example with CrewAI\n\nIn Step 3, you wrote the action–observation loop. Now let **CrewAI** manage the loop using the same simulated metrics, target, and policy. We create one agent with one tool, give it a task, and inspect the result. This is a single-agent example; a crew can also contain multiple agents.\n\nRun Steps 1 and 2 first. Install CrewAI in a fresh Colab runtime if other packages conflict. This example makes separate live model calls and needs the selected provider’s Colab secret. It does not share the earlier helper’s 100-call limit; `max_iter` limits agent iterations, not the exact number of model calls. It sends requests sequentially and uses non-streaming."
+      "source": "## Optional · The same ReAct example with CrewAI\n\nIn Step 3, you wrote the action–observation loop. Now let **CrewAI** manage the loop using the same simulated metrics, target, and policy. We create one agent with one tool, give it a task, and inspect the result. This is a single-agent example; a crew can also contain multiple agents.\n\nRun the initial Setup cell and Steps 1 and 2 first. Then run the installation cell immediately below; it installs both CrewAI and the course helper used by this example. After a runtime restart, run those cells again. Use a fresh Colab runtime if other packages conflict. This example makes separate live model calls and needs the selected provider’s Colab secret. It does not share the earlier helper’s 100-call limit; `max_iter` limits agent iterations, not the exact number of model calls. It sends requests sequentially and uses non-streaming."
     },
     {
       "type": "code",
-      "source": "%pip install -q \"crewai==1.15.45\"",
+      "source": "%pip install -q \"crewai==1.15.45\" \"agentic-ai-coursekit @ https://github.com/mkassaf/agentic-ai-course/archive/{coursekit_revision}.zip\"",
       "optional": true
     },
     {
