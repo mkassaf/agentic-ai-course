@@ -41,6 +41,9 @@ def main():
             picture = lab.get("picture")
             if picture and not (ROOT / picture.get("src", "")).is_file():
                 issues.append(f"{lab['file']}: website illustration is missing")
+            tool = lab.get("tool")
+            if tool and not (ROOT / tool.get("src", "")).is_file():
+                issues.append(f"{lab['file']}: interactive tool is missing")
         expected_tracks = {"lecture-1": 3, "lecture-2": 3, "lecture-3": 3, "self-study": 9}
         for track, count in expected_tracks.items():
             if sum(lab.get("track") == track for lab in site_labs.values()) != count:

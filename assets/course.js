@@ -139,11 +139,15 @@ const labs = [
         "Microservices & Their Patterns · slides 33, 35"
       ]
     },
-    "optional_examples": 2,
+    "optional_examples": 3,
     "picture": {
       "src": "assets/images/sampling-settings.svg",
       "alt": "A worked sampling example: temperature changes four probabilities, top-k removes D, top-p removes C, then A and B are sampled at 62.25% and 37.75%.",
       "caption": "One illustrative next-token decision. The example uses temperature 2, top-k 3, and top-p 0.80."
+    },
+    "tool": {
+      "src": "assets/tools/sampling.html",
+      "label": "Open the interactive sampling simulator"
     }
   },
   {
@@ -1429,6 +1433,7 @@ labs.forEach((lab, i) => {
     + `<aside class="key-terms"><h4>Key terms</h4><dl>${lab.terms.map(([term, meaning]) => `<dt>${esc(term)}</dt><dd>${esc(meaning)}</dd>`).join('')}</dl></aside></section>`
     + `<h4 class="diagram-heading">How the lab works</h4><figure class="lab-diagram" data-diagram="${lab.id}"></figure>`
     + `${lab.picture ? `<figure class="sampling-figure"><a href="${esc(lab.picture.src)}"><img src="${esc(lab.picture.src)}" alt="${esc(lab.picture.alt)}"></a><figcaption>${esc(lab.picture.caption)} Select the image to enlarge it.</figcaption></figure>` : ""}`
+    + `${lab.tool ? `<p class="sampling-tool-link"><a class="text-link" href="${esc(lab.tool.src)}" target="_blank" rel="noopener">${esc(lab.tool.label)} ↗</a> · Adjust the settings and explore the resulting probabilities.</p>` : ""}`
     + `<div class="lesson-grid"><div><h4>What you will learn</h4><ul>${lab.objectives.map(t => `<li>${esc(t)}</li>`).join('')}</ul></div><div><h4>Walk through an example</h4><p>${esc(lab.example)}</p></div><div><h4>Make it your own</h4><p>${esc(lab.exercise)}</p></div><div><h4>Expected output &amp; check</h4><p>${esc(lab.checks)}</p></div></div>`
     + `<p class="lesson-takeaway"><strong>Takeaway.</strong> ${esc(lab.bridge)}</p>`
     + `<div class="lab-actions"><label class="completion"><input type="checkbox" data-lab="${lab.id}" ${completed.includes(lab.id) ? 'checked' : ''}> I explored lab ${number(i)}</label>${pager}</div>`

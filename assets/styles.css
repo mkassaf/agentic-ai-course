@@ -116,3 +116,5 @@ a.flow-final:hover{border-color:var(--accent)}
 @media(max-width:1000px){.lab-context{grid-template-columns:1fr;gap:20px}}
 
 .sampling-figure{margin:0 0 30px}.sampling-figure img{display:block;width:100%;height:auto;border-radius:10px}.sampling-figure figcaption{font-size:13px;color:var(--muted);margin-top:8px}
+
+.sampling-tool-link{font-size:14px;color:var(--muted);margin:0 0 30px}.sampling-tool-link a{color:var(--ink)}

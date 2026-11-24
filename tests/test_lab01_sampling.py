@@ -10,7 +10,7 @@ from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 LESSON = json.loads((ROOT / 'lessons/01_prompting_evaluation.json').read_text())
-OPTIONAL = [cell['source'] for cell in LESSON['cells'] if cell['type'] == 'code' and cell.get('optional')]
+OPTIONAL = [cell['source'] for cell in LESSON['cells'] if cell['type'] == 'code' and cell.get('optional') and 'IFrame' not in cell['source']]
 
 
 class SamplingExamplesTests(unittest.TestCase):
