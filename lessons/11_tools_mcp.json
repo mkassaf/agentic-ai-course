@@ -16,7 +16,7 @@
     },
     {
       "type": "markdown",
-      "source": "## Step 1 · Keep the data behind its owner\n\nOnly the Orders server owns `ORDERS`. `get_order` returns a copy of the fields this interface exposes; callers do not receive a database connection or a reference they can mutate. This mirrors database-per-service, so Reporting cannot read Order's private tables directly.\n\nThe MCP SDK requires a Python function for each tool. The decorator registers the function so a client can discover and call it."
+      "source": "## Step 1 · Keep the data behind its owner\n\nOnly the Orders server owns `ORDERS`. `get_order` returns a copy of the fields this interface exposes; callers do not receive a database connection or a reference they can mutate. This mirrors database-per-service, so Reporting cannot read Order's private tables directly.\n\nThe MCP SDK requires a Python function for each tool. The decorator registers the function so a client can discover and call it. The `print` at the end of the next cell calls the plain Python function directly; the MCP path — a client discovering and calling the registered tool over the protocol — starts in Step 3."
     },
     {
       "type": "code",
@@ -24,7 +24,7 @@
     },
     {
       "type": "markdown",
-      "source": "## Step 2 · A validated write tool\n\nThe dictionary `decisions` is only a classroom decision log. The allowed options review the data-pattern exercise: API composition fits a small lookup by ID; CQRS supports a separate searchable read model. The correct choice still depends on the requirements, not on MCP."
+      "source": "## Step 2 · A validated write tool\n\nThe dictionary `decisions` is only a classroom decision log. The tool accepts just the two exercise requirements and the two pattern labels, so a mistaken call returns an error instead of corrupting state. Which label is *right* for a requirement is a design question about the requirements — not something MCP decides."
     },
     {
       "type": "code",

@@ -29,11 +29,11 @@
     },
     {
       "type": "markdown",
-      "source": "## Step 3 · Ask a judge one narrow question\nFor each example answer, ask a model whether it names a downside. The loop sends and reads each request directly. A judge can be wrong; Step 4 compares it with human ratings."
+      "source": "## Step 3 · Ask a judge one narrow question\nFor each example answer, ask a model whether it names a downside. The loop sends and reads each request directly. A judge can be wrong; Step 4 compares it with human ratings. If a reply is not one JSON object, the run is counted as \"no\" and flagged in the output — a formatting slip must not stop eight judgments, but the flag tells you one happened."
     },
     {
       "type": "code",
-      "source": "RUBRIC = (\"Does this answer name a cost or downside of the option it chose? \"\n          'Reply with JSON only, no code fences: {\"names_cost\": true or false}')\njudged = {}\nfor key, run in runs.items():\n    option, citations, answer, calls, seconds = run\n    reply = ask(f\"{RUBRIC}\\nOption: {option}\\nAnswer: {answer}\")\n    judged[key] = json.loads(reply)[\"names_cost\"] is True\n    print(key, \"names a cost:\", judged[key])"
+      "source": "RUBRIC = (\"Does this answer name a cost or downside of the option it chose? \"\n          'Reply with JSON only, no code fences: {\"names_cost\": true or false}')\njudged = {}\nfor key, run in runs.items():\n    option, citations, answer, calls, seconds = run\n    try:\n        reply = json.loads(ask(f\"{RUBRIC}\\nOption: {option}\\nAnswer: {answer}\"))\n    except json.JSONDecodeError:\n        reply = None\n    verdict = isinstance(reply, dict) and reply.get(\"names_cost\") is True\n    judged[key] = verdict\n    print(key, \"names a cost:\", verdict, \"\" if isinstance(reply, dict) else \"(not JSON; counted as no)\")"
     },
     {
       "type": "markdown",
@@ -45,7 +45,7 @@
     },
     {
       "type": "markdown",
-      "source": "## Step 5 · Compare with the best single-model fixture\n\nSelect the strongest baseline by label agreement and then valid citations. An untrusted judge metric remains `None`. This prints a comparison of fixtures, not a claim that any named model or council won an experiment.\n\nThe baseline is chosen by correct answers first and valid citation IDs second. These two illustrative cases are too few to establish a real ranking."
+      "source": "## Step 5 · Compare with the best single-model fixture\n\nSelect the strongest baseline by label agreement and then valid citations. An untrusted judge metric remains `None`. This prints a comparison of fixtures, not a claim that any named model or council won an experiment.\n\nThe baseline is chosen by correct answers first and valid citation IDs second; a tie keeps the system listed earlier. These two illustrative cases are too few to establish a real ranking."
     },
     {
       "type": "code",
@@ -53,7 +53,21 @@
     },
     {
       "type": "markdown",
-      "source": "## What you should see\n\nThe DeepSeek and council fixtures each match 2/2 labels; Qwen and Gemini match 1/2. Judge agreement and the stated-cost metric depend on the model replies. The council fixture has more valid citations and five times the illustrative calls. None of these numbers are empirical model results.\n\n## Try it\n\n1. Change the required judge-human agreement to 80%. When is `names_cost` reported as `None`?\n2. Give a false explanation a known citation ID. What extra check is needed beyond checking whether the citation ID exists?\n3. Add two cases with explicit human labels: a trip booking that must compensate earlier reservations when payment fails, and a bank that needs historical balances and an audit trail.\n4. Collect one real answer from each system on each scenario. Replace synthetic timings with measured wall time and report token usage separately from elapsed time.\n\n## Takeaway\n\nSeparate fixture-based plumbing tests from empirical evaluation. Compare identical scenarios, calibrate the judge, and report trade-offs and cost. The microservices revision matters too: CQRS, API composition, sagas, and event sourcing solve different problems.\n\n## Optional extension · Save the synthetic comparison with MLflow\n\nAfter the core steps, run `%pip install -q mlflow==2.20.0` in a new cell, then this extra cell. This logs the **synthetic fixture** metrics, not new provider benchmarks. Missing/untrusted judge metrics are omitted, never converted to zero. Tracking is optional and is not part of the five core steps.\n\n```python\nimport mlflow\nmlflow.set_tracking_uri(\"sqlite:///mlflow.db\")\nmlflow.set_experiment(\"synthetic-microservice-pattern-demo\")\nfor system, metrics in scores.items():\n    with mlflow.start_run(run_name=system):\n        mlflow.log_params({\"system\": system, \"data_kind\": \"synthetic teaching fixture\"})\n        recorded = {}\n        for name, value in metrics.items():\n            if value is not None:\n                recorded[name] = value\n        mlflow.log_metrics(recorded)\n```\n\nIn Colab, the tracking database `mlflow.db` lives in the runtime filesystem; download it before ending the session. On your own computer, use `mlflow ui --backend-store-uri sqlite:///mlflow.db --port 5000` and open localhost:5000 there. A Colab runtime's localhost is not your laptop's localhost.\n"
+      "source": "## What you should see\n\nThe DeepSeek and council fixtures each match 2/2 labels; Qwen and Gemini match 1/2. Judge agreement and the stated-cost metric depend on the model replies. The council fixture has more valid citations and five times the illustrative calls. None of these numbers are empirical model results.\n\n## Try it\n\n1. Change the required judge-human agreement to 80%. When is `names_cost` reported as `None`?\n2. Give a false explanation a known citation ID. What extra check is needed beyond checking whether the citation ID exists?\n3. Add two cases with explicit human labels: a trip booking that must compensate earlier reservations when payment fails, and a bank that needs historical balances and an audit trail.\n4. Collect one real answer from each system on each scenario. Replace synthetic timings with measured wall time and report token usage separately from elapsed time.\n\n## Takeaway\n\nSeparate fixture-based plumbing tests from empirical evaluation. Compare identical scenarios, calibrate the judge, and report trade-offs and cost. The microservices revision matters too: CQRS, API composition, sagas, and event sourcing solve different problems."
+    },
+    {
+      "type": "markdown",
+      "source": "## Optional · Save the synthetic comparison with MLflow\n\nAfter the core steps, log the **synthetic fixture** metrics from Step 5 to a local MLflow tracking store. This demonstrates experiment tracking; the numbers stay teaching fixtures, not provider benchmarks. Missing or untrusted judge metrics are omitted, never converted to zero.\n\nThe install cell adds MLflow. The logging cell writes `mlflow.db` into the Colab runtime filesystem — download it before the session ends. On your own machine, open the UI with `mlflow ui --backend-store-uri sqlite:///mlflow.db --port 5000` and visit localhost:5000 (a Colab runtime's localhost is not your laptop's localhost)."
+    },
+    {
+      "type": "code",
+      "optional": true,
+      "source": "%pip install -q mlflow==2.20.0"
+    },
+    {
+      "type": "code",
+      "optional": true,
+      "source": "import mlflow\n\nmlflow.set_tracking_uri(\"sqlite:///mlflow.db\")\nmlflow.set_experiment(\"synthetic-microservice-pattern-demo\")\nfor system, metrics in scores.items():\n    with mlflow.start_run(run_name=system):\n        mlflow.log_params({\"system\": system, \"data_kind\": \"synthetic teaching fixture\"})\n        recorded = {name: value for name, value in metrics.items() if value is not None}\n        mlflow.log_metrics(recorded)\nprint(\"Logged\", len(scores), \"synthetic runs to mlflow.db\")"
     }
   ],
   "review": {

@@ -716,6 +716,7 @@ const labs = [
     "track": "self-study",
     "steps": 5,
     "warmups": 1,
+    "optional_examples": 2,
     "patterns": [],
     "background": [
       "Evaluation needs consistent inputs, labelled criteria, and honest provenance. Synthetic answers and timings teach the method without claiming measured model performance.",

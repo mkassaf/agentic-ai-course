@@ -21,7 +21,7 @@
     },
     {
       "type": "markdown",
-      "source": "## Step 2 · Prepare the policy and routes\nThe rule permits a bounded retry only for known idempotent effects. The review route adds the case to a queue. The estimated five calls represent future review work; this notebook does not run that debate."
+      "source": "## Step 2 · Prepare the policy and routes\nThe rule permits a bounded retry only for known idempotent effects, and it costs no further model calls — the router has already spent the case's one call. The review route adds the case to a queue; its estimate of five calls represents future review work this notebook does not run. Step 4 adds both kinds to the router's own calls."
     },
     {
       "type": "code",
@@ -45,7 +45,7 @@
     },
     {
       "type": "markdown",
-      "source": "## What you should see\n\nThe router selects a handler for each case. Compare the routes with the human labels, and inspect both missed reviews and unnecessary reviews. Call counts are estimates and depend on the model’s choices.\n\n## Try it\n\n1. Route Payments to `rule`. The evaluation flags the skipped review; the handler still says not to retry automatically.\n2. Make a reply `[]` or give it the route `maybe`. Both fall back to review.\n3. Add a timeout budget to Recommendations. When should a fallback replace another attempt?\n4. Replace Inventory's unknown idempotency with a documented idempotency key and a reconciliation API. Reconsider its route with a domain expert.\n\n## Takeaway\n\nA router allocates effort; it does not create safety by itself. Deterministic handlers retain the no-blind-payment-retry rule, unknown cases get reviewed, and measured routing errors reveal whether the extra model call was worthwhile."
+      "source": "## What you should see\n\nThe router selects a handler for each case. Compare the routes with the human labels, and inspect both missed reviews and unnecessary reviews. Call counts are estimates and depend on the model’s choices.\n\n## Try it\n\n1. After Step 3, force `routes[\"Payments\"] = (\"rule\", \"forced\")` and rerun Step 4. The handler still refuses an automatic retry, and the final `assert` stops the cell — that stop is the evaluation catching the dangerous route. Rerun Step 3 to recover.\n2. Make a reply `[]` or give it the route `maybe`. Both fall back to review.\n3. Add a timeout budget to Recommendations. When should a fallback replace another attempt?\n4. Replace Inventory's unknown idempotency with a documented idempotency key and a reconciliation API. Reconsider its route with a domain expert.\n\n## Takeaway\n\nA router allocates effort; it does not create safety by itself. Deterministic handlers retain the no-blind-payment-retry rule, unknown cases get reviewed, and measured routing errors reveal whether the extra model call was worthwhile."
     }
   ],
   "review": {
