@@ -83,5 +83,11 @@
       "Why is a failed card authorization not a completed charge to refund?",
       "Which intermediate states can other services see before a saga finishes?"
     ]
+  },
+  "warmup": {
+    "title": "Use a reusable instruction",
+    "explanation": "A skill contains instructions for a particular task. Here we select a small instruction manually and include it in a model prompt. The full exercise adds a catalog, model selection, and validation.",
+    "code": "skill = \"Explain a term using one short sentence and a simple example.\"\ntask = \"Explain what a rainbow is.\"\nprint(\"Loaded instruction:\", skill)\nprint(\"Answer:\", ask(f\"Instructions: {skill}\\nTask: {task}\"))",
+    "bridge": "Next, select and load a skill for reviewing a saga."
   }
 }

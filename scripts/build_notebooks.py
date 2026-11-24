@@ -172,7 +172,14 @@ def build(lesson, revision, diagrams, site_lab):
     terms = "\n".join(f"| **{term}** | {meaning} |" for term, meaning in site_lab["terms"])
     context = ("## The idea in context\n\n" + "\n\n".join(site_lab["background"])
                + f"\n\n| Key term | Meaning |\n| --- | --- |\n{terms}")
-    if slug == "03_prompt_chaining":
+    warmup = lesson.get("warmup")
+    if warmup:
+        introduction = ("## Start with a small example\n\n"
+                        "First learn the mechanism with an everyday example. "
+                        "Then apply it to the software architecture exercise below.")
+        cells = [source_cell("markdown", intro), source_cell("markdown", introduction),
+                 source_cell("markdown", setup_note), source_cell("code", setup_for(slug, revision))]
+    elif slug == "03_prompt_chaining":
         # Introduce chaining with the everyday example before the architecture material.
         cells = [source_cell("markdown", intro), source_cell("markdown", overview["source"]),
                  source_cell("markdown", setup_note), source_cell("code", setup_for(slug, revision))]
@@ -182,6 +189,18 @@ def build(lesson, revision, diagrams, site_lab):
                  source_cell("markdown", context), *patterns,
                  source_cell("markdown", setup_note), source_cell("code", setup_for(slug, revision))]
     cells[-1].metadata["tags"] = ["setup"]
+    if warmup:
+        cells.append(source_cell("markdown", f"## Warm-up · {warmup['title']}\n\n{warmup['explanation']}"))
+        exercise = source_cell("code", warmup["code"])
+        exercise.metadata["tags"] = ["warmup"]
+        headings = [match.groups() for cell in steps if cell["type"] == "markdown"
+                    for match in [re.match(r"## Step (\d+) · ([^\n]+)", cell["source"])] if match]
+        roadmap = "## Main exercise at a glance\n\n" + "\n".join(
+            f"{number}. {title}" for number, title in headings)
+        cells.extend([exercise, source_cell("markdown", f"**Next:** {warmup['bridge']}"),
+                      source_cell("markdown", overview["source"] + picture),
+                      source_cell("markdown", review_note(lesson)),
+                      source_cell("markdown", context), *patterns, source_cell("markdown", roadmap)])
     first_example_added = False
     for cell in steps:
         if cell["type"] not in ("markdown", "code"):

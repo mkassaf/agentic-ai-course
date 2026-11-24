@@ -73,5 +73,11 @@
       "Why is the Payments case more dangerous than a failed Pricing read?",
       "Why can routing cost as much as sending every case to review?"
     ]
+  },
+  "warmup": {
+    "title": "Route a request",
+    "explanation": "A router sends different requests to different handlers. This example uses a fixed rule; later the model selects a route and code handles unknown outputs safely.",
+    "code": "request = \"rainy\"\nroute = \"indoor\" if request == \"rainy\" else \"outdoor\"\nhandlers = {\"indoor\": \"Visit the museum\", \"outdoor\": \"Walk in the park\"}\nprint(\"Weather:\", request)\nprint(\"Route:\", route)\nprint(\"Handler result:\", handlers[route])",
+    "bridge": "Now route routine resilience questions to a rule and uncertain cases to review."
   }
 }

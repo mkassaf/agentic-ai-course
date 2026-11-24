@@ -10,7 +10,7 @@ The examples use ShopEasy, the lectures' social app, and small checkout scenario
 
 ## Start in Colab
 
-Save a copy of a notebook to your Drive and run cells in order with a CPU runtime. Students should know Python functions, dictionaries, lists, loops, and JSON. Plan roughly 15–20 minutes for core work in each lab; this is an estimate, and installation, discussion, live calls, and optional work take extra time. Each core step has at most 25 Python lines and each lab has at most 100 core example lines; optional examples are additional.
+Save a copy of a notebook to your Drive and run cells in order with a CPU runtime. Students should know Python functions, dictionaries, lists, loops, and JSON. Plan roughly 15–20 minutes for core work in each lab; this is an estimate, and installation, discussion, live calls, and optional work take extra time. Most labs begin with a short everyday warm-up before the architecture exercise. Each architecture step has at most 25 Python lines and each lab has at most 100 architecture-example lines; warm-ups and optional examples are additional.
 
 **Lecture 1 (00–02):** rules, prompting/evaluation, RAG. **Lecture 2 (03–05):** chaining, tools, ReAct. **Lecture 3 (06–08):** debate, observability, human feedback/memory. Labs 09–17 are self-study extensions.
 

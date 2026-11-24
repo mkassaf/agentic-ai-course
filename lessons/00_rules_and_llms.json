@@ -91,5 +91,11 @@
       "When is a retry safe, and why is a timed-out payment uncertain?",
       "How do bulkheads, API gateways, and BFFs address different problems?"
     ]
+  },
+  "warmup": {
+    "title": "Rules and an LLM",
+    "explanation": "A rule chooses a drink from an explicit temperature; a model answers a similar question in natural language. The rule is deterministic; the model reply can vary. Compare both results.",
+    "code": "temperature = 30\nrule = \"water\" if temperature >= 25 else \"tea\"\nprint(\"Rule:\", rule)\n\nanswer = ask(\"It is 30°C outside. Suggest water or tea and briefly explain why.\")\nprint(\"LLM:\", answer)",
+    "bridge": "Now apply explicit rules and a model to the same microservices questions."
   }
 }

@@ -89,5 +89,11 @@
       "Why must a timeout not automatically trigger another payment charge?",
       "Why does semantic similarity alone not establish that a stored lesson applies?"
     ]
+  },
+  "warmup": {
+    "title": "Review an answer and remember feedback",
+    "explanation": "A scripted reviewer stands in for a person: it rejects an unsuitable suggestion and supplies feedback. We save that feedback for the next prompt. No real approval is requested in this warm-up.",
+    "code": "proposal = \"Go for a walk outside.\"\nfeedback = \"It is raining; suggest an indoor activity.\"\nprint(\"Proposal:\", proposal)\nprint(\"Simulated review: reject —\", feedback)\nnotes = [feedback]\nrevision = ask(f\"Earlier suggestion: {proposal}\\nReview feedback: {notes[0]}\\nSuggest one revision.\")\nprint(\"Revised:\", revision)",
+    "bridge": "Next, store approved advice with conditions that limit when it can be reused."
   }
 }

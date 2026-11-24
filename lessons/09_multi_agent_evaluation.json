@@ -77,5 +77,11 @@
       "For a small order-details lookup by ID, why might a separate CQRS read model add unnecessary work?",
       "Which data pattern supports replaying a historical account balance?"
     ]
+  },
+  "warmup": {
+    "title": "Evaluate answers against known answers",
+    "explanation": "Before comparing systems, define the same questions and expected answers for each. These are made-up answers used to demonstrate scoring; they are not model performance measurements.",
+    "code": "questions = ['What is 2 + 2?', 'What colour is a clear sky?']\nprint('Questions:', questions)\nexpected = [\"4\", \"blue\"]\nsample_a = [\"4\", \"blue\"]\nsample_b = [\"5\", \"blue\"]\nprint(\"Sample A correct:\", sum(a == b for a, b in zip(sample_a, expected)), \"/ 2\")\nprint(\"Sample B correct:\", sum(a == b for a, b in zip(sample_b, expected)), \"/ 2\")",
+    "bridge": "Apply the same comparison to architecture answers, then consider evidence, cost, and judge calibration."
   }
 }

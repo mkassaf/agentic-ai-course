@@ -102,5 +102,11 @@
       "What shared needs can an API gateway address?",
       "Why might mobile and web clients benefit from different BFFs?"
     ]
+  },
+  "warmup": {
+    "title": "Separate instructions from the question",
+    "explanation": "First put the instruction and question together. Then send the reusable instruction as the system message and the changing question as the user message. Compare the two answers; both make a live model call.",
+    "code": "mixed = plain.ask(\"You are a friendly tutor. Answer in one sentence. What is a rainbow?\")\nprint(\"Mixed:\", mixed)\n\nsplit = plain.ask(\"What is a rainbow?\", system=\"You are a friendly tutor. Answer in one sentence.\")\nprint(\"Separated:\", split)",
+    "bridge": "Use the same roles to answer an architecture question, then explore memory and validation."
   }
 }

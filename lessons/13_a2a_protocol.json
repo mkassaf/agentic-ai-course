@@ -66,5 +66,11 @@
       "Why should Order not depend on the payment provider's field names?",
       "Which part is the A2A protocol, and which part is domain translation?"
     ]
+  },
+  "warmup": {
+    "title": "Send a message to another agent",
+    "explanation": "A greeting agent publishes a card and receives one message over the real local A2A SDK. Its reply is a Python function, not a model; the protocol still handles discovery and communication.",
+    "code": "from coursekit.protocol_examples import talk_over_a2a\n\ndef greet(name):\n    return f\"Hello, {name}!\"\n\ncard, reply = await talk_over_a2a(greet, \"Sam\", name=\"Greeter\",\n                                   description=\"Greet a person by name.\", skill=\"Greet\")\nprint(\"Discovered:\", card[\"name\"])\nprint(\"Reply:\", reply)",
+    "bridge": "Now discover an agent that translates a payment-provider message."
   }
 }

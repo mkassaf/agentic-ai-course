@@ -96,7 +96,9 @@ def main():
         if re.search(r"MODE\s*=\s*[\"\']practice|(?:example|practice)=", text):
             issues.append(f"{path.name}: remove scripted model-response mode and arguments")
         examples = [c for c in notebook.cells if c.cell_type == "code"
-                    and not {"setup", "optional"}.intersection(c.metadata.get("tags", []))]
+                    and not {"setup", "optional", "warmup"}.intersection(c.metadata.get("tags", []))]
+        warmups = [c for c in notebook.cells if c.cell_type == "code"
+                   and "warmup" in c.metadata.get("tags", [])]
         optional = [c for c in notebook.cells if c.cell_type == "code"
                     and "optional" in c.metadata.get("tags", [])]
         if any(len(c.source.splitlines()) > 25 for c in optional):
@@ -106,6 +108,10 @@ def main():
             issues.append(f"{path.name}: website core-step count differs from the notebook")
         if site_lab.get("optional_examples", 0) != len(optional):
             issues.append(f"{path.name}: website optional-example count differs from the notebook")
+        if site_lab.get("warmups", 0) != len(warmups):
+            issues.append(f"{path.name}: website warm-up count differs from the notebook")
+        if any(len(c.source.splitlines()) > 25 for c in warmups):
+            issues.append(f"{path.name}: a warm-up exceeds 25 lines")
         numbered_steps = [int(number) for cell in notebook.cells if cell.cell_type == "markdown"
                           for number in re.findall(r"^## Step (\d+)(?![\w])", cell.source, re.M)]
         if numbered_steps != list(range(1, len(examples) + 1)):

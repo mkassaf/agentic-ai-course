@@ -86,5 +86,11 @@
       "Why should reporting not read Orders tables directly?",
       "What requirement makes CQRS preferable to API composition?"
     ]
+  },
+  "warmup": {
+    "title": "Discover and call one MCP tool",
+    "explanation": "An MCP server exposes a greeting tool. A client discovers its name and calls it through the actual local MCP SDK. This warm-up does not use a model or the network.",
+    "code": "from mcp.server import MCPServer\nfrom mcp import Client\n\nwarm_server = MCPServer(\"greeting\")\n@warm_server.tool(description=\"Greet a person by name.\")\ndef greet(name: str) -> str:\n    return f\"Hello, {name}!\"\n\nasync with Client(warm_server) as warm_client:\n    tools = await warm_client.list_tools()\n    print(\"Discovered:\", [tool.name for tool in tools.tools])\n    result = await warm_client.call_tool(\"greet\", {\"name\": \"Sam\"})\n    print(\"Result:\", result.content[0].text)",
+    "bridge": "Apply the same discover-and-call protocol to an Orders owner."
   }
 }

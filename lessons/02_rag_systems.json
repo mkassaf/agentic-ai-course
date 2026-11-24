@@ -88,5 +88,11 @@
       "Why is CQRS a better fit for searchable order history than a large in-memory API join?",
       "Does citing a valid source ID prove that the source supports an answer?"
     ]
+  },
+  "warmup": {
+    "title": "Find a note before answering",
+    "explanation": "A tiny guide has facts about two places. First look up the relevant note, then send only that note to the model. This warm-up uses a fixed keyword lookup, not embeddings; the main exercise builds a vector retriever.",
+    "code": "notes = {\"museum\": \"The museum opens at 10:00.\", \"park\": \"The park opens at sunrise.\"}\nquestion = \"When does the museum open?\"\nretrieved = notes[\"museum\"]  # The application chose the key for this example.\nprint(\"Retrieved:\", retrieved)\nanswer = client.ask(f\"Use this note: {retrieved}\\nQuestion: {question}\")\nprint(\"Answer:\", answer)",
+    "bridge": "Next, embed and retrieve microservices policies instead of selecting a note by hand."
   }
 }

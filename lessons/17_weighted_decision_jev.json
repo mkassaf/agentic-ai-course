@@ -78,5 +78,11 @@
       "Should competing workers process a task, or should each subscriber group read the same event?",
       "Why do orderId as the Kafka key and eventId for deduplication solve different problems?"
     ]
+  },
+  "warmup": {
+    "title": "Give important criteria more weight",
+    "explanation": "Two activities have illustrative scores out of five for cost and shelter from rain. Give shelter a higher weight, then compare the totals. These numbers are teaching choices, not measured facts.",
+    "code": "walk = {\"cost\": 5, \"shelter\": 1}\nmuseum = {\"cost\": 2, \"shelter\": 5}\nweights = {\"cost\": 1, \"shelter\": 3}\nwalk_score = walk[\"cost\"] * weights[\"cost\"] + walk[\"shelter\"] * weights[\"shelter\"]\nmuseum_score = museum[\"cost\"] * weights[\"cost\"] + museum[\"shelter\"] * weights[\"shelter\"]\nprint(\"Walk:\", walk_score, \"| Museum:\", museum_score)",
+    "bridge": "Use the same idea to compare a task queue and an event log."
   }
 }

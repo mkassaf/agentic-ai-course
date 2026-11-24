@@ -69,5 +69,11 @@
       "Why does renaming total break a consumer?",
       "Why should a new event field be optional for existing consumers?"
     ]
+  },
+  "warmup": {
+    "title": "Run a tiny graph",
+    "explanation": "A graph connects a node to the next step. This first graph has one deterministic node and uses the real LangGraph library. The later graph adds model generation, checking, and a bounded retry.",
+    "code": "from typing import TypedDict\nfrom langgraph.graph import StateGraph, START, END\n\nclass GreetingState(TypedDict):\n    message: str\n\ndef greet(state):\n    return {\"message\": \"Hello, \" + state[\"message\"]}\n\nwarm_graph = StateGraph(GreetingState)\nwarm_graph.add_node(\"greet\", greet)\nwarm_graph.add_edge(START, \"greet\")\nwarm_graph.add_edge(\"greet\", END)\nprint(warm_graph.compile().invoke({\"message\": \"Sam\"}))",
+    "bridge": "Next, connect generation and checking nodes for an event contract."
   }
 }

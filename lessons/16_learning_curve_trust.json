@@ -75,5 +75,11 @@
       "Why is retrying a card charge different from retrying a price read?",
       "Why must test labels stay out of trust updates?"
     ]
+  },
+  "warmup": {
+    "title": "Learn from feedback",
+    "explanation": "Two reviewers give answers to the same three questions. Compare each with known feedback before assigning more weight. These are synthetic answers, not evidence about real models.",
+    "code": "questions = ['Is an apple a fruit?', 'Is a carrot a fruit?', 'Is a pear a fruit?']\nprint('Feedback questions:', questions)\nexpected = [\"yes\", \"no\", \"yes\"]\nreviewer_a = [\"yes\", \"no\", \"yes\"]\nreviewer_b = [\"yes\", \"yes\", \"no\"]\nprint(\"Reviewer A:\", sum(a == b for a, b in zip(reviewer_a, expected)), \"/ 3\")\nprint(\"Reviewer B:\", sum(a == b for a, b in zip(reviewer_b, expected)), \"/ 3\")",
+    "bridge": "Next, turn feedback into weights and evaluate the votes on separate cases."
   }
 }

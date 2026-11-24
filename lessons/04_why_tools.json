@@ -79,5 +79,11 @@
       "Why must outside code change an Order through the aggregate root rather than set its total?",
       "What distinguishes the identity of Order from the value of Money, and which details does this tiny model omit?"
     ]
+  },
+  "warmup": {
+    "title": "Give the model a small tool",
+    "explanation": "The model chooses whether it needs a weather lookup. Python runs the tool and sends its result back to the model. The weather value is a local teaching example; no weather service is contacted.",
+    "code": "def get_weather():\n    return \"rainy\"\n\nchoice = ask(\"Tools: get_weather looks up today's weather. \"\n             \"Question: What is today's weather? Reply exactly get_weather or no_tool.\")\nprint(\"Model request:\", choice)\nif choice.strip().lower().strip(' .\"') == \"get_weather\":\n    result = get_weather()\n    print(\"Tool result:\", result)\n    print(\"Answer:\", ask(f\"The weather tool says {result}. Suggest what to wear.\"))\nelse:\n    print(\"Unexpected request; stop and inspect the model reply.\")",
+    "bridge": "Now expose read and checked write tools for an Order."
   }
 }

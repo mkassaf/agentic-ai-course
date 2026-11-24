@@ -81,5 +81,11 @@
       "What is the difference between a trace ID and a message ID?",
       "Why does an event or agent message need both identity and provenance?"
     ]
+  },
+  "warmup": {
+    "title": "Follow a decision back to its source",
+    "explanation": "A trace connects a decision to earlier messages. These small Python records are teaching data; the main exercise adds structured logging, a registry, and optional LangSmith tracing.",
+    "code": "source = {\"id\": \"m1\", \"sender\": \"guide\", \"text\": \"The park is closed today.\"}\ndecision = {\"id\": \"m2\", \"sender\": \"planner\", \"text\": \"Visit the museum.\", \"cites\": \"m1\"}\nmessages = {source[\"id\"]: source, decision[\"id\"]: decision}\nprint(\"Decision:\", decision[\"text\"])\nprint(\"Based on:\", messages[decision[\"cites\"]][\"text\"])",
+    "bridge": "Next, follow an architecture council's messages and evidence through structured logs."
   }
 }

@@ -69,5 +69,11 @@
       "Why can retries make a slow dependency worse?",
       "Why must the non-idempotent Payments charge not be blindly retried?"
     ]
+  },
+  "warmup": {
+    "title": "Act, observe, then answer",
+    "explanation": "An agent can choose to use a tool, observe its result, and then finish. This tiny loop is limited to two decisions. The weather tool returns a local example; the model's actions may vary.",
+    "code": "weather = None\nfor turn in range(2):\n    action = ask(f\"Known weather: {weather}. Choose exactly LOOKUP or FINISH. \"\n                 \"If weather is unknown, LOOKUP before FINISH.\").strip().upper().strip(\".\")\n    print(\"Action:\", action)\n    if action == \"LOOKUP\":\n        weather = \"rainy\"  # Result of a local teaching tool.\n        print(\"Observation:\", weather)\n    elif action == \"FINISH\" and weather is not None:\n        print(\"Advice:\", ask(f\"Weather: {weather}. Suggest one indoor or outdoor activity.\"))\n        break\n    else:\n        print(\"Invalid action or missing observation; stop for review.\")\n        break",
+    "bridge": "Apply the same action–observation loop to simulated dependency metrics."
   }
 }

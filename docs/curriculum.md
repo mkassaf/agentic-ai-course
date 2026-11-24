@@ -14,7 +14,7 @@ Nine self-study labs extend the same revision: evaluation (09), routing (10), MC
 
 ## Keep examples small and checkable
 
-Each lab has two to five core code steps, at most 25 lines each and 100 in total. Lab 00 also includes three optional SDK and framework examples, including a tools-disabled Harness preview. The examples are deliberately reduced models; Python state changes stand in for services, and no Kafka, Kubernetes, or payment deployment is required. Official MCP, A2A, and LangGraph SDKs demonstrate the agentic interfaces themselves.
+Each lab has two to five core code steps, at most 25 lines each and 100 in total. Most labs also begin with a short everyday warm-up; Lab 03 includes its warm-up as a core step. Lab 00 also includes three optional SDK and framework examples, including a tools-disabled Harness preview. The examples are deliberately reduced models; Python state changes stand in for services, and no Kafka, Kubernetes, or payment deployment is required. Official MCP, A2A, and LangGraph SDKs demonstrate the agentic interfaces themselves.
 
 Lab 01 compares system and user prompts, temporary context, validation, and reasoning modes. Optional examples include an interactive sampling simulator and experiments with temperature and top-k. Its older-model questions are small demonstrations, not a benchmark.
 

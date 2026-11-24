@@ -18,6 +18,7 @@ const labs = [
     "bridge": "A timed-out payment might already have succeeded; server-supported idempotency makes a retry safer.",
     "track": "lecture-1",
     "steps": 4,
+    "warmups": 1,
     "optional_examples": 3,
     "patterns": [],
     "background": [
@@ -89,6 +90,7 @@ const labs = [
     "bridge": "Thinking mode can help but is not guaranteed to be correct; compare actual results.",
     "track": "lecture-1",
     "steps": 5,
+    "warmups": 1,
     "patterns": [],
     "background": [
       "A system message guides the assistant; a user message requests a task. A follow-up can include a previous answer as temporary context.",
@@ -169,6 +171,7 @@ const labs = [
     "track": "lecture-1",
     "pattern": "Retrieval-Augmented Generation",
     "steps": 5,
+    "warmups": 1,
     "patterns": [
       "Retrieval-Augmented Generation"
     ],
@@ -326,6 +329,7 @@ const labs = [
     "checks": "Validate tool names and arguments, test the simulated confirmation flag, and check the invariant.",
     "bridge": "Tools perform actions; the model cannot bypass the aggregate root to edit totals.",
     "steps": 5,
+    "warmups": 1,
     "patterns": [
       "One-Step Tool Agent"
     ],
@@ -398,6 +402,7 @@ const labs = [
     "track": "lecture-2",
     "pattern": "One-Step Tool Agent in a ReAct loop",
     "steps": 4,
+    "warmups": 1,
     "patterns": [
       "One-Step Tool Agent"
     ],
@@ -468,6 +473,7 @@ const labs = [
     "track": "lecture-3",
     "pattern": "Debate-Based Cooperation",
     "steps": 5,
+    "warmups": 1,
     "patterns": [
       "Debate-Based Cooperation",
       "Voting-Based Cooperation"
@@ -536,6 +542,7 @@ const labs = [
     "bridge": "Agent-run traces and microservice request traces share correlation principles but are different systems.",
     "track": "lecture-3",
     "steps": 5,
+    "warmups": 1,
     "patterns": [
       "Shared Memory",
       "Registry & Adapter"
@@ -612,6 +619,7 @@ const labs = [
     "track": "lecture-3",
     "pattern": "Human in the Loop and Archival Memory",
     "steps": 5,
+    "warmups": 1,
     "patterns": [
       "Human in the Loop",
       "Scratchpad Memory",
@@ -688,6 +696,7 @@ const labs = [
     "bridge": "Use actual run logs and repeated scenarios for the project experiment.",
     "track": "self-study",
     "steps": 5,
+    "warmups": 1,
     "patterns": [],
     "background": [
       "Evaluation needs consistent inputs, labelled criteria, and honest provenance. Synthetic answers and timings teach the method without claiming measured model performance.",
@@ -756,6 +765,7 @@ const labs = [
     "track": "self-study",
     "pattern": "Routing",
     "steps": 4,
+    "warmups": 1,
     "patterns": [
       "Routing"
     ],
@@ -831,6 +841,7 @@ const labs = [
     "track": "self-study",
     "pattern": "Registry & Adapter",
     "steps": 5,
+    "warmups": 1,
     "patterns": [
       "Registry & Adapter"
     ],
@@ -908,6 +919,7 @@ const labs = [
     "track": "self-study",
     "pattern": "Skill Library Evolution",
     "steps": 5,
+    "warmups": 1,
     "patterns": [
       "Skill Library Evolution"
     ],
@@ -981,6 +993,7 @@ const labs = [
     "track": "self-study",
     "pattern": "Registry & Adapter",
     "steps": 3,
+    "warmups": 1,
     "patterns": [
       "Registry & Adapter"
     ],
@@ -1049,6 +1062,7 @@ const labs = [
     "track": "self-study",
     "pattern": "Generator–Critic Loop",
     "steps": 4,
+    "warmups": 1,
     "patterns": [
       "Generator–Critic Loop"
     ],
@@ -1119,6 +1133,7 @@ const labs = [
     "bridge": "Timeouts, retries, breakers, bulkheads, and fallback solve different failure problems.",
     "pattern": "Passive Goal Creator and a contract",
     "steps": 5,
+    "warmups": 1,
     "patterns": [
       "Passive Goal Creator"
     ],
@@ -1196,6 +1211,7 @@ const labs = [
     "bridge": "Trust estimates on a tiny dataset are fragile; a rising demo curve is not evidence about real models.",
     "pattern": "Voting-Based Cooperation",
     "steps": 4,
+    "warmups": 1,
     "patterns": [
       "Voting-Based Cooperation"
     ],
@@ -1272,6 +1288,7 @@ const labs = [
     "checks": "Check the weighted arithmetic, key roles, and consumer count; TypeSafe judgements can differ.",
     "bridge": "Preferences belong in weights; mandatory replay is an eligibility condition. Partition keys, event IDs, and consumer offsets solve different problems.",
     "steps": 5,
+    "warmups": 1,
     "patterns": [],
     "background": [
       "A weighted matrix exposes the assumptions behind a choice. Code combines the scores; a scoring model supplies judgements rather than implementing broker guarantees.",
@@ -1428,7 +1445,7 @@ labs.forEach((lab, i) => {
   detail.dataset.search = `${lab.title} ${lab.subtitle} ${lab.topics} ${lab.patterns.join(' ')} ${(lab.review?.concepts || []).join(' ')}`.toLowerCase();
   const prev = labs[i - 1], next = labs[i + 1];
   const pager = `<nav class="lab-pager" aria-label="Neighbouring labs">${prev ? `<a href="#lab-${prev.id}"><small>← Lab ${prev.id}</small>${esc(prev.title)}</a>` : '<span></span>'}${next ? `<a class="next" href="#lab-${next.id}"><small>Lab ${next.id} →</small>${esc(next.title)}</a>` : ''}</nav>`;
-  detail.innerHTML = `<summary><span class="lab-number" aria-hidden="true"><span class="num">${number(i)}</span><span class="tick">✓</span></span><div><h3><span class="visually-hidden">Lab ${number(i)}: </span>${esc(lab.title)}</h3><p>${chips(lab.patterns)}<span class="lab-subtitle">${esc(lab.subtitle)}</span></p></div><span class="lab-time">${lab.steps} core steps${lab.optional_examples ? `<br>+ ${lab.optional_examples} optional examples` : ""}</span><span class="expand-icon" aria-hidden="true">+</span></summary>`
+  detail.innerHTML = `<summary><span class="lab-number" aria-hidden="true"><span class="num">${number(i)}</span><span class="tick">✓</span></span><div><h3><span class="visually-hidden">Lab ${number(i)}: </span>${esc(lab.title)}</h3><p>${chips(lab.patterns)}<span class="lab-subtitle">${esc(lab.subtitle)}</span></p></div><span class="lab-time">${lab.steps} core steps${lab.warmups ? `<br>+ ${lab.warmups} warm-up` : ""}${lab.optional_examples ? `<br>+ ${lab.optional_examples} optional examples` : ""}</span><span class="expand-icon" aria-hidden="true">+</span></summary>`
     + `<div class="lab-body"><div class="lab-lead"><p class="lab-intro">${esc(lab.idea)}</p>${notebookActions(lab)}</div>`
     + `<section class="lab-context" aria-label="The idea in context"><div><h4>The idea in context</h4>${lab.background.map(text => `<p>${esc(text)}</p>`).join('')}</div>`
     + `<aside class="key-terms"><h4>Key terms</h4><dl>${lab.terms.map(([term, meaning]) => `<dt>${esc(term)}</dt><dd>${esc(meaning)}</dd>`).join('')}</dl></aside></section>`

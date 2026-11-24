@@ -75,5 +75,11 @@
       "Why is a customer-name search different from a lookup by order ID?",
       "Which cost of CQRS must the council record?"
     ]
+  },
+  "warmup": {
+    "title": "Proposal and challenge",
+    "explanation": "Ask one model for an activity and then ask it to challenge that proposal. These are two different roles using the same model, not three independent agents. The full exercise uses three model families and a voting process.",
+    "code": "lunch_ask = make_ask(provider=\"deepseek\")  # DeepSeek is one of the three required providers.\nidea = lunch_ask(\"Propose one outdoor activity for a rainy afternoon. One sentence.\")\nchallenge = lunch_ask(f\"Challenge this proposal for rainy weather in one sentence: {idea}\")\nprint(\"Proposal:\", idea)\nprint(\"Challenge:\", challenge)",
+    "bridge": "Now gather independent architecture proposals, challenge unsupported claims, and vote."
   }
 }

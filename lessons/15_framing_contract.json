@@ -83,5 +83,11 @@
       "Why can the same timeout not fit every checkout dependency?",
       "Can a well-formed proposal still recommend an unsafe payment retry?"
     ]
+  },
+  "warmup": {
+    "title": "Make a vague goal specific",
+    "explanation": "A goal like ‘make a room comfortable’ means different things to different people. A concrete target lets reviewers discuss the same outcome. These numbers are examples chosen by a person, not measurements.",
+    "code": "vague_goal = \"Make the room comfortable.\"\nframed_goal = {\"stimulus\": \"room is too warm\", \"response\": \"cool the room\",\n               \"measure\": \"reach 22°C within 30 minutes\"}\nprint(\"Vague:\", vague_goal)\nprint(\"Specific:\", framed_goal)",
+    "bridge": "Frame checkout qualities with explicit scenarios and a common proposal format."
   }
 }
