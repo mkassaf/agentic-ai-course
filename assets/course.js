@@ -75,16 +75,16 @@ const labs = [
     "id": "01",
     "file": "01_prompting_evaluation",
     "title": "Prompting and small evaluations",
-    "subtitle": "System and user prompts, memory, validation, and reasoning",
-    "topics": "system user messages prompting memory validation json reasoning thinking chain of thought strawberry decimal architecture gateway bff",
+    "subtitle": "System and user prompts, sampling, memory, validation, and reasoning",
+    "topics": "system user messages prompting memory validation json reasoning thinking chain of thought strawberry decimal architecture gateway bff generation settings sampling temperature top k top p max tokens",
     "idea": "Separate reusable system instructions from changing user questions, then check model answers.",
     "objectives": [
-      "Distinguish system instructions from the user question.",
+      "Distinguish system instructions from the user question and experiment with sampling settings.",
       "Pass a previous response into a follow-up and validate JSON.",
       "Compare an older model with guided prompts and DeepSeek thinking modes."
     ],
     "example": "Ask about API gateways and mobile BFFs, then test two small reasoning questions.",
-    "exercise": "Change a system prompt, omit previous context, and inspect a wrong JSON decision.",
+    "exercise": "Change temperature or top-k, omit previous context, and inspect a wrong JSON decision.",
     "checks": "Check the reply format and decision; verify reasoning answers with Python.",
     "bridge": "Thinking mode can help but is not guaranteed to be correct; compare actual results.",
     "track": "lecture-1",
@@ -138,7 +138,8 @@ const labs = [
       "readings": [
         "Microservices & Their Patterns · slides 33, 35"
       ]
-    }
+    },
+    "optional_examples": 2
   },
   {
     "id": "02",
