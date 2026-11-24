@@ -232,21 +232,22 @@ const labs = [
     "id": "03",
     "file": "03_prompt_chaining",
     "title": "Prompt chaining with quality gates",
-    "subtitle": "Prompt chaining for ShopEasy boundaries",
+    "subtitle": "From a lunch idea to ShopEasy boundaries",
     "topics": "prompt chaining workflow gate requirements options trade-offs adr patterns council single-path planning microservices DDD ShopEasy lecture revision Event storming Bounded contexts and ubiquitous language Business capability vs technical-layer decomposition",
-    "idea": "Break a boundary decision into smaller prompts so you can inspect each handoff.",
+    "idea": "Pass one answer into the next prompt, first for a lunch idea and then for a boundary decision.",
     "objectives": [
+      "Build a two-call prompt chain, then apply the same handoff to a boundary decision.",
       "Turn events and business responsibilities into candidate bounded contexts and a short ADR.",
       "Place Returns and Refunds; explain the language and invariants behind your boundary.",
       "Check each intermediate structure and manually inspect cohesion, coupling, and ownership."
     ],
-    "example": "Group ShopEasy behaviour by business capability instead of UI, logic, and database layers.",
+    "example": "Suggest a lunch and list its ingredients; then group ShopEasy behaviour by business capability.",
     "exercise": "Place Returns and Refunds; explain the language and invariants behind your boundary.",
     "checks": "Check each intermediate structure and manually inspect cohesion, coupling, and ownership.",
     "bridge": "A bounded context is a model boundary; validate it before choosing deployment boundaries.",
     "track": "lecture-2",
     "pattern": "Single-Path Planning",
-    "steps": 4,
+    "steps": 5,
     "patterns": [
       "Single-Path Planning"
     ],
