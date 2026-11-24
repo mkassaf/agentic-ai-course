@@ -33,7 +33,7 @@ class _NoRedirect(urllib.request.HTTPRedirectHandler):
 class Client:
     """Bounded client for an OpenAI-compatible Chat Completions endpoint."""
     def __init__(self, model="", family="", base_url="", api_key="",
-                 max_calls=24, max_tokens=512, timeout=45, token_field="max_tokens", extra_body=None):
+                 max_calls=100, max_tokens=512, timeout=45, token_field="max_tokens", extra_body=None):
         if extra_body is not None and (not isinstance(extra_body, dict) or
                 set(extra_body) & {"model", "messages", "max_tokens", "max_completion_tokens", "stream"}):
             raise ValueError("extra_body must be a dict and cannot override the request contract or budgets")
@@ -59,7 +59,7 @@ class Client:
             raise ValueError("Prompt must be text and total prompt length <= 28,000 characters")
         with self._lock:
             if self._attempts >= self.max_calls:
-                raise RuntimeError("Call budget reached; inspect the trace before increasing it")
+                raise RuntimeError(f"Call budget of {self.max_calls} reached; rerun the cell that creates this client to reset it.")
             self._attempts += 1
             call_id = self._attempts
         started = time.perf_counter()

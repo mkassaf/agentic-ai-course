@@ -55,6 +55,7 @@ class NotebookHelperTests(unittest.TestCase):
                     patch("coursekit.notebook.Client") as factory:
                 make_ask(provider=provider)
                 read_key.assert_called_once_with(key_name)
+                self.assertEqual(factory.call_args.kwargs["max_calls"], 100)
                 self.assertEqual(factory.call_args.kwargs["base_url"], url)
                 self.assertEqual(factory.call_args.kwargs["extra_body"], extra)
 
