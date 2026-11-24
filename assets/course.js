@@ -398,15 +398,15 @@ const labs = [
     "topics": "agent foundations patterns react action observation loop chaining routing one-step tool agent in a react loop microservices DDD ShopEasy lecture revision Cascading failure Circuit breaker vs retry Idempotency and graceful degradation crewai framework",
     "idea": "Observe a dependency before selecting a resilience policy.",
     "objectives": [
-      "Inspect a service before choosing a resilience response, using a bounded action loop.",
+      "Inspect a service before choosing a resilience response, using a bounded ReAct loop.",
       "Try finishing before a successful read, or inspect a non-idempotent payment call.",
-      "Inspect action, observation, accumulated history, and the stopping guard.",
+      "Inspect thought, action, observation, accumulated history, and the stopping guard.",
       "Compare the manual ReAct loop with a CrewAI agent using the same metrics."
     ],
     "example": "Read simulated Inventory latency and idempotency facts before recommending a circuit breaker or a safe retry.",
     "exercise": "Try finishing before a successful read, or inspect a non-idempotent payment call.",
-    "checks": "Inspect action, observation, accumulated history, and the stopping guard.",
-    "bridge": "An agent loop selects its next step from observations; it still needs a bound and allowed tools.",
+    "checks": "Inspect thought, action, observation, accumulated history, and the stopping guard.",
+    "bridge": "An agent loop thinks, then selects its next step from observations; it still needs a bound and allowed tools.",
     "track": "lecture-2",
     "pattern": "One-Step Tool Agent in a ReAct loop",
     "steps": 4,
@@ -415,10 +415,14 @@ const labs = [
       "One-Step Tool Agent"
     ],
     "background": [
-      "ReAct-style control flow alternates model actions with tool observations. The example exposes those exchanges without deploying a checkout system.",
-      "An agent loop selects its next step from observations; it still needs a bound and allowed tools."
+      "ReAct-style control flow alternates a short model thought, a tool action, and the observation it returns. The example exposes those exchanges without deploying a checkout system.",
+      "An agent loop thinks, then selects its next step from observations; it still needs a bound and allowed tools."
     ],
     "terms": [
+      [
+        "Thought",
+        "The model's one-line reason for choosing its next action."
+      ],
       [
         "Agent",
         "A system in which a model chooses its next action in a loop, based on what it has observed."
@@ -429,7 +433,7 @@ const labs = [
       ],
       [
         "History",
-        "Every action and observation so far; the agent's view of the task."
+        "Every thought, action and observation so far; the agent's view of the task."
       ],
       [
         "Guard",
@@ -455,7 +459,8 @@ const labs = [
       ],
       "questions": [
         "Why can retries make a slow dependency worse?",
-        "Why must the non-idempotent Payments charge not be blindly retried?"
+        "Why must the non-idempotent Payments charge not be blindly retried?",
+        "What does printing the model's one-line thought add over an action alone?"
       ],
       "readings": [
         "Microservices & Their Patterns · slides 38, 39, 40, 41"

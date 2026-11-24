@@ -20,7 +20,8 @@ class WarmupTests(unittest.TestCase):
                 prompts = []
                 responses = {
                     '04': iter(['I cannot check live data.', 'get_weather', 'It is 18°C.']),
-                    '05': iter(['LOOKUP', 'FINISH', 'Visit a museum.']),
+                    '05': iter(['I do not know the weather yet.\nLOOKUP',
+                                'Now I know it is rainy.\nFINISH', 'Visit a museum.']),
                     '06': iter(['Go for a walk.', 'It is raining.']),
                 }
 

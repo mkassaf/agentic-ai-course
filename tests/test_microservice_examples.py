@@ -101,11 +101,10 @@ class ReActObservationTests(unittest.TestCase):
 
     def test_failed_or_wrong_target_lookup_cannot_unlock_finish(self):
         for service in ("stock", "Payments"):
-            with self.subTest(service=service), self.assertRaisesRegex(ValueError, "successfully"):
-                self.run_actions([
-                    {"action": "read_metrics", "input": service},
-                    {"action": "finish", "input": "circuit breaker"},
-                ])
+            premature = {"action": "finish", "input": "circuit breaker"}
+            actions = [{"action": "read_metrics", "input": service}] + [premature] * 4
+            with self.subTest(service=service), self.assertRaisesRegex(AssertionError, "budget"):
+                self.run_actions(actions)
 
     def test_agent_can_recover_by_observing_the_target_after_a_failed_lookup(self):
         ns = self.run_actions([
@@ -116,6 +115,31 @@ class ReActObservationTests(unittest.TestCase):
         self.assertEqual(ns["decision"], "circuit breaker")
         self.assertEqual(len(ns["history"]), 2)
         self.assertTrue(ns["observed"])
+
+    def test_premature_finish_returns_an_observation_and_the_agent_recovers(self):
+        ns = self.run_actions([
+            {"action": "finish", "input": "circuit breaker"},
+            {"action": "read_metrics", "input": "Inventory"},
+            {"action": "finish", "input": "circuit breaker"},
+        ])
+        self.assertEqual(ns["decision"], "circuit breaker")
+        self.assertTrue(ns["observed"])
+        self.assertEqual(len(ns["history"]), 2)
+
+    def test_malformed_reply_becomes_an_error_observation(self):
+        cells = code_cells("05_react_agent")
+        ns = {}
+        quiet_exec(cells[0], ns)
+        quiet_exec(cells[1], ns)
+        replies = iter([
+            "I will read the metrics first.",
+            '{"thought":"Now I can act.","action":"READ_METRICS","input":"Inventory"}',
+            '{"action":"finish","input":"Circuit breaker."}',
+        ])
+        ns["ask"] = lambda prompt: next(replies)
+        quiet_exec(cells[2], ns)
+        self.assertEqual(ns["decision"], "circuit breaker")
+        self.assertEqual(len(ns["history"]), 2)
 
 
 if __name__ == "__main__":

@@ -399,8 +399,8 @@ const DIAGRAMS = {
       },
       {
         "k": "model",
-        "t": "Next action",
-        "s": "JSON"
+        "t": "Thought + action",
+        "s": "one-line reason · JSON"
       },
       {
         "k": "check",
