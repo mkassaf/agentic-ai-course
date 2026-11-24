@@ -3,7 +3,10 @@ import contextlib
 import io
 import json
 from pathlib import Path
+import sys
+from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -32,6 +35,50 @@ class NumericOutcomeTests(unittest.TestCase):
         self.assertTrue(ns['trusted'])
         self.assertEqual((ns['scores']['Council']['calls'], ns['scores']['DeepSeek']['calls']), (10, 2))
         self.assertEqual(ns['ratio'], 5.0)
+
+    def test_invalid_judgments_leave_the_affected_system_metric_missing(self):
+        invalid_replies = ['not JSON', '[]', 'null', '{}', '{"names_cost": null}',
+                           '{"names_cost": "true"}', '{"names_cost": 1}']
+        for invalid in invalid_replies:
+            with self.subTest(reply=invalid):
+                replies = [json.dumps({'names_cost': value})
+                           for value in (False, False, True, False, False, True, True, True)]
+                replies[6] = invalid
+                ns = run_lesson('09_multi_agent_evaluation', responses=replies)
+                self.assertTrue(ns['trusted'])
+                self.assertIsNone(ns['judged'][('Council', 'Support search')])
+                self.assertIsNone(ns['scores']['Council']['names_cost'])
+                self.assertEqual(ns['scores']['DeepSeek']['names_cost'], 1)
+                self.assertNotIn('names_cost', ns['wins'])
+
+    def test_missing_calibration_verdict_does_not_count_as_a_negative_rating(self):
+        replies = [json.dumps({'names_cost': value})
+                   for value in (False, False, True, False, False, True, True, True)]
+        replies[0] = '{}'
+        ns = run_lesson('09_multi_agent_evaluation', responses=replies)
+        self.assertEqual(ns['agree'], 3)
+        self.assertFalse(ns['trusted'])
+        self.assertTrue(all(score['names_cost'] is None for score in ns['scores'].values()))
+
+    def test_mlflow_omits_missing_judge_metrics_and_keeps_valid_zero_scores(self):
+        replies = [json.dumps({'names_cost': value})
+                   for value in (False, False, True, False, False, True, False, False)]
+        replies[6] = '{}'
+        ns = run_lesson('09_multi_agent_evaluation', responses=replies)
+        recorded = []
+        fake_mlflow = SimpleNamespace(
+            set_tracking_uri=lambda uri: None, set_experiment=lambda name: None,
+            start_run=lambda **kwargs: contextlib.nullcontext(),
+            log_params=lambda params: None, log_metrics=lambda metrics: recorded.append(metrics),
+        )
+        lesson = json.loads((ROOT / 'lessons/09_multi_agent_evaluation.json').read_text())
+        logging_cell = next(cell['source'] for cell in lesson['cells']
+                            if cell['type'] == 'code' and 'import mlflow' in cell['source'])
+        with patch.dict(sys.modules, {'mlflow': fake_mlflow}), contextlib.redirect_stdout(io.StringIO()):
+            exec(logging_cell, ns)
+        self.assertEqual(recorded[0]['names_cost'], 0)
+        self.assertNotIn('names_cost', recorded[3])
+        self.assertEqual(recorded[3]['correct'], 2)
 
     def test_routing_estimate_includes_router_and_queued_reviews(self):
         replies = [json.dumps({'route': r, 'reason': 'test'}) for r in ('rule','review','review','review','review')]

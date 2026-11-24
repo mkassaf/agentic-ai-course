@@ -37,7 +37,7 @@
     },
     {
       "type": "markdown",
-      "source": "## Step 4 · Challenge unsupported claims\nCode first checks each proposal's source IDs, and only a proposal without a single valid ID is challenged. A claim that carries a valid ID is never questioned here — an ID check proves the source exists, not that it supports the claim.\n\nThe critic is the first architect who proposed a **different** option, since disagreement makes the sharper challenge; if everyone agrees on the option, the first other architect takes the role. The author then revises once. The prompts are written directly in the loop so the order stays visible."
+      "source": "## Step 4 · Challenge unsupported claims\nCode first checks each proposal's source IDs. It challenges a proposal when its citations are empty or any ID is unknown; only nonempty citations whose IDs are all known bypass the challenge. Checking IDs proves the sources exist, not that they support the claim.\n\nThe critic is the first architect who proposed a **different** option, since disagreement makes the sharper challenge; if everyone agrees on the option, the first other architect takes the role. The author then revises once. The prompts are written directly in the loop so the order stays visible."
     },
     {
       "type": "code",
