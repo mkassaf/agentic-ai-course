@@ -35,12 +35,12 @@ class NotebookSetupTests(unittest.TestCase):
         return ns['upgrades'], removed
 
     def test_old_installed_helper_is_upgraded_and_unloaded(self):
-        upgrades, removed = self.provisioning('0.4.0')
+        upgrades, removed = self.provisioning('0.5.0')
         self.assertEqual(upgrades, [True])
         self.assertTrue(removed)
 
     def test_current_installed_helper_is_reused(self):
-        upgrades, removed = self.provisioning('0.5.0')
+        upgrades, removed = self.provisioning('0.5.1')
         self.assertEqual(upgrades, [])
         self.assertFalse(removed)
 

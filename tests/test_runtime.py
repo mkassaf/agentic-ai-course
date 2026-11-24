@@ -17,6 +17,17 @@ def client(**overrides):
 
 
 class ClientTests(unittest.TestCase):
+    def test_budget_allows_100_requests_before_stopping(self):
+        model = client(max_calls=100)
+        payload = json.dumps({"choices": [{"message": {"content": "answer"}}]}).encode()
+        with patch("coursekit.runtime.urllib.request.build_opener") as opener:
+            opener.return_value.open.side_effect = lambda request, timeout: io.BytesIO(payload)
+            for _ in range(100):
+                self.assertEqual(model.ask("hello"), "answer")
+            with self.assertRaisesRegex(RuntimeError, "budget of 100"):
+                model.ask("one more")
+        self.assertEqual(opener.return_value.open.call_count, 100)
+
     def test_call_budget_counts_requests(self):
         model = client(max_calls=1)
         payload = {"choices": [{"message": {"content": "answer"}}]}

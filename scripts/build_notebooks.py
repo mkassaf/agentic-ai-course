@@ -107,11 +107,11 @@ def setup_for(slug, revision):
                    'settings = PROVIDERS[PROVIDER]\n'
                    'key = secret(settings["secret_name"])\n'
                    'plain = Client(model=settings["model"], base_url=settings["base_url"],\n'
-                   '               api_key=key, max_calls=12, extra_body=settings.get("extra_body"))\n'
+                   '               api_key=key, max_calls=100, extra_body=settings.get("extra_body"))\n'
                    'thinking = None\n'
                    'if PROVIDER == "deepseek":\n'
                    '    thinking = Client(model=settings["model"], base_url=settings["base_url"],\n'
-                   '                      api_key=key, max_calls=12, max_tokens=4096, timeout=120,\n'
+                   '                      api_key=key, max_calls=100, max_tokens=4096, timeout=120,\n'
                    '                      extra_body={"thinking": {"type": "enabled"}, "reasoning_effort": "low"})')
     elif slug == "06_multi_agent_debate":
         source += '\nfrom coursekit import make_ask'
@@ -121,7 +121,7 @@ def setup_for(slug, revision):
                    'settings = PROVIDERS[PROVIDER]\n'
                    'client = Client(model=settings["model"], family=settings["family"],\n'
                    '                base_url=settings["base_url"], api_key=secret(settings["secret_name"]),\n'
-                   '                max_calls=12, max_tokens=256, extra_body=settings.get("extra_body"))')
+                   '                max_calls=100, max_tokens=256, extra_body=settings.get("extra_body"))')
     elif slug not in NO_MODEL_LABS:
         provider_line = 'PROVIDER = "deepseek"  # or "gemini" or "freeinference"\n'
         token_budget = ', max_tokens=768' if slug == '15_framing_contract' else ''
@@ -139,22 +139,22 @@ def build(lesson, revision, diagrams, site_lab):
     if slug == "01_prompting_evaluation":
         setup_note += (' Save `DEEPSEEK_API_KEY` in Colab Secrets and keep `PROVIDER="deepseek"`. '
                        'Step 4 downloads a small local model; Step 5 uses DeepSeek thinking mode. '
-                       'Other providers work in Steps 1–3; Step 5 requires DeepSeek. Each client stops after 12 calls.')
+                       'Other providers work in Steps 1–3; Step 5 requires DeepSeek. Each client stops after 100 calls.')
     elif slug == "00_rules_and_llms":
         setup_note += (' Save `DEEPSEEK_API_KEY` in Colab Secrets and keep `PROVIDER="deepseek"`. '
                        'You can also select `"gemini"` or `"freeinference"` with the corresponding secret. '
-                       '`ask` stops after 12 calls; optional SDK and framework examples make separate calls.')
+                       '`ask` stops after 100 calls; optional SDK and framework examples make separate calls.')
     elif slug == "06_multi_agent_debate":
         setup_note += (' Save `FREEINFERENCE_API_KEY`, `DEEPSEEK_API_KEY`, and `GEMINI_API_KEY` in '
                        'Colab Secrets. Each architect uses its own provider and call budget.')
     elif slug == "02_rag_systems":
         setup_note += (' Choose `PROVIDER` and save its key in Colab Secrets. DeepSeek uses '
                        '`DEEPSEEK_API_KEY`; Gemini and FreeInference use their respective secrets. '
-                       '`client` stops after 12 calls; rerun setup to reset the count.')
+                       '`client` stops after 100 calls; rerun setup to reset the count.')
     elif slug not in NO_MODEL_LABS:
         setup_note += (' Choose `PROVIDER` (`"freeinference"`, `"gemini"`, or `"deepseek"`), and save '
                        'its key in Colab Secrets (`FREEINFERENCE_API_KEY`, `GEMINI_API_KEY`, or '
-                       '`DEEPSEEK_API_KEY`). `ask` stops after 12 calls; rerun setup to reset the count.')
+                       '`DEEPSEEK_API_KEY`). `ask` stops after 100 calls; rerun setup to reset the count.')
     elif slug == '17_weighted_decision_jev':
         setup_note += ' Steps 4–5 use TypeSafe and require `TYPESAFE_API_KEY` in Colab Secrets.'
     else:
