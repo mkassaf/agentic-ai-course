@@ -329,7 +329,7 @@ const labs = [
     "checks": "Validate tool names and arguments, test the simulated confirmation flag, and check the invariant.",
     "bridge": "Tools perform actions; the model cannot bypass the aggregate root to edit totals.",
     "steps": 5,
-    "warmups": 1,
+    "warmups": 2,
     "patterns": [
       "One-Step Tool Agent"
     ],

@@ -193,11 +193,17 @@ def build(lesson, revision, diagrams, site_lab):
         cells.append(source_cell("markdown", f"## Warm-up · {warmup['title']}\n\n{warmup['explanation']}"))
         exercise = source_cell("code", warmup["code"])
         exercise.metadata["tags"] = ["warmup"]
+        warmup_cells = [exercise]
+        for extra in warmup.get("extra_steps", []):
+            warmup_cells.append(source_cell("markdown", extra["explanation"]))
+            extra_exercise = source_cell("code", extra["code"])
+            extra_exercise.metadata["tags"] = ["warmup"]
+            warmup_cells.append(extra_exercise)
         headings = [match.groups() for cell in steps if cell["type"] == "markdown"
                     for match in [re.match(r"## Step (\d+) · ([^\n]+)", cell["source"])] if match]
         roadmap = "## Main exercise at a glance\n\n" + "\n".join(
             f"{number}. {title}" for number, title in headings)
-        cells.extend([exercise, source_cell("markdown", f"**Next:** {warmup['bridge']}"),
+        cells.extend([*warmup_cells, source_cell("markdown", f"**Next:** {warmup['bridge']}"),
                       source_cell("markdown", overview["source"] + picture),
                       source_cell("markdown", review_note(lesson)),
                       source_cell("markdown", context), *patterns, source_cell("markdown", roadmap)])

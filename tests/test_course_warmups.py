@@ -4,6 +4,7 @@ import io
 import json
 from pathlib import Path
 import unittest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -18,7 +19,7 @@ class WarmupTests(unittest.TestCase):
                 warmup = json.loads(path.read_text())['warmup']
                 prompts = []
                 responses = {
-                    '04': iter(['get_weather', 'A raincoat.']),
+                    '04': iter(['I cannot check live data.', 'get_weather', 'It is 18°C.']),
                     '05': iter(['LOOKUP', 'FINISH', 'Visit a museum.']),
                     '06': iter(['Go for a walk.', 'It is raining.']),
                 }
@@ -33,14 +34,18 @@ class WarmupTests(unittest.TestCase):
 
                 namespace = {'ask': ask, 'plain': Client(), 'client': Client(),
                              'make_ask': lambda **kwargs: ask}
-                with contextlib.redirect_stdout(io.StringIO()):
+                weather_response = io.BytesIO(b'{"current":{"temperature_2m":18,"weather_code":3}}')
+                with contextlib.redirect_stdout(io.StringIO()), patch('urllib.request.urlopen', return_value=weather_response):
                     exec(warmup['code'], namespace)
+                    for step in warmup.get('extra_steps', []):
+                        exec(step['code'], namespace)
                 if number == '01':
                     self.assertIn('system', prompts[1][1])
                 if number == '02':
                     self.assertIn('museum opens at 10:00', prompts[0][0])
                 if number == '04':
-                    self.assertIn('rainy', prompts[1][0])
+                    self.assertIn('without', warmup['explanation'])
+                    self.assertIn("'temperature_2m': 18", prompts[2][0])
                 if number == '05':
                     self.assertIn('rainy', prompts[1][0])
                 if number == '06':
