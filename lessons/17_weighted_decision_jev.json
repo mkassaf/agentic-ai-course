@@ -9,7 +9,7 @@
     },
     {
       "type": "markdown",
-      "source": "## Step 1 · Compare a task queue and event log\n\nA plain average weights every criterion equally. A task queue distributes work among competing workers; an event log can retain events for independent subscribers. The scores are teaching fixtures. The record key keeps one order's events together under a stable partition mapping; eventId identifies the fact for deduplication. Neither is an architecture score."
+      "source": "## Step 1 · Compare a task queue and event log\n\nA plain average weights every criterion equally. A task queue distributes work among competing workers; an event log can retain events for independent subscribers. The scores are teaching fixtures.\n\nThe cell ends with a semantics side-note, not a scoring input: the record key keeps one order's events together under a stable partition mapping, while eventId identifies a fact for deduplication. Neither is an architecture score."
     },
     {
       "type": "code",
@@ -33,7 +33,7 @@
     },
     {
       "type": "markdown",
-      "source": "## Step 4 · Give the scoring model the evidence\n\nAll eight judgements use the same ordered rubric. The state supplies the queue and event-log descriptions and what each criterion means. A score remains a judgement, not a benchmark result. This step needs a separate `TYPESAFE_API_KEY` in Colab Secrets; a FreeInference key does not work with TypeSafe."
+      "source": "## Step 4 · Prepare the evidence the scoring model will judge\n\nThis cell only builds the `state`; the scoring request itself happens in Step 5. All eight judgements use the same ordered rubric. The state supplies the queue and event-log descriptions and what each criterion means. A score remains a judgement, not a benchmark result. This step needs a separate `TYPESAFE_API_KEY` in Colab Secrets; a FreeInference key does not work with TypeSafe."
     },
     {
       "type": "code",
@@ -41,7 +41,7 @@
     },
     {
       "type": "markdown",
-      "source": "## Step 5 · Score once, reweight in code\n\nOne request asks independent option–criterion questions together. The cell reads a key, makes this request, and combines the returned scores with the Python matrix. Typed output guarantees a shape, not the correctness of an architecture recommendation."
+      "source": "## Step 5 · Score once, reweight in code\n\nOne request asks independent option–criterion questions together. The cell reads a key, makes this request, and combines the returned scores with the Python matrix from Step 3 (the replay and fan-out weights). Typed output guarantees a shape, not the correctness of an architecture recommendation."
     },
     {
       "type": "code",

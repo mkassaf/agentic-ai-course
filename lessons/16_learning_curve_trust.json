@@ -29,15 +29,15 @@
     },
     {
       "type": "markdown",
-      "source": "## Step 3 · Calculate weights from one feedback case\nCount each reviewer's correct answers on the feedback seen so far. Smoothing starts trust at 0.5 with no evidence. This example turns that agreement into a nonnegative weight. The formula is a teaching choice, not a universal trust score."
+      "source": "## Step 3 · Calculate weights from the first two feedback cases\nCount each reviewer's correct answers on the feedback seen so far. Smoothing starts trust at 0.5 with no evidence, and the formula turns that agreement into a nonnegative weight. Two cases are enough to see the point: the always-retry Optimist keeps the highest weight, while the Criticality reviewer and Contract's deliberate slip each drop to zero. The formula is a teaching choice, not a universal trust score."
     },
     {
       "type": "code",
-      "source": "seen = feedback[:1]\nweights = {}\nfor reviewer, given in answers.items():\n    correct = 0\n    for case in seen:\n        if given[case] == expert[case]:\n            correct += 1\n    trust = (correct + 1) / (len(seen) + 2)\n    weights[reviewer] = max(0.0, 2 * trust - 1)\n    print(reviewer, \"feedback correct:\", correct, \"weight:\", round(weights[reviewer], 2))"
+      "source": "seen = feedback[:2]\nweights = {}\nfor reviewer, given in answers.items():\n    correct = 0\n    for case in seen:\n        if given[case] == expert[case]:\n            correct += 1\n    trust = (correct + 1) / (len(seen) + 2)\n    weights[reviewer] = max(0.0, 2 * trust - 1)\n    print(reviewer, \"feedback correct:\", correct, \"weight:\", round(weights[reviewer], 2))"
     },
     {
       "type": "markdown",
-      "source": "## Step 4 · Measure after each feedback round\nFor each round, calculate the weights from feedback only. Then use those weights to vote on the held-out cases. A tied vote is escalated. Print every result, even if it stays flat or gets worse."
+      "source": "## Step 4 · Measure after each feedback round\nFor each round, calculate the weights from feedback only. Then use those weights to vote on the held-out cases. A tied vote is escalated. Print every result, even if it stays flat or gets worse. Round 0 keeps one equal vote per reviewer: at zero evidence the smoothing formula would leave every weight at 0 and escalate every case, so the curve starts from an unweighted majority."
     },
     {
       "type": "code",
