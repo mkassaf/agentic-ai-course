@@ -25,15 +25,15 @@
     },
     {
       "type": "code",
-      "source": "read_skill_text = \"\"\"---\nname: read-pattern-review\ndescription: Choose API composition for ID lookups or CQRS for searchable cross-service views.\n---\nUse owner APIs or published events, never read another service's private tables.\"\"\"\nboundary_skill = \"\"\"---\nname: boundary-review\ndescription: Review ShopEasy boundaries using business language and data ownership.\n---\nPrefer business capabilities, cohesive models, private data, and independent changes.\"\"\"\nskills = {}\nfor text in [adr_skill, read_skill_text, boundary_skill]:\n    fields, body = read_skill(text)\n    skills[fields[\"name\"]] = {\"description\": fields[\"description\"], \"body\": body}\ncatalog_lines = []\nfor name, skill in skills.items():\n    catalog_lines.append(f\"- {name}: {skill['description']}\")\ncatalog = \"\\n\".join(catalog_lines)\nprint(catalog)"
+      "source": "read_pattern_skill = \"\"\"---\nname: read-pattern-review\ndescription: Choose API composition for ID lookups or CQRS for searchable cross-service views.\n---\nUse owner APIs or published events, never read another service's private tables.\"\"\"\nboundary_skill = \"\"\"---\nname: boundary-review\ndescription: Review ShopEasy boundaries using business language and data ownership.\n---\nPrefer business capabilities, cohesive models, private data, and independent changes.\"\"\"\nskills = {}\nfor text in [adr_skill, read_pattern_skill, boundary_skill]:\n    fields, body = read_skill(text)\n    skills[fields[\"name\"]] = {\"description\": fields[\"description\"], \"body\": body}\ncatalog_lines = []\nfor name, skill in skills.items():\n    catalog_lines.append(f\"- {name}: {skill['description']}\")\ncatalog = \"\\n\".join(catalog_lines)\nprint(catalog)"
     },
     {
       "type": "markdown",
-      "source": "## Step 3 · Select before loading\n\nThe task asks about a failed checkout, so `saga-adr` is the relevant procedure. Our code accepts only a known skill name before revealing its instructions. The model selects a skill name."
+      "source": "## Step 3 · Select before loading\n\nThe model sees the catalog and picks a skill name. Our code accepts only a known name before revealing any instructions: a reply that names no listed skill is asked once more, and a second miss stops the step with a visible message rather than loading the wrong procedure. The task here is a failed checkout, so `saga-adr` is the relevant skill."
     },
     {
       "type": "code",
-      "source": "task = \"ShopEasy created an order, verified the customer, reserved stock, then payment failed. Review compensation.\"\nprompt = f\"Available skills:\\n{catalog}\\nTask: {task}\\nReply with the one skill name only.\"\nchoice = ask(prompt).strip()\nif choice not in skills:\n    raise ValueError(f\"Unknown skill {choice!r}\")\nprint(\"Chosen:\", choice)\nprint(\"Loaded instructions:\\n\" + skills[choice][\"body\"])"
+      "source": "task = \"ShopEasy created an order, verified the customer, reserved stock, then payment failed. Review compensation.\"\nprompt = f\"Available skills:\\n{catalog}\\nTask: {task}\\nReply with the one skill name only.\"\nchoice = ask(prompt).strip()\nif choice not in skills:\n    print(\"Not a known skill name:\", choice)\n    choice = ask(f\"{prompt}\\nYour last reply named no listed skill. Reply with the one skill name only.\").strip()\n    if choice not in skills:\n        raise ValueError(f\"Still no known skill name ({choice!r}); rerun this cell to try again.\")\nprint(\"Chosen:\", choice)\nprint(\"Loaded instructions:\\n\" + skills[choice][\"body\"])"
     },
     {
       "type": "markdown",
