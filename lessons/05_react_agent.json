@@ -76,11 +76,11 @@
     },
     {
       "type": "markdown",
-      "source": "### 3 · Run the crew and check the result\n\nCrewAI displays its actions and tool observations. After it finishes, ordinary Python checks that the target was read and compares the answer with the exercise policy. These checks happen **after** the crew runs; they reject an unsupported answer rather than preventing the agent from attempting one. Rerun this cell to start a fresh observation record."
+      "source": "### 3 · Run the crew and check the result\n\nCrewAI displays its actions and tool observations. After it finishes, ordinary Python checks that the target was read and compares the answer with the exercise policy. These checks happen **after** the crew runs; they reject an unsupported answer rather than preventing the agent from attempting one. Rerun this cell to start a fresh observation record.\n\nColab runs an event loop, so `await crew.kickoff_async()` starts the crew without blocking it. Run this cell in Colab or another notebook that supports top-level `await`."
     },
     {
       "type": "code",
-      "source": "observed_services.clear()\nresult = crew.kickoff()\nanswer = result.raw.strip().lower().rstrip(\".\")\nprint(\"CrewAI recommendation:\", answer)\nprint(\"Services read:\", observed_services)\n\nif target not in observed_services:\n    raise ValueError(\"The agent did not read the target metrics; do not accept its answer.\")\nfacts = METRICS[target]\nif facts[\"failure_rate\"] >= 0.5:\n    expected = \"circuit breaker\"\nelif facts[\"idempotent\"] and facts[\"transient_failure\"]:\n    expected = \"bounded retry\"\nelse:\n    expected = \"no automatic retry\"\nprint(\"Exercise expects:\", expected)\nassert answer == expected, \"The recommendation does not match the exercise policy.\"",
+      "source": "observed_services.clear()\nresult = await crew.kickoff_async()\nanswer = result.raw.strip().lower().rstrip(\".\")\nprint(\"CrewAI recommendation:\", answer)\nprint(\"Services read:\", observed_services)\n\nif target not in observed_services:\n    raise ValueError(\"The agent did not read the target metrics; do not accept its answer.\")\nfacts = METRICS[target]\nif facts[\"failure_rate\"] >= 0.5:\n    expected = \"circuit breaker\"\nelif facts[\"idempotent\"] and facts[\"transient_failure\"]:\n    expected = \"bounded retry\"\nelse:\n    expected = \"no automatic retry\"\nprint(\"Exercise expects:\", expected)\nassert answer == expected, \"The recommendation does not match the exercise policy.\"",
       "optional": true
     },
     {
