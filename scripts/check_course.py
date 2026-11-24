@@ -37,6 +37,10 @@ def main():
         issues.append("Website lessons do not match the configured notebook sequence")
     site_labs = {lab["file"]: lab for lab in json.loads(lesson_data[1])} if lesson_data else {}
     if site_labs:
+        for lab in site_labs.values():
+            picture = lab.get("picture")
+            if picture and not (ROOT / picture.get("src", "")).is_file():
+                issues.append(f"{lab['file']}: website illustration is missing")
         expected_tracks = {"lecture-1": 3, "lecture-2": 3, "lecture-3": 3, "self-study": 9}
         for track, count in expected_tracks.items():
             if sum(lab.get("track") == track for lab in site_labs.values()) != count:

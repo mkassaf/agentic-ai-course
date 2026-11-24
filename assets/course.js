@@ -139,7 +139,12 @@ const labs = [
         "Microservices & Their Patterns · slides 33, 35"
       ]
     },
-    "optional_examples": 2
+    "optional_examples": 2,
+    "picture": {
+      "src": "assets/images/sampling-settings.svg",
+      "alt": "A worked sampling example: temperature changes four probabilities, top-k removes D, top-p removes C, then A and B are sampled at 62.25% and 37.75%.",
+      "caption": "One illustrative next-token decision. The example uses temperature 2, top-k 3, and top-p 0.80."
+    }
   },
   {
     "id": "02",
@@ -1423,6 +1428,7 @@ labs.forEach((lab, i) => {
     + `<section class="lab-context" aria-label="The idea in context"><div><h4>The idea in context</h4>${lab.background.map(text => `<p>${esc(text)}</p>`).join('')}</div>`
     + `<aside class="key-terms"><h4>Key terms</h4><dl>${lab.terms.map(([term, meaning]) => `<dt>${esc(term)}</dt><dd>${esc(meaning)}</dd>`).join('')}</dl></aside></section>`
     + `<h4 class="diagram-heading">How the lab works</h4><figure class="lab-diagram" data-diagram="${lab.id}"></figure>`
+    + `${lab.picture ? `<figure class="sampling-figure"><a href="${esc(lab.picture.src)}"><img src="${esc(lab.picture.src)}" alt="${esc(lab.picture.alt)}"></a><figcaption>${esc(lab.picture.caption)} Select the image to enlarge it.</figcaption></figure>` : ""}`
     + `<div class="lesson-grid"><div><h4>What you will learn</h4><ul>${lab.objectives.map(t => `<li>${esc(t)}</li>`).join('')}</ul></div><div><h4>Walk through an example</h4><p>${esc(lab.example)}</p></div><div><h4>Make it your own</h4><p>${esc(lab.exercise)}</p></div><div><h4>Expected output &amp; check</h4><p>${esc(lab.checks)}</p></div></div>`
     + `<p class="lesson-takeaway"><strong>Takeaway.</strong> ${esc(lab.bridge)}</p>`
     + `<div class="lab-actions"><label class="completion"><input type="checkbox" data-lab="${lab.id}" ${completed.includes(lab.id) ? 'checked' : ''}> I explored lab ${number(i)}</label>${pager}</div>`

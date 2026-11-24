@@ -62,6 +62,7 @@ python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements-dev.txt
 node scripts/export_diagrams.js
+python scripts/build_sampling_diagram.py
 python scripts/build_notebooks.py
 python -m unittest discover -s tests -v
 python scripts/check_course.py
@@ -73,6 +74,6 @@ Automated checks compile all notebooks and execute the model-free protocol and t
 
 ## Maintain the course
 
-Edit `lessons/*.json`, including each lesson's `review` metadata, and keep the site summaries in `assets/course.js` aligned. `scripts/build_notebooks.py` creates clean notebooks and the slide map. Source helpers are installed from the published revision in `coursekit-ref.txt`. Never put credentials in lesson sources, outputs, or Git.
+Edit `lessons/*.json`, including each lesson's `review` metadata, and keep the site summaries in `assets/course.js` aligned. `scripts/build_notebooks.py` creates clean notebooks and the slide map; `scripts/build_sampling_diagram.py` regenerates the sampling illustration. Source helpers are installed from the published revision in `coursekit-ref.txt`. Never put credentials in lesson sources, outputs, or Git.
 
 For a fork, use `python scripts/configure_repo.py OWNER/REPO --ref main`, then enable GitHub Actions as the Pages source. The workflow verifies and publishes the static site.
