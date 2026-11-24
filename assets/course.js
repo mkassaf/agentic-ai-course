@@ -561,6 +561,7 @@ const labs = [
       "Shared Memory",
       "Registry & Adapter"
     ],
+    "optional_examples": 1,
     "background": [
       "Observability makes a workflow inspectable during and after a run. Each proposal is logged, and a registry lists reviewer settings.",
       "Agent-run traces and microservice request traces share correlation principles but are different systems."
@@ -577,6 +578,10 @@ const labs = [
       [
         "Log",
         "A time-stamped record of what happened; structured logs, such as JSON lines, can be searched and counted."
+      ],
+      [
+        "Trace ID",
+        "A label shared by one run's messages so they can be found and compared together; a message ID identifies a single message."
       ],
       [
         "Registry",

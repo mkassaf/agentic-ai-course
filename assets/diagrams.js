@@ -514,7 +514,7 @@ const DIAGRAMS = {
         {
           "k": "data",
           "t": "Live log",
-          "s": "time · level · line"
+          "s": "same JSON lines"
         },
         {
           "k": "data",
@@ -535,7 +535,7 @@ const DIAGRAMS = {
       {
         "k": "data",
         "t": "Evidence trail",
-        "s": "trace() from council.log"
+        "s": "ids from council.log"
       }
     ]
   },

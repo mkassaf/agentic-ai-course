@@ -29,15 +29,15 @@ class Lab07LoggingTests(unittest.TestCase):
                     for source in cells:
                         exec(source, ns)
                     self.assertEqual(ns['decision']['kind'], 'escalation')
-                    exec(cells[2], ns)
                     exec(cells[3], ns)
                     exec(cells[4], ns)
+                    exec(cells[5], ns)
                 self.assertEqual(ns['decision']['option'], 'CQRS')
                 self.assertEqual(len(ns['decision']['cites']), 3)
                 ns['CASE']['cross_service_search'] = False
                 ns['ask'] = lambda prompt: '{"option":"API composition","claim":"Small lookup.","cites":["R2"]}'
                 with contextlib.redirect_stdout(io.StringIO()):
-                    exec(cells[2], ns)
+                    exec(cells[3], ns)
                 rulebook = next(message for message in ns['accepted'] if message['sender'] == 'Rulebook')
                 self.assertEqual(rulebook['option'], 'API composition')
                 with open('council.log') as log:

@@ -5,7 +5,7 @@
   "cells": [
     {
       "type": "markdown",
-      "source": "## Follow a council's decisions\nA final decision is easier to review when we can see who proposed it and which sources they used.\n\nIn this lab, the council writes structured messages to a live log and a JSON log file. Each message has an ID and a shared trace ID. A simple registry stores each reviewer's settings. Later, add a rule-based reviewer and run the same steps again.\n\n**Optional LangSmith tracing:** Save `LANGSMITH_API_KEY` in Colab Secrets, then run the following before Step 1. Without a key, the local log still works.\n\n```python\nimport os\nfrom google.colab import userdata\nos.environ[\"LANGSMITH_API_KEY\"] = userdata.get(\"LANGSMITH_API_KEY\")\nos.environ[\"LANGSMITH_TRACING\"] = \"true\"\n```\n\nThe trace includes the case and model replies. Use classroom data, not confidential information."
+      "source": "## Follow a council's decisions\nA final decision is easier to review when we can see who proposed it and which sources they used.\n\n**So far:** Lab 06 debated this same support-search case with three architects and a vote. **New:** a smaller council as inspectable records — every message has an ID, every run shares a correlation ID, and reviewers live in a registry you can extend.\n\nThe council writes structured messages to a live log and a JSON log file. The registry is the `council` dictionary in Step 1; because the loop reads it, adding a rule-based reviewer takes one line, and the same steps run again unchanged.\n\nThe local log needs no extra key. An optional cell before Step 3 turns on LangSmith tracing, which records model calls separately from the lab's own IDs; use classroom data there, not confidential information."
     },
     {
       "type": "markdown",
@@ -13,7 +13,7 @@
     },
     {
       "type": "markdown",
-      "source": "## Step 1 · Prepare the case and reviewer settings\nEach reviewer has a name, a kind, and a stance. Both start as model reviewers. In Step 5, add a rule reviewer to the same dictionary; the loop in Step 3 reads either kind."
+      "source": "## Step 1 · Prepare the case and reviewer settings\nEach reviewer has a name, a kind, and a stance. Both start as model reviewers. This dictionary *is* the lab's registry: in Step 5 you add a rule reviewer to the same dictionary, and the loop in Step 3 reads either kind without changing. The cell also imports the modules the later steps need."
     },
     {
       "type": "code",
@@ -26,6 +26,15 @@
     {
       "type": "code",
       "source": "logger = logging.getLogger(\"council\")\nlogger.setLevel(logging.INFO)\nlive = logging.StreamHandler(sys.stdout)\nto_file = logging.FileHandler(\"council.log\", mode=\"w\")\nformatter = logging.Formatter(\"%(message)s\")\nlive.setFormatter(formatter)\nto_file.setFormatter(formatter)\nlogger.handlers = [live, to_file]\nlogger.propagate = False\nprint(\"Log ready: council.log\")"
+    },
+    {
+      "type": "markdown",
+      "source": "## Optional · Turn on LangSmith tracing\nTwo different things are called a trace in this lab. Every logged message carries a `trace_id` — a correlation label our own code chose, so one run's messages can be found together. A LangSmith trace is separate: the SDK's own record of the model calls, built while the code runs. Same correlation idea, two different systems.\n\nSave `LANGSMITH_API_KEY` in Colab Secrets and run this cell before Step 3 to record model calls as well as messages. Tracing sends the case and model replies to LangSmith: use classroom data, not confidential information. Without a key nothing breaks — the local log keeps working."
+    },
+    {
+      "type": "code",
+      "optional": true,
+      "source": "import os\ntry:\n    from google.colab import userdata\n    os.environ[\"LANGSMITH_API_KEY\"] = userdata.get(\"LANGSMITH_API_KEY\")\n    os.environ[\"LANGSMITH_TRACING\"] = \"true\"\n    print(\"LangSmith tracing is on for Steps 3–5.\")\nexcept Exception:\n    print(\"No LANGSMITH_API_KEY found; local logging only.\")"
     },
     {
       "type": "markdown",
@@ -45,7 +54,7 @@
     },
     {
       "type": "markdown",
-      "source": "## Step 5 · Follow the log and add a reviewer\nRead the saved lines, find the proposal IDs cited by the decision, and print their sources. Then add a rule-based reviewer. Rerun Steps 3–5 to see its proposal included; the collection and voting loops stay the same.\n\nThe log is local. An ID identifies a message; the shared trace ID connects messages from the exercise."
+      "source": "## Step 5 · Follow the log and add a reviewer\nRead the saved lines, find the proposal IDs cited by the decision, and print their sources. Then add a rule-based reviewer. Rerun Steps 3–5 to see its proposal included; the collection and voting loops stay the same.\n\nThe log is local. An ID identifies a message; the shared trace ID connects one run's messages. Rerun Steps 3–5 without touching Step 2 and the new lines append to the same `council.log`, so runs stay comparable in one file; rerun Step 2 only to start a fresh log."
     },
     {
       "type": "code",
