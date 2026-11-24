@@ -46,6 +46,46 @@
     {
       "type": "markdown",
       "source": "## What you should see\nThe model can list dependencies and read Inventory's simulated metrics before choosing a policy. An unknown name produces an error observation. Its actions can vary. A failed lookup or another service's metrics cannot unlock `finish`.\n\n## Try it\n1. Ask the agent to use `read_metrics` with `stock` before the loop. The error observation must not unlock `finish`.\n2. In Step 2, change `target` to `\"Payments\"`, then inspect the resulting actions. Rerun Steps 2–4.\n3. In Step 1, change Inventory's failure rate to 0.1. Rerun Step 1, then rerun Steps 2–4. Explain why both idempotency and a transient fault matter.\n4. Pick a timeout, breaker and fallback for an optional Recommendations dependency that is slow or unavailable. Which user-visible feature degrades?\n\n## Takeaway\nAn agent selects steps from observations, while code controls available actions, successful reads, budgets and final checks. Resilience patterns address different failure modes; indiscriminate retries can amplify an outage or duplicate a charge."
+    },
+    {
+      "type": "markdown",
+      "source": "## Optional · The same ReAct example with CrewAI\n\nIn Step 3, you wrote the action–observation loop. Now let **CrewAI** manage the loop using the same simulated metrics, target, and policy. We create one agent with one tool, give it a task, and inspect the result. This is a single-agent example; a crew can also contain multiple agents.\n\nRun Steps 1 and 2 first. Install CrewAI in a fresh Colab runtime if other packages conflict. This example makes separate live model calls and needs the selected provider’s Colab secret. It does not share the earlier helper’s 100-call limit; `max_iter` limits agent iterations, not the exact number of model calls. It sends requests sequentially and uses non-streaming."
+    },
+    {
+      "type": "code",
+      "source": "%pip install -q \"crewai==1.15.45\"",
+      "optional": true
+    },
+    {
+      "type": "markdown",
+      "source": "### 1 · Give the agent a metrics tool\n\nThe decorator turns the Python function into a CrewAI tool. Its description tells the agent how to use it. Successful lookups are recorded so we can verify the agent actually read the target. The data is simulated; no real service is queried."
+    },
+    {
+      "type": "code",
+      "source": "from crewai.tools import tool\nimport json\n\nobserved_services = []\n\n@tool(\"read_metrics\")\ndef read_metrics(service: str) -> str:\n    \"\"\"Read simulated metrics for the exact service name: Inventory or Payments.\"\"\"\n    record = METRICS.get(service)\n    if record is None:\n        return \"Unknown dependency. Use Inventory or Payments.\"\n    observed_services.append(service)\n    print(\"Observation:\", record)\n    return json.dumps(record)",
+      "optional": true
+    },
+    {
+      "type": "markdown",
+      "source": "### 2 · Create one agent and one task\n\nCrewAI uses the chosen provider’s OpenAI-compatible endpoint. The `openai/` prefix selects CrewAI’s compatible client; it does not change the provider or send the key to OpenAI. The agent can call only the supplied tool. A small iteration limit bounds its decision loop."
+    },
+    {
+      "type": "code",
+      "source": "from crewai import Agent, Crew, LLM, Task\nfrom coursekit import PROVIDERS, secret\n\nsettings = PROVIDERS[PROVIDER]\nllm = LLM(\n    model=\"openai/\" + settings[\"model\"], custom_openai=True,\n    base_url=settings[\"base_url\"], api_key=secret(settings[\"secret_name\"]),\n    stream=False, max_tokens=1024, extra_body=settings.get(\"extra_body\"),\n)\nagent = Agent(\n    role=\"Resilience reviewer\", goal=\"Recommend a safe resilience policy\",\n    backstory=\"You inspect a service before recommending a response.\",\n    llm=llm, tools=[read_metrics], max_iter=5,\n    allow_delegation=False, cache=False, verbose=True,\n)\ntask = Task(\n    description=f\"Read metrics for {target}. {POLICY} \"\n                \"Return only the policy label, without explanation.\",\n    expected_output=\"One label: circuit breaker, bounded retry, or no automatic retry.\",\n    agent=agent,\n)\ncrew = Crew(agents=[agent], tasks=[task], verbose=True)",
+      "optional": true
+    },
+    {
+      "type": "markdown",
+      "source": "### 3 · Run the crew and check the result\n\nCrewAI displays its actions and tool observations. After it finishes, ordinary Python checks that the target was read and compares the answer with the exercise policy. These checks happen **after** the crew runs; they reject an unsupported answer rather than preventing the agent from attempting one. Rerun this cell to start a fresh observation record."
+    },
+    {
+      "type": "code",
+      "source": "observed_services.clear()\nresult = crew.kickoff()\nanswer = result.raw.strip().lower().rstrip(\".\")\nprint(\"CrewAI recommendation:\", answer)\nprint(\"Services read:\", observed_services)\n\nif target not in observed_services:\n    raise ValueError(\"The agent did not read the target metrics; do not accept its answer.\")\nfacts = METRICS[target]\nif facts[\"failure_rate\"] >= 0.5:\n    expected = \"circuit breaker\"\nelif facts[\"idempotent\"] and facts[\"transient_failure\"]:\n    expected = \"bounded retry\"\nelse:\n    expected = \"no automatic retry\"\nprint(\"Exercise expects:\", expected)\nassert answer == expected, \"The recommendation does not match the exercise policy.\"",
+      "optional": true
+    },
+    {
+      "type": "markdown",
+      "source": "**Compare:** In Step 3, Python chose which function to run based on the model’s JSON. In this version, CrewAI manages the agent’s tool calls and observations. The model still chooses actions and can make mistakes, so inspect the trace and the checks. Change `target` in Step 2 to `\"Payments\"`, then rerun the CrewAI cells."
     }
   ],
   "review": {

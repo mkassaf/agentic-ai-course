@@ -395,12 +395,13 @@ const labs = [
     "file": "05_react_agent",
     "title": "ReAct agents: reason, act, observe",
     "subtitle": "ReAct for checkout resilience",
-    "topics": "agent foundations patterns react action observation loop chaining routing one-step tool agent in a react loop microservices DDD ShopEasy lecture revision Cascading failure Circuit breaker vs retry Idempotency and graceful degradation",
+    "topics": "agent foundations patterns react action observation loop chaining routing one-step tool agent in a react loop microservices DDD ShopEasy lecture revision Cascading failure Circuit breaker vs retry Idempotency and graceful degradation crewai framework",
     "idea": "Observe a dependency before selecting a resilience policy.",
     "objectives": [
       "Inspect a service before choosing a resilience response, using a bounded action loop.",
       "Try finishing before a successful read, or inspect a non-idempotent payment call.",
-      "Inspect action, observation, accumulated history, and the stopping guard."
+      "Inspect action, observation, accumulated history, and the stopping guard.",
+      "Compare the manual ReAct loop with a CrewAI agent using the same metrics."
     ],
     "example": "Read simulated Inventory latency and idempotency facts before recommending a circuit breaker or a safe retry.",
     "exercise": "Try finishing before a successful read, or inspect a non-idempotent payment call.",
@@ -459,7 +460,8 @@ const labs = [
       "readings": [
         "Microservices & Their Patterns · slides 38, 39, 40, 41"
       ]
-    }
+    },
+    "optional_examples": 4
   },
   {
     "id": "06",
