@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 920" role="img" aria-labelledby="title desc">
+  <title id="title">Temporary memory: send the previous answer again</title>
+  <desc id="desc">Without context, a request asks for a drawback but does not say which choice. With context, the first request asks for a mobile API pattern, an example answer is saved in first_answer, and a second independent request includes that answer and asks for a drawback. The model sees only the context sent with each request.</desc>
+  <style>
+    text { font-family: "Helvetica Neue", Arial, sans-serif; fill: #1a1a1a; }
+    .title { font-size: 38px; font-weight: 700; }
+    .subtitle { font-size: 22px; fill: #5c5c5c; }
+    .section { font-size: 25px; font-weight: 700; }
+    .label { font-size: 19px; font-weight: 700; }
+    .body { font-size: 21px; }
+    .small { font-size: 18px; fill: #5c5c5c; }
+    .code { font-family: "SF Mono", Consolas, monospace; font-size: 20px; }
+    .card { fill: #fff; stroke: #d4dbe2; stroke-width: 2; }
+    .line { fill: none; stroke: #798086; stroke-width: 3; marker-end: url(#arrow); }
+  </style>
+  <defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 Z" fill="#798086"/></marker></defs>
+  <rect width="1200" height="920" rx="26" fill="#f3f5f7"/>
+  <text x="48" y="66" class="title">Temporary memory across LLM calls</text>
+  <text x="48" y="104" class="subtitle">Each request is independent: the model only sees what you send with it.</text>
+
+  <circle cx="66" cy="161" r="17" fill="#14a800"/><text x="59" y="168" class="label">1</text>
+  <text x="98" y="169" class="section">Without context</text>
+  <rect x="48" y="194" width="680" height="108" rx="16" class="card"/>
+  <text x="72" y="228" class="label">REQUEST</text>
+  <text x="72" y="268" class="body">“What is one drawback of this choice?”</text>
+  <path d="M747 248 H802" class="line"/>
+  <rect x="824" y="194" width="328" height="108" rx="16" class="card"/>
+  <text x="848" y="228" class="label">THE MODEL SEES</text>
+  <text x="848" y="267" class="body">Which choice?</text>
+
+  <circle cx="66" cy="359" r="17" fill="#14a800"/><text x="59" y="366" class="label">2</text>
+  <text x="98" y="367" class="section">Save the first answer</text>
+  <rect x="48" y="392" width="485" height="134" rx="16" class="card"/>
+  <text x="72" y="427" class="label">FIRST REQUEST</text>
+  <text x="72" y="467" class="body">“Suggest a pattern for a</text>
+  <text x="72" y="498" class="body">tailored mobile API.”</text>
+  <path d="M550 459 H606" class="line"/>
+  <rect x="628" y="392" width="524" height="134" rx="16" class="card"/>
+  <text x="652" y="427" class="label">MODEL ANSWER → PYTHON VARIABLE</text>
+  <text x="652" y="468" class="code">first_answer = “Consider a BFF.”</text>
+  <text x="652" y="498" class="small">Illustrative response; yours may differ.</text>
+  <path d="M891 542 V581" class="line"/>
+
+  <circle cx="66" cy="613" r="17" fill="#14a800"/><text x="59" y="620" class="label">3</text>
+  <text x="98" y="621" class="section">Send that answer in the follow-up</text>
+  <rect x="48" y="646" width="680" height="148" rx="16" class="card"/>
+  <text x="72" y="681" class="label">SECOND REQUEST</text>
+  <text x="72" y="720" class="body">“Earlier answer: Consider a BFF.</text>
+  <text x="72" y="753" class="body">What is one drawback of this choice?”</text>
+  <path d="M747 720 H802" class="line"/>
+  <rect x="824" y="646" width="328" height="148" rx="16" class="card"/>
+  <text x="848" y="681" class="label">THE MODEL SEES</text>
+  <text x="848" y="720" class="body">The earlier answer</text>
+  <text x="848" y="753" class="body">and the new question</text>
+
+  <text x="48" y="849" class="body">The variable is temporary; include the text again whenever it is needed.</text>
+  <text x="48" y="881" class="small">Here the earlier answer is copied into a user message, not a full chat history.</text>
+</svg>

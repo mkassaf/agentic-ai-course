@@ -39,7 +39,7 @@
     },
     {
       "type": "markdown",
-      "source": "## Step 2 · Temporary memory: pass the previous answer\nFirst ask a follow-up without context. Then save one response in `first_answer` and include it in the next user prompt. The second call can use that text as context. This is temporary memory held in a Python variable: each API request is independent, and the model does not remember the previous request unless we send the context again. It is not persistent memory.\n\nBecause this version copies the response into a new **user message**, it is not a complete role-labelled chat history. A production conversation may instead resend selected user and assistant messages as separate roles."
+      "source": "## Step 2 · Temporary memory: pass the previous answer\nFirst ask a follow-up without context. Then save one response in `first_answer` and include it in the next user prompt. The second call can use that text as context. This is temporary memory held in a Python variable: each API request is independent, and the model does not remember the previous request unless we send the context again. It is not persistent memory.\n\n![Temporary memory: without context, a follow-up does not identify the choice. With context, save the first model answer in first_answer and include it in the second request along with the follow-up question.](https://mkassaf.github.io/agentic-ai-course/assets/images/temporary-memory.svg)\n\nBecause this version copies the response into a new **user message**, it is not a complete role-labelled chat history. A production conversation may instead resend selected user and assistant messages as separate roles."
     },
     {
       "type": "code",
