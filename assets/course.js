@@ -85,8 +85,8 @@ const labs = [
       "Compare an older model with guided prompts and DeepSeek thinking modes."
     ],
     "example": "Ask about API gateways and mobile BFFs, then test two small reasoning questions.",
-    "exercise": "Change temperature or top-k, omit previous context, and inspect a wrong JSON decision.",
-    "checks": "Check the reply format and decision; verify reasoning answers with Python.",
+    "exercise": "Change temperature or top-k, omit previous context, and call check() with a wrong or malformed answer.",
+    "checks": "Check the reply format and decision across three phrasings; verify reasoning answers with Python.",
     "bridge": "Thinking mode can help but is not guaranteed to be correct; compare actual results.",
     "track": "lecture-1",
     "steps": 5,
@@ -162,7 +162,7 @@ const labs = [
     "objectives": [
       "Organize policies into categories and compare full-context prompts with RAG.",
       "Inspect embeddings and ranked policies for several questions, including an unrelated one.",
-      "Compare prompts, input-token usage, and citation validity; inspect factual support."
+      "Compare prompts, answers, input-token usage, and citation validity; inspect factual support."
     ],
     "example": "Compare full-library and retrieved-policy answers about private service data and searchable order history.",
     "exercise": "Try more questions, change the number of retrieved policies, and inspect irrelevant matches.",

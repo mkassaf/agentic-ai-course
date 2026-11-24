@@ -56,7 +56,11 @@ class PromptingLessonTests(unittest.TestCase):
             ('{"decision":"BFF","reason": "  "}', 'Valid format: False'),
         ]:
             with self.subTest(reply=reply):
-                self.assertIn(expected, run(2, {'plain': ScriptedClient([reply])}))
+                client = ScriptedClient([reply] * 3)
+                output = run(2, {'plain': client})
+                self.assertIn(expected, output)
+                self.assertIn("Small evaluation:", output)
+                self.assertEqual(len(client.calls), 3)
 
     def test_thinking_comparison_does_not_depend_on_local_model_step(self):
         plain = ScriptedClient(['3', '9.9'])
