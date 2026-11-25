@@ -4,26 +4,28 @@ const labs = [
     "id": "00",
     "file": "00_rules_and_llms",
     "title": "From rules to LLM calls",
-    "subtitle": "Microservices quiz: rules versus LLM answers",
-    "topics": "rules llm prompting microservices retry idempotency bulkhead api gateway bff sdk openai langchain framework deepseek harness",
-    "idea": "Compare explicit rules and an LLM on the same microservices questions.",
+    "subtitle": "Rules versus LLMs, then prompting techniques",
+    "topics": "rules llm prompting microservices retry idempotency bulkhead api gateway bff sdk openai langchain framework deepseek harness zero-shot no-shot one-shot single-shot few-shot persona role prompting",
+    "idea": "Compare rules with an LLM, then vary worked examples and persona instructions on one shared question.",
     "objectives": [
       "Apply simple rules for retries, bulkheads, gateways, and BFFs.",
       "Make one LLM call, then compare SDK, LangChain, and optional DeepSeek Harness examples.",
+      "Compare zero-shot, one-shot, and few-shot prompts, then a neutral prompt and an architect persona.",
       "Explain why agreement is useful to inspect but does not prove a design is correct."
     ],
     "example": "ShopEasy faces a slow dependency; ask the same question with a helper, SDK, LangChain, or an optional agent harness.",
-    "exercise": "Change a failure from transient to permanent, and explain when a retry is safe.",
-    "checks": "Compare the answer letters and examine any disagreement.",
+    "exercise": "Change transient failure facts, then vary only the example count or persona in the prompting comparison.",
+    "checks": "Compare quiz answer letters; hold the new question fixed while inspecting the prompting variants.",
     "bridge": "A timed-out payment might already have succeeded; server-supported idempotency makes a retry safer.",
     "track": "lecture-1",
-    "steps": 4,
+    "steps": 5,
     "warmups": 1,
     "optional_examples": 3,
     "patterns": [],
     "background": [
       "A Python rule checks explicit facts; an LLM reads a natural-language question and returns a response. Both answers need to be reviewed in context.",
-      "Retries need a transient failure, a safe operation, a limit, and backoff. Bulkheads isolate resources; gateways and BFFs serve different edge needs."
+      "Retries need a transient failure, a safe operation, a limit, and backoff. Bulkheads isolate resources; gateways and BFFs serve different edge needs.",
+      "Zero-shot, one-shot, and few-shot prompts include zero, one, or several worked examples. Persona prompting adds a role or perspective; it is a separate choice from example count."
     ],
     "terms": [
       [
@@ -45,6 +47,22 @@ const labs = [
       [
         "LLM prompt",
         "The instructions, facts, and question sent to a language model."
+      ],
+      [
+        "Zero-shot",
+        "A prompt with no worked input/output examples."
+      ],
+      [
+        "One-shot",
+        "A prompt with one worked input/output example; also called single-shot."
+      ],
+      [
+        "Few-shot",
+        "A prompt with several worked input/output examples."
+      ],
+      [
+        "Persona prompting",
+        "Asking the model to adopt a role or perspective; this does not guarantee expertise."
       ]
     ],
     "review": {
@@ -70,6 +88,11 @@ const labs = [
       "readings": [
         "Microservices & Their Patterns · slides 33, 35, 39"
       ]
+    },
+    "picture": {
+      "src": "assets/images/prompt-techniques.svg",
+      "alt": "Two controlled comparisons: zero, one, or three worked examples for the same question, then neutral and architect persona prompts with no examples.",
+      "caption": "Shots count worked examples. Persona adds a perspective. Hold the question fixed within each comparison and inspect the actual replies."
     }
   },
   {

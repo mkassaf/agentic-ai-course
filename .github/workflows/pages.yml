@@ -25,6 +25,7 @@ jobs:
       - run: python -m pip install -r requirements-dev.txt
       - run: node scripts/export_diagrams.js
       - run: python scripts/build_sampling_diagram.py
+      - run: python scripts/build_prompting_diagram.py
       - run: python scripts/build_notebooks.py
       - run: git diff --exit-code -- notebooks assets/diagrams assets/images
       - name: Configure published notebook links

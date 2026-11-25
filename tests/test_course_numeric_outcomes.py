@@ -24,7 +24,7 @@ def run_lesson(slug, *, cells=None, responses=()):
 
 class NumericOutcomeTests(unittest.TestCase):
     def test_quiz_compares_each_case_to_the_rule(self):
-        ns = run_lesson('00_rules_and_llms', responses=['A'] * 8)
+        ns = run_lesson('00_rules_and_llms', responses=['A'] * 13)
         self.assertEqual(len(ns['cases']), 7)
         self.assertEqual(ns['agreement'], 3)
 

@@ -317,6 +317,16 @@ const DIAGRAMS = {
         "k": "check",
         "t": "Compare",
         "s": "agreement count"
+      },
+      {
+        "k": "model",
+        "t": "Prompting variants",
+        "s": "0 / 1 / 3 demos · persona"
+      },
+      {
+        "k": "check",
+        "t": "Inspect replies",
+        "s": "same question per comparison"
       }
     ]
   },

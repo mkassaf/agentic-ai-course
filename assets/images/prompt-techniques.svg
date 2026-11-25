@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 1450" role="img" aria-labelledby="title desc">
+<title id="title">Prompting techniques: demonstrations and persona are separate choices</title>
+<desc id="desc">Two independent prompt comparisons use the same held-out architecture question: phone and browser clients need different tailored APIs. Panel A fixes the question, choices Bulkhead, API gateway, and BFF, and a label-only output format. Zero-shot has no worked question-answer examples, one-shot has one, and few-shot has three. These are alternatives, not steps; more examples do not guarantee a better answer. Panel B has no demonstrations in either prompt. Both ask for one trade-off in two short sentences; only the persona prompt adds: You are a cautious software architect. Consider operational cost. Shot count counts input-output demonstrations, not requests; zero-shot still contains instructions. A role instruction changes emphasis and does not guarantee expertise.</desc>
+<style>
+  text { font-family: "Helvetica Neue", Arial, sans-serif; fill: #000000; }
+  .title { font-size: 36px; font-weight: 700; }
+  .intro { font-size: 21px; fill: #5C5C5C; }
+  .section { font-size: 28px; font-weight: 700; }
+  .body { font-size: 20px; }
+  .label { font-size: 20px; font-weight: 700; }
+  .small { font-size: 18px; fill: #5C5C5C; }
+  .badge { font-size: 20px; font-weight: 700; }
+  .card { fill: #FFFFFF; stroke: #D4DBE2; stroke-width: 1.5; }
+  .soft { fill: #F3F5F7; }
+  .row { fill: #F9FAFB; }
+  .line { stroke: #E0E6EB; stroke-width: 1.5; }
+</style>
+<rect width="1100" height="1450" rx="24" fill="#F3F5F7"/>
+<text x="40" y="62" class="title"><tspan x="40" dy="0">Examples and roles change different parts of a prompt</tspan></text>
+<text x="40" y="126" class="intro"><tspan x="40" dy="0">Two comparisons. Change one ingredient at a time.</tspan></text>
+<rect x="40" y="158" width="1020" height="718" rx="16" class="card"/>
+<circle cx="79" cy="202" r="19" fill="#14A800"/>
+<text x="72" y="209" class="badge"><tspan x="72" dy="0">A</tspan></text>
+<text x="112" y="211" class="section"><tspan x="112" dy="0">Compare the number of worked examples</tspan></text>
+<text x="64" y="251" class="intro"><tspan x="64" dy="0">Keep the held-out question, choices, and output format identical.</tspan></text>
+<rect x="64" y="272" width="972" height="140" rx="12" class="soft"/>
+<text x="84" y="302" class="label"><tspan x="84" dy="0">Shared question</tspan></text>
+<text x="84" y="332" class="body"><tspan x="84" dy="0">ShopEasy has phone and browser clients that need different tailored APIs. Which pattern fits?</tspan></text>
+<text x="84" y="366" class="small"><tspan x="84" dy="0">Return exactly one label: Bulkhead, API gateway, or BFF.</tspan></text>
+<text x="84" y="453" class="label"><tspan x="84" dy="0">Prompt variant</tspan></text>
+<text x="297" y="453" class="label"><tspan x="297" dy="0">Worked Q → A examples included before that question</tspan></text>
+<rect x="64" y="472" width="972" height="76" rx="12" class="row"/>
+<text x="84" y="501" class="label"><tspan x="84" dy="0">Zero-shot</tspan></text>
+<text x="84" y="529" class="small"><tspan x="84" dy="0">0 examples</tspan></text>
+<path d="M275 486 V534" class="line"/>
+<text x="297" y="515" class="body"><tspan x="297" dy="0">No worked question–answer pairs.</tspan></text>
+<rect x="64" y="560" width="972" height="94" rx="12" class="row"/>
+<text x="84" y="589" class="label"><tspan x="84" dy="0">One-shot</tspan></text>
+<text x="84" y="617" class="small"><tspan x="84" dy="0">1 example</tspan></text>
+<path d="M275 574 V640" class="line"/>
+<text x="297" y="589" class="small"><tspan x="297" dy="0">Q: One external entry point applies routing and authentication. → A: API gateway</tspan></text>
+<rect x="64" y="666" width="972" height="142" rx="12" class="row"/>
+<text x="84" y="695" class="label"><tspan x="84" dy="0">Few-shot</tspan></text>
+<text x="84" y="723" class="small"><tspan x="84" dy="0">3 examples</tspan></text>
+<path d="M275 680 V794" class="line"/>
+<text x="297" y="695" class="small"><tspan x="297" dy="0">Q: One external entry point applies routing and authentication. → A: API gateway</tspan></text>
+<text x="297" y="722" class="small"><tspan x="297" dy="0">Q: Slow reporting exhausts a shared pool; isolate the resources. → A: Bulkhead</tspan></text>
+<text x="297" y="749" class="small"><tspan x="297" dy="0">Q: A tablet app needs an API tailored to its screens. → A: BFF</tspan></text>
+<text x="64" y="846" class="small"><tspan x="64" dy="0">These are alternatives, not stages. More examples do not guarantee a better answer.</tspan></text>
+<rect x="40" y="904" width="1020" height="462" rx="16" class="card"/>
+<circle cx="79" cy="948" r="19" fill="#14A800"/>
+<text x="72" y="955" class="badge"><tspan x="72" dy="0">B</tspan></text>
+<text x="112" y="957" class="section"><tspan x="112" dy="0">Compare a neutral prompt with a persona</tspan></text>
+<text x="64" y="999" class="body"><tspan x="64" dy="0">ShopEasy has phone and browser clients that need different tailored APIs. Which pattern fits?</tspan></text>
+<text x="64" y="1032" class="small"><tspan x="64" dy="0">Choices: Bulkhead · API gateway · BFF</tspan></text>
+<text x="64" y="1065" class="small"><tspan x="64" dy="0">Both prompts: choose a pattern and explain one trade-off in two short sentences.</tspan></text>
+<rect x="64" y="1090" width="474" height="156" rx="12" class="row"/>
+<text x="84" y="1125" class="label"><tspan x="84" dy="0">Neutral · no role</tspan></text>
+<text x="84" y="1163" class="body"><tspan x="84" dy="0">No persona instruction is added.</tspan></text>
+<rect x="562" y="1090" width="474" height="156" rx="12" class="row"/>
+<text x="582" y="1125" class="label"><tspan x="582" dy="0">Persona · one role</tspan></text>
+<text x="582" y="1163" class="body"><tspan x="582" dy="0">You are a cautious software architect.</tspan><tspan x="582" dy="27">Consider operational cost.</tspan></text>
+<text x="64" y="1284" class="label"><tspan x="64" dy="0">0 demonstrations in either prompt. Only the role instruction changes.</tspan></text>
+<text x="64" y="1323" class="small"><tspan x="64" dy="0">A persona can change emphasis; it does not guarantee expertise or correctness.</tspan></text>
+<rect x="40" y="1392" width="6" height="27" rx="3" fill="#14A800"/>
+<text x="60" y="1413" class="small"><tspan x="60" dy="0">Zero-shot still has instructions. Shots count worked input → output demonstrations, not requests.</tspan></text>
+</svg>

@@ -6,7 +6,7 @@ The course has two outcomes for every lab: learn an agentic AI mechanism and rev
 
 | Lecture | Labs | Agentic mechanisms | Architecture revision |
 | --- | --- | --- | --- |
-| 1 · Ask, check, retrieve | 00–02 | Rule versus LLM; optional SDK, LangChain and Harness examples; prompting, structured output, evaluation, RAG | Safe retries, bulkheads, gateways and BFFs; prompting with gateway/BFF choices; private service data, CQRS and API composition |
+| 1 · Ask, check, retrieve | 00–02 | Rule versus LLM; zero-shot, one-shot, few-shot and persona prompting; optional SDK, LangChain and Harness examples; structured output, evaluation, RAG | Safe retries, bulkheads, gateways and BFFs; prompting with gateway/BFF choices; private service data, CQRS and API composition |
 | 2 · Chain, call tools, act | 03–05 | Prompt chains, validated tools, bounded ReAct | Business capabilities and bounded contexts; service-owned data; resilience and safe retries |
 | 3 · Debate, trace, decide | 06–08 | Independent proposals, bounded debate, logging, swappable agents, human feedback, memory | Read-pattern trade-offs; correlation IDs; idempotent effects and scoped retry advice |
 
