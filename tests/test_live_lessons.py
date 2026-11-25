@@ -26,14 +26,8 @@ def load_function(source, name, namespace):
 
 
 class LiveRetryTests(unittest.TestCase):
-    def test_debate_challenges_and_repairs_missing_citations(self):
-        replies = {
-            "freeinference": iter(['{"option":"CQRS","claim":"Search fits a read model.","evidence":["R3","C1"]}']),
-            "deepseek": iter(['{"option":"API composition","claim":"Fewer moving parts.","evidence":["C2"]}',
-                              'Which source supports that claim?']),
-            "gemini": iter(['{"option":"CQRS","claim":"Always fresh.","evidence":[]}',
-                            '{"option":"CQRS","claim":"The read model can lag.","evidence":["R3"]}']),
-        }
+    def run_debate(self, replies):
+        replies = {provider: iter(script) for provider, script in replies.items()}
         prompts = []
 
         def make_ask(*, provider):
@@ -45,10 +39,46 @@ class LiveRetryTests(unittest.TestCase):
         ns = {"make_ask": make_ask}
         for cell in code_cells("06_multi_agent_debate"):
             quiet_exec(cell, ns)
+        return ns, prompts
+
+    def test_debate_challenges_and_repairs_missing_citations(self):
+        ns, prompts = self.run_debate({
+            "freeinference": ['{"option":"CQRS","claim":"Search fits a read model.","evidence":["R3","C1"]}'],
+            "deepseek": ['{"option":"API composition","claim":"Fewer moving parts.","evidence":["C2"]}',
+                         'Which source supports that claim?'],
+            "gemini": ['{"option":"CQRS","claim":"Always fresh.","evidence":[]}',
+                       '{"option":"CQRS","claim":"The read model can lag.","evidence":["R3"]}'],
+        })
         self.assertEqual(ns["outcome"]["option"], "CQRS")
         self.assertEqual(ns["outcome"]["votes"], {"CQRS": 2, "API composition": 1})
         self.assertEqual(len(prompts), 5)
         self.assertTrue(any("Challenge:" in prompt for _, prompt in prompts))
+
+    def test_debate_excludes_malformed_and_unsupported_proposals(self):
+        invalid_option = '{"option":"Shared database","claim":"Simplify search.","evidence":["R3"]}'
+        valid_option = '{"option":"CQRS","claim":"Search fits a read model.","evidence":["R3"]}'
+        ns, prompts = self.run_debate({
+            "freeinference": [invalid_option, invalid_option],
+            "deepseek": ['Ordinary prose instead of JSON.', invalid_option],
+            "gemini": [valid_option, 'Choose a listed option.', 'Please use the reply format.'],
+        })
+        self.assertEqual(len(prompts), 7)
+        self.assertEqual(ns["outcome"]["kind"], "escalation")
+        self.assertEqual(ns["outcome"]["votes"], {"CQRS": 1})
+
+    def test_debate_demonstrates_a_challenge_with_three_valid_proposals(self):
+        cqrs = '{"option":"CQRS","claim":"Search fits a read model.","evidence":["R3"]}'
+        composition = '{"option":"API composition","claim":"Use fewer components.","evidence":["C2"]}'
+        revision = '{"option":"CQRS","claim":"Accept a possible delay.","evidence":["R3","C2"]}'
+        ns, prompts = self.run_debate({
+            "freeinference": [cqrs, revision],
+            "deepseek": [composition, 'How would you account for a delay?'],
+            "gemini": [cqrs],
+        })
+        self.assertEqual(len(prompts), 5)
+        self.assertEqual(ns["proposals"]["Minimalist"]["claim"], "Search fits a read model.")
+        self.assertEqual(ns["final_proposals"]["Minimalist"]["claim"], "Accept a possible delay.")
+        self.assertEqual(ns["outcome"]["votes"], {"CQRS": 2, "API composition": 1})
 
     def test_a2a_adapter_keeps_provider_fields_out_of_the_internal_model(self):
         ns = {}
@@ -122,6 +152,15 @@ class SkillContractTests(unittest.TestCase):
 
 
 class MemoryScopeTests(unittest.TestCase):
+    def test_reviewer_checks_the_last_allowed_revision(self):
+        cells = code_cells("08_human_feedback_memory")
+        replies = iter(["do not retry", "retry"])
+        ns = {"ask": lambda prompt: next(replies)}
+        quiet_exec(cells[0], ns)
+        quiet_exec(cells[1], ns)
+        self.assertEqual(ns["option"], "retry")
+        self.assertEqual(ns["review"]["verdict"], "accept")
+
     def test_similar_but_out_of_scope_memory_never_enters_the_search_prompt(self):
         cells = code_cells("08_human_feedback_memory")
         prompts, queries = [], []
@@ -130,7 +169,7 @@ class MemoryScopeTests(unittest.TestCase):
         class Memory:
             def query(self, **kwargs):
                 queries.append(kwargs)
-                # A semantic false positive: Search would be the closer match without a scope filter.
+                # Payments would receive a semantic match without the scope filter.
                 scope = kwargs.get("where")
                 approved = {"$and": [{"idempotent": True}, {"transient": True}]}
                 records = [{"lesson": stored_lesson}] if scope is None or scope == approved else []
@@ -147,8 +186,10 @@ class MemoryScopeTests(unittest.TestCase):
         prompts.clear()
         quiet_exec(cells[4], ns)
         self.assertEqual(ns["scores"], {"before": 1, "after": 2})
-        self.assertIn(stored_lesson, prompts[2])
-        self.assertNotIn(stored_lesson, prompts[3])
+        self.assertEqual(len(prompts), 3)
+        self.assertIn(stored_lesson, prompts[1])
+        self.assertIn("Payments", prompts[2])
+        self.assertNotIn(stored_lesson, prompts[2])
         self.assertEqual(queries[-1]["where"], {"$and": [{"idempotent": False}, {"transient": True}]})
         self.assertEqual(queries[-2]["where"], {"$and": [{"idempotent": True}, {"transient": True}]})
 

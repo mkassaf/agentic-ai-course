@@ -24,9 +24,14 @@ def run_lesson(slug, *, cells=None, responses=()):
 
 class NumericOutcomeTests(unittest.TestCase):
     def test_quiz_compares_each_case_to_the_rule(self):
-        ns = run_lesson('00_rules_and_llms', responses=['A'] * 13)
+        answers = [
+            'A', 'B. Do not retry automatically', 'Retry with a limit and backoff',
+            'B. Retry with a limit and backoff', 'A. BFF', 'C.', 'B',
+        ]
+        ns = run_lesson('00_rules_and_llms', responses=['A', *answers, *['MOSS'] * 5])
         self.assertEqual(len(ns['cases']), 7)
-        self.assertEqual(ns['agreement'], 3)
+        self.assertEqual(ns['format_matches'], 2)
+        self.assertEqual(ns['agreement'], 5)
 
     def test_evaluation_dataset_and_judge_calibration(self):
         replies = [json.dumps({'names_cost': value}) for value in (False, False, True, True, False, True, True, True)]

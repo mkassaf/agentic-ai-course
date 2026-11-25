@@ -6,7 +6,7 @@ const labs = [
     "title": "From rules to LLM calls",
     "subtitle": "Rules versus LLMs, then prompting techniques",
     "topics": "rules llm prompting microservices retry idempotency bulkhead api gateway bff sdk openai langchain framework deepseek harness zero-shot no-shot one-shot single-shot few-shot persona role prompting",
-    "idea": "Compare rules with an LLM, then vary worked examples and persona instructions on one shared question.",
+    "idea": "Compare Python rules and model replies. Then use worked examples to route support tickets and try a persona on an architecture question.",
     "objectives": [
       "Apply simple rules for retries, bulkheads, gateways, and BFFs.",
       "Make one LLM call, then compare SDK, LangChain, and optional DeepSeek Harness examples.",
@@ -15,7 +15,7 @@ const labs = [
     ],
     "example": "ShopEasy faces a slow dependency; ask the same question with a helper, SDK, LangChain, or an optional agent harness.",
     "exercise": "Change transient failure facts, then vary only the example count or persona in the prompting comparison.",
-    "checks": "Compare quiz answer letters; hold the new question fixed while inspecting the prompting variants.",
+    "checks": "Check the quiz choices and reply format separately. Compare which queue labels the model can infer from the examples.",
     "bridge": "A timed-out payment might already have succeeded; server-supported idempotency makes a retry safer.",
     "track": "lecture-1",
     "steps": 5,
@@ -91,8 +91,8 @@ const labs = [
     },
     "picture": {
       "src": "assets/images/prompt-techniques.svg",
-      "alt": "Two controlled comparisons: zero, one, or three worked examples for the same question, then neutral and architect persona prompts with no examples.",
-      "caption": "Shots count worked examples. Persona adds a perspective. Hold the question fixed within each comparison and inspect the actual replies."
+      "alt": "Compare zero, one, or three worked examples for support-ticket routing. Then compare a neutral prompt and a mobile developer persona on the same architecture question.",
+      "caption": "Shots count worked examples. A persona adds a perspective. Within each comparison, hold the new task fixed and inspect the replies."
     }
   },
   {
@@ -187,9 +187,9 @@ const labs = [
       "Inspect embeddings and ranked policies for several questions, including an unrelated one.",
       "Compare prompts, answers, input-token usage, and citation validity; inspect factual support."
     ],
-    "example": "Compare full-library and retrieved-policy answers about private service data and searchable order history.",
+    "example": "Compare the full policy library with retrieved notes on private service data, order search, and an unrelated lunch question.",
     "exercise": "Try more questions, change the number of retrieved policies, and inspect irrelevant matches.",
-    "checks": "Inspect prompt sizes, reported input tokens, retrieved IDs and distances, and citation support.",
+    "checks": "Compare prompt sizes and check citations. See whether the answers acknowledge when the policies lack evidence.",
     "bridge": "Citing a valid source ID does not by itself prove factual support.",
     "track": "lecture-1",
     "pattern": "Retrieval-Augmented Generation",
@@ -350,7 +350,7 @@ const labs = [
     ],
     "example": "An agent looks up the Orders service, checks its record, and formats it as HTML.",
     "exercise": "Ask about Inventory, an unknown service, or a general microservices concept.",
-    "checks": "Inspect each tool request and result; only validated records can be formatted.",
+    "checks": "Follow the requested service from the catalog through validation and formatting. Check that the final HTML comes from the formatter.",
     "bridge": "The model chooses actions while Python runs the tools and controls access.",
     "steps": 5,
     "warmups": 2,
@@ -428,7 +428,7 @@ const labs = [
     ],
     "example": "Read simulated Inventory latency and idempotency facts before recommending a circuit breaker or a safe retry.",
     "exercise": "Try finishing before a successful read, or inspect a non-idempotent payment call.",
-    "checks": "Inspect thought, action, observation, accumulated history, and the stopping guard.",
+    "checks": "Follow a tool result or error into the next turn. Check that the agent reads the target before it can finish.",
     "bridge": "An agent loop thinks, then selects its next step from observations; it still needs a bound and allowed tools.",
     "track": "lecture-2",
     "pattern": "One-Step Tool Agent in a ReAct loop",
@@ -504,8 +504,8 @@ const labs = [
       "Check independent proposals, bounded revision, valid citations, a quorum, and escalation."
     ],
     "example": "Three architect roles on three providers compare ShopEasy support search with small order-by-ID lookups.",
-    "exercise": "Remove a citation or change the query workload and inspect challenges and dissent.",
-    "checks": "Check independent proposals, bounded revision, valid citations, a quorum, and escalation.",
+    "exercise": "Run the challenge and revision path with a missing citation, then inspect which proposals can vote.",
+    "checks": "Verify that each vote names an offered option and cites a known source. Check whether two reviewers agree.",
     "bridge": "CQRS supports search but adds a read model and consistency lag; composition has different costs.",
     "track": "lecture-3",
     "pattern": "Debate-Based Cooperation",
@@ -575,7 +575,7 @@ const labs = [
     ],
     "example": "Trace ShopEasy pattern recommendations back to the claims and evidence behind them.",
     "exercise": "Add an agent through the registry and follow its cited messages in the log.",
-    "checks": "Inspect the live log, persisted records, and the decision evidence trail.",
+    "checks": "Follow a decision to its proposals and sources. If a reviewer sends invalid JSON, find its rejected reply in the log.",
     "bridge": "Agent-run traces and microservice request traces share correlation principles but are different systems.",
     "track": "lecture-3",
     "steps": 5,
@@ -656,7 +656,7 @@ const labs = [
     ],
     "example": "Simulated human feedback approves retry advice for an idempotent read; the lesson must not be reused blindly for a payment charge.",
     "exercise": "Change idempotency or whether a failure is transient, and compare candidate memories with applicable ones.",
-    "checks": "Report before/after held-out scores even when memory does not improve them.",
+    "checks": "Read the before and after answer for each case. Check that Payments receives no retry advice from memory.",
     "bridge": "Similarity is not applicability. Check known scope conditions before inserting a lesson into a prompt.",
     "track": "lecture-3",
     "pattern": "Human in the Loop and Archival Memory",

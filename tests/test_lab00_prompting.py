@@ -19,7 +19,7 @@ def run_prompting_step():
 
     def ask(prompt):
         prompts.append(prompt)
-        return 'BFF'
+        return 'MOSS' if len(prompts) <= 3 else 'BFF'
 
     namespace = {'ask': ask, 'prompt': 'original', 'options': options}
     with contextlib.redirect_stdout(io.StringIO()):
@@ -37,6 +37,10 @@ class PromptingTechniqueTests(unittest.TestCase):
         self.assertEqual(len(set(demonstrations)), 3)
         question = namespace['technique_question']
         instruction = namespace['label_request']
+        self.assertIn('package', question)
+        self.assertIn('KITE, MOSS, or LAMP', instruction)
+        self.assertIn('parcel', demonstrations[1])
+        self.assertTrue(demonstrations[1].endswith('A: MOSS'))
 
         for call, expected_examples in zip(prompts[:3], (0, 1, 3)):
             with self.subTest(examples=expected_examples):
@@ -53,9 +57,10 @@ class PromptingTechniqueTests(unittest.TestCase):
         _, prompts, namespace, _ = run_prompting_step()
         self.assertEqual(len(prompts), 5)
         task = namespace['persona_task']
-        self.assertIn(namespace['technique_question'], task)
-        self.assertIn('two short sentences', task)
-        role = 'You are a cautious software architect. Consider operational cost.'
+        self.assertIn(namespace['architecture_question'], task)
+        self.assertNotIn(namespace['technique_question'], task)
+        self.assertIn('operational trade-off in two short sentences', task)
+        role = 'You are a mobile developer.'
         self.assertEqual(prompts[3].strip(), task)
         self.assertEqual(prompts[4].strip(), f'{role}\n{task}')
 

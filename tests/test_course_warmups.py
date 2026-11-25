@@ -67,6 +67,22 @@ class WarmupTests(unittest.TestCase):
         self.assertIn('agentic-ai-coursekit @ https://github.com/', install)
         self.assertIn(revision + '.zip', install)
 
+    def test_react_warmup_returns_each_rejected_action_to_the_model(self):
+        lesson = json.loads((ROOT / 'lessons/05_react_agent.json').read_text())
+        replies = iter(['I can guess.\nFINISH', 'I need weather.\nCHECK_WEATHER', 'I can look it up.\nLOOKUP'])
+        prompts = []
+
+        def ask(prompt):
+            prompts.append(prompt)
+            return next(replies)
+
+        with contextlib.redirect_stdout(io.StringIO()):
+            exec(lesson['warmup']['code'], {'ask': ask})
+
+        self.assertEqual(len(prompts), 3)
+        self.assertIn('LOOKUP is required before FINISH.', prompts[1])
+        self.assertIn('Unknown action.', prompts[2])
+
     def test_every_lab_starts_with_its_simple_example(self):
         for path in sorted((ROOT / 'notebooks').glob('*.ipynb')):
             with self.subTest(lab=path.stem):

@@ -41,19 +41,44 @@ class PromptChainTests(unittest.TestCase):
         self.assertIn('private data ownership', prompts[4])
         self.assertIn('Consequence:', namespace['record'])
 
-    def test_bad_context_shape_stops_before_the_comparison(self):
+    def test_bad_context_shape_clears_previous_handoff_and_stops_chain(self):
         prompts = []
-
+        replies = iter(['["Order", "Inventory", "Shipping"]', '[123, null, {}]'])
         def ask(prompt):
             prompts.append(prompt)
-            return '["Order"]'
+            return next(replies)
 
         namespace = {'ask': ask}
         with contextlib.redirect_stdout(io.StringIO()):
             exec(STEPS[1], namespace)
+            exec(STEPS[2], namespace)
+            self.assertIsNotNone(namespace['contexts'])
             with self.assertRaisesRegex(ValueError, 'Quality gate'):
                 exec(STEPS[2], namespace)
-        self.assertEqual(len(prompts), 1)
+            self.assertIsNone(namespace['contexts'])
+            with self.assertRaisesRegex(ValueError, 'complete Step 3'):
+                exec(STEPS[3], namespace)
+        self.assertEqual(len(prompts), 2)
+
+    def test_gate_explains_malformed_json(self):
+        namespace = {'ask': lambda prompt: '```json\n["Order", "Inventory", "Shipping"]\n```'}
+        with contextlib.redirect_stdout(io.StringIO()):
+            exec(STEPS[1], namespace)
+            with self.assertRaisesRegex(ValueError, 'expected JSON without extra text'):
+                exec(STEPS[2], namespace)
+
+    def test_decision_gate_requires_exactly_three_nonempty_lines(self):
+        for reply in (
+            'Context: Shared data\nDecision: business capability split\nConsequence: ',
+            'Context: Shared data\nDecision: business capability split\nConsequence: More calls\nExtra line',
+        ):
+            with self.subTest(reply=reply), contextlib.redirect_stdout(io.StringIO()):
+                namespace = {'ask': lambda prompt: reply}
+                exec(STEPS[1], namespace)
+                namespace.update(contexts=['Order', 'Inventory', 'Shipping'], tradeoffs={})
+                with self.assertRaisesRegex(ValueError, 'Quality gate'):
+                    exec(STEPS[4], namespace)
+                self.assertIsNone(namespace['record'])
 
     def test_notebook_starts_with_the_everyday_example(self):
         notebook = json.loads((ROOT / 'notebooks/03_prompt_chaining.ipynb').read_text())

@@ -6,15 +6,16 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / 'assets' / 'images' / 'prompt-techniques.svg'
 
-QUESTION = 'ShopEasy has phone and browser clients that need different tailored APIs. Which pattern fits?'
-LABELS = 'Bulkhead · API gateway · BFF'
-FORMAT = 'Return exactly one label: Bulkhead, API gateway, or BFF.'
+ROUTING_QUESTION = 'My package was supposed to arrive yesterday, but it has not arrived.'
+ROUTING_INSTRUCTION = 'Route the support ticket. Reply with one queue label: KITE, MOSS, or LAMP.'
+ARCHITECTURE_QUESTION = 'ShopEasy has phone and browser clients that need different tailored APIs. Which pattern fits?'
+ARCHITECTURE_LABELS = 'Bulkhead · API gateway · BFF'
 DEMOS = (
-    ('One external entry point applies routing and authentication.', 'API gateway'),
-    ('Slow reporting exhausts a shared pool; isolate the resources.', 'Bulkhead'),
-    ('A tablet app needs an API tailored to its screens.', 'BFF'),
+    ('I was charged twice for one order.', 'KITE'),
+    ('The courier left my parcel at the wrong address.', 'MOSS'),
+    ('I cannot sign in after resetting my password.', 'LAMP'),
 )
-PERSONA = 'You are a cautious software architect. Consider operational cost.'
+PERSONA = 'You are a mobile developer.'
 
 
 def wrap_text(value, width, size, bold=False):
@@ -58,16 +59,13 @@ def rect(x, y, width, height, cls='card', radius=16):
 
 def render():
     desc = (
-        'Two independent prompt comparisons use the same held-out architecture question: '
-        'phone and browser clients need different tailored APIs. Panel A fixes the question, '
-        'choices Bulkhead, API gateway, and BFF, and a label-only output format. Zero-shot '
-        'has no worked question-answer examples, one-shot has one, and few-shot has three. '
-        'These are alternatives, not steps; more examples do not guarantee a better answer. '
-        'Panel B has no demonstrations in either prompt. Both ask for one trade-off in two '
-        'short sentences; only the persona prompt adds: You are a cautious software architect. '
-        'Consider operational cost. Shot count counts input-output demonstrations, not '
-        'requests; zero-shot still contains instructions. A role instruction changes emphasis '
-        'and does not guarantee expertise.'
+        'Panel A compares three prompts for the same late package ticket. The available '
+        'queue labels are KITE, MOSS, and LAMP. Zero-shot gives no worked examples. '
+        'One-shot maps a billing ticket to KITE. Few-shot also maps a delivery ticket '
+        'to MOSS and a sign-in ticket to LAMP. The expected label is MOSS. Panel B asks '
+        'both prompts which API pattern supports phone and browser clients with different '
+        'needs and asks for one operational trade-off. The persona prompt adds the role '
+        'of a mobile developer. Both prompts give zero worked examples.'
     )
     parts = [f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 1450" role="img" aria-labelledby="title desc">
 <title id="title">Prompting techniques: demonstrations and persona are separate choices</title>
@@ -103,9 +101,9 @@ def render():
     put(64, 251, 972, 'Keep the held-out question, choices, and output format identical.', 'intro', 21)
 
     parts.append(rect(64, 272, 972, 140, 'soft', 12))
-    put(84, 302, 932, 'Shared question', 'label', 20, True)
-    put(84, 332, 932, QUESTION)
-    put(84, 366, 932, FORMAT, 'small', 18)
+    put(84, 302, 932, 'New support ticket', 'label', 20, True)
+    put(84, 332, 932, ROUTING_QUESTION)
+    put(84, 366, 932, ROUTING_INSTRUCTION, 'small', 18)
 
     put(84, 453, 185, 'Prompt variant', 'label', 20, True)
     put(297, 453, 710, 'Worked Q → A examples included before that question', 'label', 20, True)
@@ -126,15 +124,15 @@ def render():
             baseline = y + 29
             for question, answer in demos:
                 baseline = put(297, baseline, 715, f'Q: {question} → A: {answer}', 'small', 18) + 3
-    put(64, 846, 972, 'These are alternatives, not stages. More examples do not guarantee a better answer.', 'small', 18)
+    put(64, 846, 972, 'Expected queue is MOSS. The delivery example shows the desk’s convention.', 'small', 18)
 
     parts += [rect(40, 904, 1020, 462),
               '<circle cx="79" cy="948" r="19" fill="#14A800"/>']
     put(72, 955, 22, 'B', 'badge', 20, True)
     put(112, 957, 895, 'Compare a neutral prompt with a persona', 'section', 28, True)
-    put(64, 999, 972, QUESTION)
-    put(64, 1032, 972, f'Choices: {LABELS}', 'small', 18)
-    put(64, 1065, 972, 'Both prompts: choose a pattern and explain one trade-off in two short sentences.', 'small', 18)
+    put(64, 999, 972, ARCHITECTURE_QUESTION)
+    put(64, 1032, 972, f'Choices: {ARCHITECTURE_LABELS}', 'small', 18)
+    put(64, 1065, 972, 'Both prompts ask for one operational trade-off in two short sentences.', 'small', 18)
 
     for x, title, body in (
         (64, 'Neutral · no role', 'No persona instruction is added.'),

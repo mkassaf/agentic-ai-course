@@ -49,6 +49,21 @@ class ToolAgentTests(unittest.TestCase):
         for cell in self.cells[:4]:
             quiet_exec(cell, self.ns)
 
+    def run_replies(self, replies):
+        replies = iter(replies)
+        calls = []
+
+        class Client:
+            def ask(self, prompt, *, system):
+                calls.append((prompt, system))
+                return next(replies)
+
+        self.ns["client"] = Client()
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            exec(self.cells[4], self.ns)
+        return calls, output.getvalue()
+
     def test_extract_validate_and_escape_html(self):
         data = self.ns["extract_service"]("Orders")
         self.assertEqual(self.ns["validate_service"](data), "Valid")
@@ -60,46 +75,70 @@ class ToolAgentTests(unittest.TestCase):
         self.assertEqual(self.ns["extract_service"]("missing"), {})
 
     def test_agent_receives_system_prompt_and_tool_results(self):
-        replies = iter([
+        calls, output = self.run_replies([
             '{"tool":"extract_service","name":"orders"}',
             '{"tool":"validate_service"}',
             '{"tool":"format_html"}',
             '{"tool":"finish","answer":"Done"}',
         ])
-        calls = []
-        class Client:
-            def ask(self, prompt, *, system):
-                calls.append((prompt, system))
-                return next(replies)
-        self.ns["client"] = Client()
-        quiet_exec(self.cells[4], self.ns)
         self.assertIn("extract_service", calls[0][1])
         self.assertIn("Sales team", calls[1][0])
         self.assertIn("Valid", calls[2][0])
         self.assertIn("<h2>Orders</h2>", calls[3][0])
+        self.assertIn("Final answer: <h2>Orders</h2><p>Owner: Sales team</p>", output)
+        self.assertNotIn("Final answer: Done", output)
 
     def test_invalid_requests_cannot_format(self):
-        replies = iter(['{"tool":"format_html"}', '{"tool":"finish","answer":"Stopped"}'])
-        class Client:
-            def ask(self, prompt, *, system):
-                return next(replies)
-        self.ns["client"] = Client()
-        quiet_exec(self.cells[4], self.ns)
+        early_finish = '{"tool":"finish","answer":"<h2>Orders</h2><p>Invented owner</p>"}'
+        _, output = self.run_replies(['{"tool":"format_html"}'] + [early_finish] * 5)
         self.assertIn("extract and validate", self.ns["history"])
+        self.assertNotIn("Final answer:", output)
+        self.assertIn("Stopped after six turns", output)
+
+    def test_model_recovers_from_wrong_service_and_finishes_with_requested_html(self):
+        calls, output = self.run_replies([
+            '{"tool":"extract_service","name":"inventory"}',
+            '{"tool":"finish","answer":"I used Inventory."}',
+            '{"tool":"extract_service","name":"orders"}',
+            '{"tool":"validate_service"}',
+            '{"tool":"format_html"}',
+            '{"tool":"finish"}',
+        ])
+        self.assertIn("Wrong service. Look up Orders.", calls[1][0])
+        self.assertNotIn("Stock team", output)
+        self.assertIn("Final answer: <h2>Orders</h2>", output)
+
+    def test_missing_service_returns_the_lookup_error_even_if_model_invents_html(self):
+        self.ns.update(html_target="Shipping", question="Show the Shipping service as HTML.")
+        _, output = self.run_replies([
+            '{"tool":"extract_service","name":"shipping"}',
+            '{"tool":"finish","answer":"<h2>Shipping</h2>"}',
+        ])
+        self.assertIn("Final answer: Service not found.", output)
+
+    def test_conceptual_question_can_finish_without_tools(self):
+        self.ns.update(html_target=None, question="What does a microservice own?")
+        calls, output = self.run_replies(['{"tool":"finish","answer":"Its own private data."}'])
+        self.assertEqual(len(calls), 1)
+        self.assertIn("Final answer: Its own private data.", output)
+
+    def test_native_tool_formats_only_matching_catalog_record(self):
+        formatter_source = '\n'.join(self.cells[5].splitlines()[1:])  # omit notebook install magic
+        exec(formatter_source, self.ns)
+        formatter = self.ns["format_catalog_html"]
+        record = self.ns["extract_service"]("Orders")
+        self.assertIn("Sales team", formatter(record))
+        for other in (self.ns["extract_service"]("Inventory"), dict(record, owner="Invented team")):
+            self.assertIn("Extract the Orders record", formatter(other))
 
     def test_non_json_reply_returns_a_result_and_the_loop_retries(self):
-        replies = iter([
+        self.run_replies([
             "I will extract it now.",
             '{"tool":"extract_service","name":"orders"}',
             '{"tool":"validate_service"}',
             '{"tool":"format_html"}',
             '{"tool":"finish","answer":"Done"}',
         ])
-        class Client:
-            def ask(self, prompt, *, system):
-                return next(replies)
-        self.ns["client"] = Client()
-        quiet_exec(self.cells[4], self.ns)
         self.assertIn("JSON object", self.ns["history"])
         self.assertTrue(self.ns["validated"])
 
