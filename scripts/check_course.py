@@ -78,6 +78,11 @@ def main():
         nbformat.validate(notebook)
         text = "\n".join(c.source for c in notebook.cells)
         lesson = json.loads((ROOT / "lessons" / (path.stem + ".json")).read_text())
+        exercise = notebook.cells[-1] if notebook.cells else None
+        if not exercise or exercise.cell_type != "markdown" or not re.match(r"^## Exercise\b", exercise.source):
+            issues.append(f"{path.name}: end with a hands-on exercise after any optional cells")
+        elif exercise.source != lesson["cells"][-1]["source"].strip():
+            issues.append(f"{path.name}: final exercise differs from its lesson source; rebuild")
         site_lab = site_labs.get(path.stem, {})
         if site_lab.get("title") != lesson.get("title"):
             issues.append(f"{path.name}: website title differs from the lesson source")

@@ -56,7 +56,11 @@
     },
     {
       "type": "markdown",
-      "source": "## What you should see\n\nThe Orders interface returns order 101 with total 42. Discovery lists two tools. The decision log contains API composition for a small ID lookup and CQRS for history search. Three bad calls return errors; the original decision stays intact.\n\n## Try it\n\n1. Add an order to `ORDERS`. Which component owns this change?\n2. Explain why giving the reporting team an SQL connection would bypass this boundary.\n3. Add `cancel_order(order_id)` as an owner operation, validating the order state first. It must not directly update a Payment or Inventory table.\n4. **Use it in your council.** Expose a read-only source lookup and a separately authorized decision write. Which data should each tool reveal?\n\n## Takeaway\n\nMCP gives an agent a discoverable tool boundary. Data ownership and validation remain application responsibilities. A successful protocol call is not proof that a chosen architecture pattern is appropriate."
+      "source": "## What you should see\n\nThe Orders interface returns order 101 with total 42. Discovery lists two tools. The decision log contains API composition for a small ID lookup and CQRS for history search. Three bad calls return errors; the original decision stays intact.\n\n## Takeaway\n\nMCP gives an agent a discoverable tool boundary. Data ownership and validation remain application responsibilities. A successful protocol call is not proof that a chosen architecture pattern is appropriate."
+    },
+    {
+      "type": "markdown",
+      "source": "## Exercise · Read a new order through its owner\n\n1. In Step 1, add order `\"103\"` to `ORDERS` with `{\"status\": \"PENDING\", \"total\": 55}`. In the `get_order` call in Step 4, change `\"order_id\": \"101\"` to `\"order_id\": \"103\"`.\n2. Rerun Steps 1–4 to rebuild the server, register both tools, and read the new order. Check that `Owner returned:` includes order 103, status `PENDING`, and total 55.\n3. Rerun Step 5 to check that broken calls still return errors and keep the valid decision. Explain which component owns the new order and how the client obtains it.\n\n**More to try**\n\n- Explain what boundary a SQL connection for the reporting team would bypass.\n- Add `cancel_order(order_id)` as an owner tool that validates the order's state before changing it. Keep the change within Orders.\n- In your council, expose a read-only source lookup and a separately authorized decision write. Which data should each tool reveal?"
     }
   ],
   "review": {

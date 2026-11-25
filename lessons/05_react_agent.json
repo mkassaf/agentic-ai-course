@@ -45,7 +45,7 @@
     },
     {
       "type": "markdown",
-      "source": "## What you should see\nA successful run prints a `read_metrics Inventory` action, an observation with Inventory's record, and the checked recommendation `circuit breaker`. It may list dependencies first. An error observation gives the model a chance to correct its request within the five-turn limit.\n\nIf you see `Turn budget exhausted`, read the printed actions and check whether Inventory was ever read successfully. Rerun Step 3 for a fresh attempt. If Step 4 rejects the recommendation, rerun Step 3 and then Step 4 so the check sees the latest recommendation.\n\n## Try it\n1. In Step 3's prompt, instruct the agent to call `read_metrics` on `stock` first. The error observation must not unlock `finish`. Check the printed actions to see whether the model followed the new instruction.\n2. In Step 2, change `target` to `\"Payments\"`. Rerun Steps 2–4. Explain why Step 4 expects `no automatic retry` even though the failure rate is low.\n3. In Step 1, change Inventory's failure rate to 0.1. Rerun Step 1, then Steps 2–4. Why does the exercise now expect `bounded retry`?\n4. Pick a timeout, breaker and fallback for an optional Recommendations dependency that is slow or unavailable. Which user-visible feature degrades?\n\n## Takeaway\nThe model uses each observation to choose its next action. Python controls the available actions, how many times the model can try, when it may finish, and how its answer is checked."
+      "source": "## What you should see\nA successful run prints a `read_metrics Inventory` action, an observation with Inventory's record, and the checked recommendation `circuit breaker`. It may list dependencies first. An error observation gives the model a chance to correct its request within the five-turn limit.\n\nIf you see `Turn budget exhausted`, read the printed actions and check whether Inventory was ever read successfully. Rerun Step 3 for a fresh attempt. If Step 4 rejects the recommendation, rerun Step 3 and then Step 4 so the check sees the latest recommendation.\n\n## Takeaway\nThe model uses each observation to choose its next action. Python controls the available actions, how many times the model can try, when it may finish, and how its answer is checked."
     },
     {
       "type": "markdown",
@@ -86,6 +86,10 @@
     {
       "type": "markdown",
       "source": "Compare the trace with the manual loop in Step 3. Look for the requested service, the returned metrics, and the final label. To try another record, set `target` to `\"Payments\"` in Step 2 and rerun Step 2 and the CrewAI cells."
+    },
+    {
+      "type": "markdown",
+      "source": "## Exercise · Change the dependency and predict the policy\n\n1. In Step 2, change `target = \"Inventory\"` to `target = \"Payments\"`. In Step 1, find the Payments record and predict the policy from its failure rate and `idempotent` field.\n2. Rerun Steps 2–4. Find the action that reads the Payments metrics and the printed `Recommendation` and `Exercise expects` labels.\n3. Explain why Step 4 expects `no automatic retry` for Payments. Use the observed record to explain what could happen if a timed-out charge were repeated.\n\n**More to try**\n\n- In Step 3's prompt, ask the agent to use `read_metrics` on `stock` first. Check whether the model follows the instruction and whether that error unlocks `finish`.\n- Restore `target = \"Inventory\"`. In Step 1, change Inventory's `failure_rate` from `0.7` to `0.1`. Rerun Steps 1–4 and explain why the expected policy changes to `bounded retry`.\n- Pick a timeout, breaker, and fallback for a slow Recommendations dependency. Which customer-facing feature would degrade?"
     }
   ],
   "review": {
