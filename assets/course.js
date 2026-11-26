@@ -10,7 +10,7 @@ const labs = [
     "objectives": [
       "Apply simple rules for retries, bulkheads, gateways, and BFFs.",
       "Make one LLM call, then compare SDK, LangChain, and optional DeepSeek Harness examples.",
-      "Compare zero-shot, one-shot, and few-shot prompts, then give the same architecture question to two personas.",
+      "Compare zero-shot, one-shot, and few-shot prompts, then ask two team leads with competing interests to make the same decision.",
       "Explain why agreement is useful to inspect but does not prove a design is correct."
     ],
     "example": "ShopEasy faces a slow dependency; ask the same question with a helper, SDK, LangChain, or an optional agent harness.",
@@ -91,7 +91,7 @@ const labs = [
     },
     "picture": {
       "src": "assets/images/prompt-techniques.svg",
-      "alt": "Compare zero, one, or three examples for sorting a customer message into Billing, Delivery, or Login. Then compare a mobile developer and an on-call engineer answering the same architecture question.",
+      "alt": "Compare zero, one, or three examples for sorting a customer message into Billing, Delivery, or Login. Then compare a mobile team lead and a platform team lead deciding between a dedicated mobile API and an update to the shared API.",
       "caption": "Shots count worked examples. A persona adds a perspective. Within each comparison, hold the new task fixed and inspect the replies."
     }
   },

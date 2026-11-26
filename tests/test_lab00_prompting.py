@@ -19,7 +19,9 @@ def run_prompting_step():
 
     def ask(prompt):
         prompts.append(prompt)
-        return 'Delivery' if len(prompts) <= 3 else 'BFF'
+        if len(prompts) <= 3:
+            return 'Delivery'
+        return 'Build a BFF.' if len(prompts) == 4 else 'Update the shared API.'
 
     namespace = {'ask': ask, 'prompt': 'original', 'options': options}
     with contextlib.redirect_stdout(io.StringIO()):
@@ -59,9 +61,10 @@ class PromptingTechniqueTests(unittest.TestCase):
         task = namespace['persona_task']
         self.assertIn(namespace['architecture_question'], task)
         self.assertNotIn(namespace['customer_message'], task)
-        self.assertIn('operational trade-off in two short sentences', task)
+        self.assertIn(namespace['architecture_options'], task)
+        self.assertIn('Choose one option and give one trade-off in two short sentences.', task)
         personas = namespace['personas']
-        self.assertEqual(list(personas), ['Mobile developer', 'On-call engineer'])
+        self.assertEqual(list(personas), ['Mobile team lead', 'Platform team lead'])
         self.assertNotEqual(*personas.values())
         self.assertEqual(prompts[3:], [f'{role}\n{task}' for role in personas.values()])
 
@@ -82,6 +85,8 @@ class PromptingTechniqueTests(unittest.TestCase):
         self.assertEqual(diagram.ROUTING_INSTRUCTION, namespace['label_request'])
         self.assertEqual([f'Message: {message}\nCategory: {category}' for message, category in diagram.DEMOS],
                          namespace['demonstrations'])
+        self.assertEqual(diagram.ARCHITECTURE_QUESTION, namespace['architecture_question'])
+        self.assertEqual(diagram.ARCHITECTURE_OPTIONS, namespace['architecture_options'])
         self.assertEqual(diagram.PERSONAS, tuple(namespace['personas'].items()))
 
         image_path = 'assets/images/prompt-techniques.svg'

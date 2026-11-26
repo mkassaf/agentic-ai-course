@@ -8,16 +8,17 @@ OUTPUT = ROOT / 'assets' / 'images' / 'prompt-techniques.svg'
 
 ROUTING_QUESTION = "My package hasn't arrived."
 ROUTING_INSTRUCTION = 'Choose one category: Billing, Delivery, or Login. Reply with the category only.'
-ARCHITECTURE_QUESTION = 'ShopEasy has phone and browser clients that need different tailored APIs. Which pattern fits?'
-ARCHITECTURE_LABELS = 'Bulkhead · API gateway · BFF'
+ARCHITECTURE_QUESTION = "ShopEasy's mobile app needs smaller responses. The team can fund one change this sprint."
+ARCHITECTURE_OPTIONS = 'Build a mobile-only API (a BFF) or add smaller responses to the shared API.'
+ARCHITECTURE_INSTRUCTION = 'Choose one option and give one trade-off in two short sentences.'
 DEMOS = (
     ('My package arrived at the wrong address.', 'Delivery'),
     ('I was charged twice.', 'Billing'),
     ("I can't sign in.", 'Login'),
 )
 PERSONAS = (
-    ('Mobile developer', 'You are the mobile developer responsible for fast app screens.'),
-    ('On-call engineer', 'You are the on-call engineer responsible for keeping services simple to operate.'),
+    ('Mobile team lead', 'You lead the mobile team. Your team is measured on how quickly it can ship mobile changes.'),
+    ('Platform team lead', 'You lead the platform team. Your team is measured on keeping the number of services it runs low.'),
 )
 
 
@@ -66,13 +67,13 @@ def render():
         'The categories are Billing, Delivery, and Login. Zero-shot gives no examples. '
         'One-shot shows a package sent to the wrong address, categorized as Delivery. '
         'Few-shot adds a double charge for Billing and a sign-in problem for Login. '
-        'The expected category is Delivery. Panel B asks both personas which API pattern '
-        'supports phone and browser clients with different needs and asks for one operational '
-        'trade-off. The mobile developer is responsible for fast app screens. The on-call '
-        'engineer is responsible for keeping services simple to operate. Both prompts give '
-        'zero worked examples.'
+        'The expected category is Delivery. Panel B asks two team leads to choose a single '
+        'change for smaller mobile API responses and give a trade-off. The mobile team lead '
+        'is measured on how quickly the team ships mobile changes and may favor a mobile-only API. '
+        'The platform team lead is measured on keeping the number of services low and may favor '
+        'updating the shared API. Both receive the same task.'
     )
-    parts = [f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 1450" role="img" aria-labelledby="title desc">
+    parts = [f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 1500" role="img" aria-labelledby="title desc">
 <title id="title">Prompting techniques: demonstrations and persona are separate choices</title>
 <desc id="desc">{escape(desc)}</desc>
 <style>
@@ -89,7 +90,7 @@ def render():
   .row {{ fill: #F9FAFB; }}
   .line {{ stroke: #E0E6EB; stroke-width: 1.5; }}
 </style>
-<rect width="1100" height="1450" rx="24" fill="#F3F5F7"/>''']
+<rect width="1100" height="1500" rx="24" fill="#F3F5F7"/>''']
 
     def put(x, y, width, value, cls='body', size=20, bold=False):
         element, below = paragraph(x, y, width, value, cls, size, bold)
@@ -131,23 +132,26 @@ def render():
                 baseline = put(297, baseline, 715, f'{question} → {answer}', 'small', 18) + 3
     put(64, 846, 972, 'Expected category: Delivery.', 'small', 18)
 
-    parts += [rect(40, 904, 1020, 462),
+    parts += [rect(40, 904, 1020, 522),
               '<circle cx="79" cy="948" r="19" fill="#14A800"/>']
     put(72, 955, 22, 'B', 'badge', 20, True)
-    put(112, 957, 895, 'Ask two personas the same question', 'section', 28, True)
-    put(64, 999, 972, ARCHITECTURE_QUESTION)
-    put(64, 1032, 972, f'Choices: {ARCHITECTURE_LABELS}', 'small', 18)
-    put(64, 1065, 972, 'Both prompts ask for one operational trade-off in two short sentences.', 'small', 18)
+    put(112, 957, 895, 'Give two team leads the same decision', 'section', 28, True)
+    next_line = put(64, 999, 972, ARCHITECTURE_QUESTION)
+    next_line = put(64, next_line + 6, 972, ARCHITECTURE_OPTIONS, 'small', 18)
+    next_line = put(64, next_line + 8, 972, ARCHITECTURE_INSTRUCTION, 'small', 18)
 
-    for x, (title, body) in zip((64, 562), PERSONAS):
-        parts.append(rect(x, 1090, 474, 156, 'row', 12))
-        put(x + 20, 1125, 434, title, 'label', 20, True)
-        put(x + 20, 1163, 434, body)
-    put(64, 1284, 972, '0 demonstrations in either prompt. Only the role instruction changes.', 'label', 20, True)
-    put(64, 1323, 972, 'Compare what each reply emphasizes, such as faster screens or simpler operations.', 'small', 18)
+    card_y = next_line + 10
+    choices = ('May favor a mobile-only API.', 'May favor updating the shared API.')
+    for x, (title, body), choice in zip((64, 562), PERSONAS, choices):
+        parts.append(rect(x, card_y, 474, 176, 'row', 12))
+        put(x + 20, card_y + 35, 434, title, 'label', 20, True)
+        put(x + 20, card_y + 70, 434, body)
+        put(x + 20, card_y + 150, 434, choice, 'small', 18)
+    put(64, card_y + 215, 972, 'Both leads get the same task. Their incentives pull in different directions.', 'label', 20, True)
+    put(64, card_y + 250, 972, 'Compare the options they choose and the trade-offs they point out.', 'small', 18)
 
-    parts.append('<rect x="40" y="1392" width="6" height="27" rx="3" fill="#14A800"/>')
-    put(60, 1413, 1000, 'Zero-shot still has instructions. Shots count worked input → output demonstrations, not requests.', 'small', 18)
+    parts.append('<rect x="40" y="1442" width="6" height="27" rx="3" fill="#14A800"/>')
+    put(60, 1463, 1000, 'Zero-shot still has instructions. Shots count worked input → output demonstrations, not requests.', 'small', 18)
     parts.append('</svg>')
     return '\n'.join(parts) + '\n'
 

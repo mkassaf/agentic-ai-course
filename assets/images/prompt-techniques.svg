@@ -1,6 +1,6 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 1450" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 1500" role="img" aria-labelledby="title desc">
 <title id="title">Prompting techniques: demonstrations and persona are separate choices</title>
-<desc id="desc">Panel A compares three prompts for the same customer message about a missing package. The categories are Billing, Delivery, and Login. Zero-shot gives no examples. One-shot shows a package sent to the wrong address, categorized as Delivery. Few-shot adds a double charge for Billing and a sign-in problem for Login. The expected category is Delivery. Panel B asks both personas which API pattern supports phone and browser clients with different needs and asks for one operational trade-off. The mobile developer is responsible for fast app screens. The on-call engineer is responsible for keeping services simple to operate. Both prompts give zero worked examples.</desc>
+<desc id="desc">Panel A compares three prompts for the same customer message about a missing package. The categories are Billing, Delivery, and Login. Zero-shot gives no examples. One-shot shows a package sent to the wrong address, categorized as Delivery. Few-shot adds a double charge for Billing and a sign-in problem for Login. The expected category is Delivery. Panel B asks two team leads to choose a single change for smaller mobile API responses and give a trade-off. The mobile team lead is measured on how quickly the team ships mobile changes and may favor a mobile-only API. The platform team lead is measured on keeping the number of services low and may favor updating the shared API. Both receive the same task.</desc>
 <style>
   text { font-family: "Helvetica Neue", Arial, sans-serif; fill: #000000; }
   .title { font-size: 36px; font-weight: 700; }
@@ -15,7 +15,7 @@
   .row { fill: #F9FAFB; }
   .line { stroke: #E0E6EB; stroke-width: 1.5; }
 </style>
-<rect width="1100" height="1450" rx="24" fill="#F3F5F7"/>
+<rect width="1100" height="1500" rx="24" fill="#F3F5F7"/>
 <text x="40" y="62" class="title"><tspan x="40" dy="0">Examples and roles change different parts of a prompt</tspan></text>
 <text x="40" y="126" class="intro"><tspan x="40" dy="0">Two comparisons. Change one ingredient at a time.</tspan></text>
 <rect x="40" y="158" width="1020" height="718" rx="16" class="card"/>
@@ -47,21 +47,23 @@
 <text x="297" y="722" class="small"><tspan x="297" dy="0">I was charged twice. → Billing</tspan></text>
 <text x="297" y="749" class="small"><tspan x="297" dy="0">I can&#x27;t sign in. → Login</tspan></text>
 <text x="64" y="846" class="small"><tspan x="64" dy="0">Expected category: Delivery.</tspan></text>
-<rect x="40" y="904" width="1020" height="462" rx="16" class="card"/>
+<rect x="40" y="904" width="1020" height="522" rx="16" class="card"/>
 <circle cx="79" cy="948" r="19" fill="#14A800"/>
 <text x="72" y="955" class="badge"><tspan x="72" dy="0">B</tspan></text>
-<text x="112" y="957" class="section"><tspan x="112" dy="0">Ask two personas the same question</tspan></text>
-<text x="64" y="999" class="body"><tspan x="64" dy="0">ShopEasy has phone and browser clients that need different tailored APIs. Which pattern fits?</tspan></text>
-<text x="64" y="1032" class="small"><tspan x="64" dy="0">Choices: Bulkhead · API gateway · BFF</tspan></text>
-<text x="64" y="1065" class="small"><tspan x="64" dy="0">Both prompts ask for one operational trade-off in two short sentences.</tspan></text>
-<rect x="64" y="1090" width="474" height="156" rx="12" class="row"/>
-<text x="84" y="1125" class="label"><tspan x="84" dy="0">Mobile developer</tspan></text>
-<text x="84" y="1163" class="body"><tspan x="84" dy="0">You are the mobile developer responsible for</tspan><tspan x="84" dy="27">fast app screens.</tspan></text>
-<rect x="562" y="1090" width="474" height="156" rx="12" class="row"/>
-<text x="582" y="1125" class="label"><tspan x="582" dy="0">On-call engineer</tspan></text>
-<text x="582" y="1163" class="body"><tspan x="582" dy="0">You are the on-call engineer responsible for</tspan><tspan x="582" dy="27">keeping services simple to operate.</tspan></text>
-<text x="64" y="1284" class="label"><tspan x="64" dy="0">0 demonstrations in either prompt. Only the role instruction changes.</tspan></text>
-<text x="64" y="1323" class="small"><tspan x="64" dy="0">Compare what each reply emphasizes, such as faster screens or simpler operations.</tspan></text>
-<rect x="40" y="1392" width="6" height="27" rx="3" fill="#14A800"/>
-<text x="60" y="1413" class="small"><tspan x="60" dy="0">Zero-shot still has instructions. Shots count worked input → output demonstrations, not requests.</tspan></text>
+<text x="112" y="957" class="section"><tspan x="112" dy="0">Give two team leads the same decision</tspan></text>
+<text x="64" y="999" class="body"><tspan x="64" dy="0">ShopEasy&#x27;s mobile app needs smaller responses. The team can fund one change this sprint.</tspan></text>
+<text x="64" y="1032" class="small"><tspan x="64" dy="0">Build a mobile-only API (a BFF) or add smaller responses to the shared API.</tspan></text>
+<text x="64" y="1064" class="small"><tspan x="64" dy="0">Choose one option and give one trade-off in two short sentences.</tspan></text>
+<rect x="64" y="1098" width="474" height="176" rx="12" class="row"/>
+<text x="84" y="1133" class="label"><tspan x="84" dy="0">Mobile team lead</tspan></text>
+<text x="84" y="1168" class="body"><tspan x="84" dy="0">You lead the mobile team. Your team is</tspan><tspan x="84" dy="27">measured on how quickly it can ship mobile</tspan><tspan x="84" dy="27">changes.</tspan></text>
+<text x="84" y="1248" class="small"><tspan x="84" dy="0">May favor a mobile-only API.</tspan></text>
+<rect x="562" y="1098" width="474" height="176" rx="12" class="row"/>
+<text x="582" y="1133" class="label"><tspan x="582" dy="0">Platform team lead</tspan></text>
+<text x="582" y="1168" class="body"><tspan x="582" dy="0">You lead the platform team. Your team is</tspan><tspan x="582" dy="27">measured on keeping the number of services</tspan><tspan x="582" dy="27">it runs low.</tspan></text>
+<text x="582" y="1248" class="small"><tspan x="582" dy="0">May favor updating the shared API.</tspan></text>
+<text x="64" y="1313" class="label"><tspan x="64" dy="0">Both leads get the same task. Their incentives pull in different directions.</tspan></text>
+<text x="64" y="1348" class="small"><tspan x="64" dy="0">Compare the options they choose and the trade-offs they point out.</tspan></text>
+<rect x="40" y="1442" width="6" height="27" rx="3" fill="#14A800"/>
+<text x="60" y="1463" class="small"><tspan x="60" dy="0">Zero-shot still has instructions. Shots count worked input → output demonstrations, not requests.</tspan></text>
 </svg>
