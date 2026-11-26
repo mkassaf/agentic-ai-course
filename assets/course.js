@@ -10,7 +10,7 @@ const labs = [
     "objectives": [
       "Apply simple rules for retries, bulkheads, gateways, and BFFs.",
       "Make one LLM call, then compare SDK, LangChain, and optional DeepSeek Harness examples.",
-      "Compare zero-shot, one-shot, and few-shot prompts, then a neutral prompt and an architect persona.",
+      "Compare zero-shot, one-shot, and few-shot prompts, then give the same architecture question to two personas.",
       "Explain why agreement is useful to inspect but does not prove a design is correct."
     ],
     "example": "ShopEasy faces a slow dependency; ask the same question with a helper, SDK, LangChain, or an optional agent harness.",
@@ -91,7 +91,7 @@ const labs = [
     },
     "picture": {
       "src": "assets/images/prompt-techniques.svg",
-      "alt": "Compare zero, one, or three examples for sorting a customer message into Billing, Delivery, or Login. Then compare a neutral prompt and a mobile developer persona on the same architecture question.",
+      "alt": "Compare zero, one, or three examples for sorting a customer message into Billing, Delivery, or Login. Then compare a mobile developer and an on-call engineer answering the same architecture question.",
       "caption": "Shots count worked examples. A persona adds a perspective. Within each comparison, hold the new task fixed and inspect the replies."
     }
   },
@@ -103,7 +103,7 @@ const labs = [
     "topics": "system user messages prompting memory validation json reasoning thinking chain of thought strawberry decimal architecture gateway bff generation settings sampling temperature top k top p max tokens",
     "idea": "Separate reusable system instructions from changing user questions, then check model answers.",
     "objectives": [
-      "Distinguish system instructions from the user question and experiment with sampling settings.",
+      "Ask the same question with two system prompts and compare the styles. Then experiment with sampling settings.",
       "Pass a previous response into a follow-up and validate JSON.",
       "Compare an older model with guided prompts and DeepSeek thinking modes."
     ],

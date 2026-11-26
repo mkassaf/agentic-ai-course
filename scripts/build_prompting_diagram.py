@@ -15,7 +15,10 @@ DEMOS = (
     ('I was charged twice.', 'Billing'),
     ("I can't sign in.", 'Login'),
 )
-PERSONA = 'You are a mobile developer.'
+PERSONAS = (
+    ('Mobile developer', 'You are the mobile developer responsible for fast app screens.'),
+    ('On-call engineer', 'You are the on-call engineer responsible for keeping services simple to operate.'),
+)
 
 
 def wrap_text(value, width, size, bold=False):
@@ -63,10 +66,11 @@ def render():
         'The categories are Billing, Delivery, and Login. Zero-shot gives no examples. '
         'One-shot shows a package sent to the wrong address, categorized as Delivery. '
         'Few-shot adds a double charge for Billing and a sign-in problem for Login. '
-        'The expected category is Delivery. Panel B asks '
-        'both prompts which API pattern supports phone and browser clients with different '
-        'needs and asks for one operational trade-off. The persona prompt adds the role '
-        'of a mobile developer. Both prompts give zero worked examples.'
+        'The expected category is Delivery. Panel B asks both personas which API pattern '
+        'supports phone and browser clients with different needs and asks for one operational '
+        'trade-off. The mobile developer is responsible for fast app screens. The on-call '
+        'engineer is responsible for keeping services simple to operate. Both prompts give '
+        'zero worked examples.'
     )
     parts = [f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 1450" role="img" aria-labelledby="title desc">
 <title id="title">Prompting techniques: demonstrations and persona are separate choices</title>
@@ -130,20 +134,17 @@ def render():
     parts += [rect(40, 904, 1020, 462),
               '<circle cx="79" cy="948" r="19" fill="#14A800"/>']
     put(72, 955, 22, 'B', 'badge', 20, True)
-    put(112, 957, 895, 'Compare a neutral prompt with a persona', 'section', 28, True)
+    put(112, 957, 895, 'Ask two personas the same question', 'section', 28, True)
     put(64, 999, 972, ARCHITECTURE_QUESTION)
     put(64, 1032, 972, f'Choices: {ARCHITECTURE_LABELS}', 'small', 18)
     put(64, 1065, 972, 'Both prompts ask for one operational trade-off in two short sentences.', 'small', 18)
 
-    for x, title, body in (
-        (64, 'Neutral · no role', 'No persona instruction is added.'),
-        (562, 'Persona · one role', PERSONA),
-    ):
+    for x, (title, body) in zip((64, 562), PERSONAS):
         parts.append(rect(x, 1090, 474, 156, 'row', 12))
         put(x + 20, 1125, 434, title, 'label', 20, True)
         put(x + 20, 1163, 434, body)
     put(64, 1284, 972, '0 demonstrations in either prompt. Only the role instruction changes.', 'label', 20, True)
-    put(64, 1323, 972, 'A persona can change emphasis; it does not guarantee expertise or correctness.', 'small', 18)
+    put(64, 1323, 972, 'Compare what each reply emphasizes, such as faster screens or simpler operations.', 'small', 18)
 
     parts.append('<rect x="40" y="1392" width="6" height="27" rx="3" fill="#14A800"/>')
     put(60, 1413, 1000, 'Zero-shot still has instructions. Shots count worked input → output demonstrations, not requests.', 'small', 18)

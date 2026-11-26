@@ -60,9 +60,10 @@ class PromptingTechniqueTests(unittest.TestCase):
         self.assertIn(namespace['architecture_question'], task)
         self.assertNotIn(namespace['customer_message'], task)
         self.assertIn('operational trade-off in two short sentences', task)
-        role = 'You are a mobile developer.'
-        self.assertEqual(prompts[3].strip(), task)
-        self.assertEqual(prompts[4].strip(), f'{role}\n{task}')
+        personas = namespace['personas']
+        self.assertEqual(list(personas), ['Mobile developer', 'On-call engineer'])
+        self.assertNotEqual(*personas.values())
+        self.assertEqual(prompts[3:], [f'{role}\n{task}' for role in personas.values()])
 
     def test_comparison_preserves_the_original_prompt_and_provider_options(self):
         _, _, namespace, options = run_prompting_step()
@@ -81,6 +82,7 @@ class PromptingTechniqueTests(unittest.TestCase):
         self.assertEqual(diagram.ROUTING_INSTRUCTION, namespace['label_request'])
         self.assertEqual([f'Message: {message}\nCategory: {category}' for message, category in diagram.DEMOS],
                          namespace['demonstrations'])
+        self.assertEqual(diagram.PERSONAS, tuple(namespace['personas'].items()))
 
         image_path = 'assets/images/prompt-techniques.svg'
         lesson = json.loads((ROOT / 'lessons/00_rules_and_llms.json').read_text())

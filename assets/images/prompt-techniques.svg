@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 1450" role="img" aria-labelledby="title desc">
 <title id="title">Prompting techniques: demonstrations and persona are separate choices</title>
-<desc id="desc">Panel A compares three prompts for the same customer message about a missing package. The categories are Billing, Delivery, and Login. Zero-shot gives no examples. One-shot shows a package sent to the wrong address, categorized as Delivery. Few-shot adds a double charge for Billing and a sign-in problem for Login. The expected category is Delivery. Panel B asks both prompts which API pattern supports phone and browser clients with different needs and asks for one operational trade-off. The persona prompt adds the role of a mobile developer. Both prompts give zero worked examples.</desc>
+<desc id="desc">Panel A compares three prompts for the same customer message about a missing package. The categories are Billing, Delivery, and Login. Zero-shot gives no examples. One-shot shows a package sent to the wrong address, categorized as Delivery. Few-shot adds a double charge for Billing and a sign-in problem for Login. The expected category is Delivery. Panel B asks both personas which API pattern supports phone and browser clients with different needs and asks for one operational trade-off. The mobile developer is responsible for fast app screens. The on-call engineer is responsible for keeping services simple to operate. Both prompts give zero worked examples.</desc>
 <style>
   text { font-family: "Helvetica Neue", Arial, sans-serif; fill: #000000; }
   .title { font-size: 36px; font-weight: 700; }
@@ -50,18 +50,18 @@
 <rect x="40" y="904" width="1020" height="462" rx="16" class="card"/>
 <circle cx="79" cy="948" r="19" fill="#14A800"/>
 <text x="72" y="955" class="badge"><tspan x="72" dy="0">B</tspan></text>
-<text x="112" y="957" class="section"><tspan x="112" dy="0">Compare a neutral prompt with a persona</tspan></text>
+<text x="112" y="957" class="section"><tspan x="112" dy="0">Ask two personas the same question</tspan></text>
 <text x="64" y="999" class="body"><tspan x="64" dy="0">ShopEasy has phone and browser clients that need different tailored APIs. Which pattern fits?</tspan></text>
 <text x="64" y="1032" class="small"><tspan x="64" dy="0">Choices: Bulkhead · API gateway · BFF</tspan></text>
 <text x="64" y="1065" class="small"><tspan x="64" dy="0">Both prompts ask for one operational trade-off in two short sentences.</tspan></text>
 <rect x="64" y="1090" width="474" height="156" rx="12" class="row"/>
-<text x="84" y="1125" class="label"><tspan x="84" dy="0">Neutral · no role</tspan></text>
-<text x="84" y="1163" class="body"><tspan x="84" dy="0">No persona instruction is added.</tspan></text>
+<text x="84" y="1125" class="label"><tspan x="84" dy="0">Mobile developer</tspan></text>
+<text x="84" y="1163" class="body"><tspan x="84" dy="0">You are the mobile developer responsible for</tspan><tspan x="84" dy="27">fast app screens.</tspan></text>
 <rect x="562" y="1090" width="474" height="156" rx="12" class="row"/>
-<text x="582" y="1125" class="label"><tspan x="582" dy="0">Persona · one role</tspan></text>
-<text x="582" y="1163" class="body"><tspan x="582" dy="0">You are a mobile developer.</tspan></text>
+<text x="582" y="1125" class="label"><tspan x="582" dy="0">On-call engineer</tspan></text>
+<text x="582" y="1163" class="body"><tspan x="582" dy="0">You are the on-call engineer responsible for</tspan><tspan x="582" dy="27">keeping services simple to operate.</tspan></text>
 <text x="64" y="1284" class="label"><tspan x="64" dy="0">0 demonstrations in either prompt. Only the role instruction changes.</tspan></text>
-<text x="64" y="1323" class="small"><tspan x="64" dy="0">A persona can change emphasis; it does not guarantee expertise or correctness.</tspan></text>
+<text x="64" y="1323" class="small"><tspan x="64" dy="0">Compare what each reply emphasizes, such as faster screens or simpler operations.</tspan></text>
 <rect x="40" y="1392" width="6" height="27" rx="3" fill="#14A800"/>
 <text x="60" y="1413" class="small"><tspan x="60" dy="0">Zero-shot still has instructions. Shots count worked input → output demonstrations, not requests.</tspan></text>
 </svg>
