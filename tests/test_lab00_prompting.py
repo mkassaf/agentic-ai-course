@@ -19,7 +19,7 @@ def run_prompting_step():
 
     def ask(prompt):
         prompts.append(prompt)
-        return 'MOSS' if len(prompts) <= 3 else 'BFF'
+        return 'Delivery' if len(prompts) <= 3 else 'BFF'
 
     namespace = {'ask': ask, 'prompt': 'original', 'options': options}
     with contextlib.redirect_stdout(io.StringIO()):
@@ -35,21 +35,21 @@ class PromptingTechniqueTests(unittest.TestCase):
         demonstrations = namespace['demonstrations']
         self.assertEqual(len(demonstrations), 3)
         self.assertEqual(len(set(demonstrations)), 3)
-        question = namespace['technique_question']
+        message = namespace['customer_message']
         instruction = namespace['label_request']
-        self.assertIn('package', question)
-        self.assertIn('KITE, MOSS, or LAMP', instruction)
-        self.assertIn('parcel', demonstrations[1])
-        self.assertTrue(demonstrations[1].endswith('A: MOSS'))
+        self.assertIn('package', message)
+        self.assertIn('Billing, Delivery, or Login', instruction)
+        self.assertEqual(namespace['expected_category'], 'Delivery')
+        self.assertTrue(demonstrations[0].endswith('Category: Delivery'))
 
         for call, expected_examples in zip(prompts[:3], (0, 1, 3)):
             with self.subTest(examples=expected_examples):
-                self.assertEqual(call.count(question), 1)
+                self.assertEqual(call.count(message), 1)
                 self.assertEqual(call.count(instruction), 1)
                 for index, example in enumerate(demonstrations):
                     if index < expected_examples:
                         self.assertEqual(call.count(example), 1)
-                        self.assertLess(call.index(example), call.index(question))
+                        self.assertLess(call.index(example), call.index(message))
                     else:
                         self.assertNotIn(example, call)
 
@@ -58,7 +58,7 @@ class PromptingTechniqueTests(unittest.TestCase):
         self.assertEqual(len(prompts), 5)
         task = namespace['persona_task']
         self.assertIn(namespace['architecture_question'], task)
-        self.assertNotIn(namespace['technique_question'], task)
+        self.assertNotIn(namespace['customer_message'], task)
         self.assertIn('operational trade-off in two short sentences', task)
         role = 'You are a mobile developer.'
         self.assertEqual(prompts[3].strip(), task)
@@ -76,6 +76,11 @@ class PromptingTechniqueTests(unittest.TestCase):
         diagram = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(diagram)
         self.assertEqual(diagram.OUTPUT.read_text(), diagram.render())
+        _, _, namespace, _ = run_prompting_step()
+        self.assertEqual(diagram.ROUTING_QUESTION, namespace['customer_message'])
+        self.assertEqual(diagram.ROUTING_INSTRUCTION, namespace['label_request'])
+        self.assertEqual([f'Message: {message}\nCategory: {category}' for message, category in diagram.DEMOS],
+                         namespace['demonstrations'])
 
         image_path = 'assets/images/prompt-techniques.svg'
         lesson = json.loads((ROOT / 'lessons/00_rules_and_llms.json').read_text())

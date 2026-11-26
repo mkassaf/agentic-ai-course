@@ -6,7 +6,7 @@ const labs = [
     "title": "From rules to LLM calls",
     "subtitle": "Rules versus LLMs, then prompting techniques",
     "topics": "rules llm prompting microservices retry idempotency bulkhead api gateway bff sdk openai langchain framework deepseek harness zero-shot no-shot one-shot single-shot few-shot persona role prompting",
-    "idea": "Compare Python rules and model replies. Then use worked examples to route support tickets and try a persona on an architecture question.",
+    "idea": "Compare Python rules and model replies. Then use worked examples to sort customer messages and try a persona on an architecture question.",
     "objectives": [
       "Apply simple rules for retries, bulkheads, gateways, and BFFs.",
       "Make one LLM call, then compare SDK, LangChain, and optional DeepSeek Harness examples.",
@@ -15,7 +15,7 @@ const labs = [
     ],
     "example": "ShopEasy faces a slow dependency; ask the same question with a helper, SDK, LangChain, or an optional agent harness.",
     "exercise": "Change transient failure facts, then vary only the example count or persona in the prompting comparison.",
-    "checks": "Check the quiz choices and reply format separately. Compare which queue labels the model can infer from the examples.",
+    "checks": "Check quiz choices and reply format separately. Then compare the category replies with zero, one, and three examples.",
     "bridge": "A timed-out payment might already have succeeded; server-supported idempotency makes a retry safer.",
     "track": "lecture-1",
     "steps": 5,
@@ -91,7 +91,7 @@ const labs = [
     },
     "picture": {
       "src": "assets/images/prompt-techniques.svg",
-      "alt": "Compare zero, one, or three worked examples for support-ticket routing. Then compare a neutral prompt and a mobile developer persona on the same architecture question.",
+      "alt": "Compare zero, one, or three examples for sorting a customer message into Billing, Delivery, or Login. Then compare a neutral prompt and a mobile developer persona on the same architecture question.",
       "caption": "Shots count worked examples. A persona adds a perspective. Within each comparison, hold the new task fixed and inspect the replies."
     }
   },

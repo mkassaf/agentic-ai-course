@@ -28,7 +28,7 @@ class NumericOutcomeTests(unittest.TestCase):
             'A', 'B. Do not retry automatically', 'Retry with a limit and backoff',
             'B. Retry with a limit and backoff', 'A. BFF', 'C.', 'B',
         ]
-        ns = run_lesson('00_rules_and_llms', responses=['A', *answers, *['MOSS'] * 5])
+        ns = run_lesson('00_rules_and_llms', responses=['A', *answers, *['Delivery'] * 3, 'BFF', 'BFF'])
         self.assertEqual(len(ns['cases']), 7)
         self.assertEqual(ns['format_matches'], 2)
         self.assertEqual(ns['agreement'], 5)

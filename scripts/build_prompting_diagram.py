@@ -6,14 +6,14 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / 'assets' / 'images' / 'prompt-techniques.svg'
 
-ROUTING_QUESTION = 'My package was supposed to arrive yesterday, but it has not arrived.'
-ROUTING_INSTRUCTION = 'Route the support ticket. Reply with one queue label: KITE, MOSS, or LAMP.'
+ROUTING_QUESTION = "My package hasn't arrived."
+ROUTING_INSTRUCTION = 'Choose one category: Billing, Delivery, or Login. Reply with the category only.'
 ARCHITECTURE_QUESTION = 'ShopEasy has phone and browser clients that need different tailored APIs. Which pattern fits?'
 ARCHITECTURE_LABELS = 'Bulkhead · API gateway · BFF'
 DEMOS = (
-    ('I was charged twice for one order.', 'KITE'),
-    ('The courier left my parcel at the wrong address.', 'MOSS'),
-    ('I cannot sign in after resetting my password.', 'LAMP'),
+    ('My package arrived at the wrong address.', 'Delivery'),
+    ('I was charged twice.', 'Billing'),
+    ("I can't sign in.", 'Login'),
 )
 PERSONA = 'You are a mobile developer.'
 
@@ -59,10 +59,11 @@ def rect(x, y, width, height, cls='card', radius=16):
 
 def render():
     desc = (
-        'Panel A compares three prompts for the same late package ticket. The available '
-        'queue labels are KITE, MOSS, and LAMP. Zero-shot gives no worked examples. '
-        'One-shot maps a billing ticket to KITE. Few-shot also maps a delivery ticket '
-        'to MOSS and a sign-in ticket to LAMP. The expected label is MOSS. Panel B asks '
+        'Panel A compares three prompts for the same customer message about a missing package. '
+        'The categories are Billing, Delivery, and Login. Zero-shot gives no examples. '
+        'One-shot shows a package sent to the wrong address, categorized as Delivery. '
+        'Few-shot adds a double charge for Billing and a sign-in problem for Login. '
+        'The expected category is Delivery. Panel B asks '
         'both prompts which API pattern supports phone and browser clients with different '
         'needs and asks for one operational trade-off. The persona prompt adds the role '
         'of a mobile developer. Both prompts give zero worked examples.'
@@ -98,15 +99,15 @@ def render():
               '<circle cx="79" cy="202" r="19" fill="#14A800"/>']
     put(72, 209, 22, 'A', 'badge', 20, True)
     put(112, 211, 895, 'Compare the number of worked examples', 'section', 28, True)
-    put(64, 251, 972, 'Keep the held-out question, choices, and output format identical.', 'intro', 21)
+    put(64, 251, 972, 'Keep the same customer message, category choices, and response format.', 'intro', 21)
 
     parts.append(rect(64, 272, 972, 140, 'soft', 12))
-    put(84, 302, 932, 'New support ticket', 'label', 20, True)
+    put(84, 302, 932, 'Customer message', 'label', 20, True)
     put(84, 332, 932, ROUTING_QUESTION)
     put(84, 366, 932, ROUTING_INSTRUCTION, 'small', 18)
 
     put(84, 453, 185, 'Prompt variant', 'label', 20, True)
-    put(297, 453, 710, 'Worked Q → A examples included before that question', 'label', 20, True)
+    put(297, 453, 710, 'Worked examples before the new message', 'label', 20, True)
 
     rows = [
         (472, 76, 'Zero-shot', '0 examples', []),
@@ -119,12 +120,12 @@ def render():
         put(84, y + 57, 185, count, 'small', 18)
         parts.append(f'<path d="M275 {y+14} V{y+height-14}" class="line"/>')
         if not demos:
-            put(297, y + 43, 715, 'No worked question–answer pairs.', 'body', 20)
+            put(297, y + 43, 715, 'No examples.', 'body', 20)
         else:
             baseline = y + 29
             for question, answer in demos:
-                baseline = put(297, baseline, 715, f'Q: {question} → A: {answer}', 'small', 18) + 3
-    put(64, 846, 972, 'Expected queue is MOSS. The delivery example shows the desk’s convention.', 'small', 18)
+                baseline = put(297, baseline, 715, f'{question} → {answer}', 'small', 18) + 3
+    put(64, 846, 972, 'Expected category: Delivery.', 'small', 18)
 
     parts += [rect(40, 904, 1020, 462),
               '<circle cx="79" cy="948" r="19" fill="#14A800"/>']
