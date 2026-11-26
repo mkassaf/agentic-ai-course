@@ -22,7 +22,7 @@ Lecture 1 uses Labs 00–02; Lecture 2 uses 03–05; Lecture 3 uses 06–08. Lab
 
 ## Questions worth asking
 
-- **00–01:** When is a retry safe? How do bulkheads, gateways and BFFs solve different problems? Compare zero-shot, one-shot and few-shot prompts on the same message. Which priorities do the two personas emphasize? Which words change when the rainbow question uses a different system instruction? What context does a follow-up need?
+- **00–01:** When is a retry safe? How do bulkheads, gateways and BFFs solve different problems? Compare zero-shot, one-shot and few-shot prompts on the same message. Which priorities do the two personas emphasize? What would each Lab 01 reviewer change first about the same slow customer search when they focus on data flow, response time, or privacy? What context does a follow-up need?
 - **02:** Did the retrieved note support the claim? What changes when no relevant note is found?
 - **03:** Where does ShopEasy's language change? Why is a UI/logic/data split a poor default service boundary?
 - **04:** Which tool supplies the service record? What does validation check, and who runs the tools?

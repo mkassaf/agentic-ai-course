@@ -41,11 +41,15 @@ class WarmupTests(unittest.TestCase):
                     for step in warmup.get('extra_steps', []):
                         exec(step['code'], namespace)
                 if number == '01':
-                    mixed, tutor, physics = prompts
+                    self.assertEqual(len(prompts), 4)
+                    mixed, *views = prompts
+                    question, architect = views[0]
                     self.assertEqual(mixed[1]['system'], '')
-                    self.assertEqual(mixed[0], f"{tutor[1]['system']} {tutor[0]}")
-                    self.assertEqual(tutor[0], physics[0])
-                    self.assertNotEqual(tutor[1]['system'], physics[1]['system'])
+                    self.assertEqual(mixed[0].split(), f"{architect['system']} {question}".split())
+                    self.assertEqual([prompt for prompt, _ in views], [question] * 3)
+                    system_prompts = {kwargs['system'].strip() for _, kwargs in views}
+                    self.assertEqual(len(system_prompts), 3)
+                    self.assertNotIn('', system_prompts)
                 if number == '02':
                     self.assertIn('museum opens at 10:00', prompts[0][0])
                 if number == '04':

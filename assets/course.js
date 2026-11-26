@@ -103,7 +103,7 @@ const labs = [
     "topics": "system user messages prompting memory validation json reasoning thinking chain of thought strawberry decimal architecture gateway bff generation settings sampling temperature top k top p max tokens",
     "idea": "Separate reusable system instructions from changing user questions, then check model answers.",
     "objectives": [
-      "Ask the same question with two system prompts and compare the styles. Then experiment with sampling settings.",
+      "Ask three personas the same architecture question and compare their recommendations. Then experiment with sampling settings.",
       "Pass a previous response into a follow-up and validate JSON.",
       "Compare an older model with guided prompts and DeepSeek thinking modes."
     ],
